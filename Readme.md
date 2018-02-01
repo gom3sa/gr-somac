@@ -8,5 +8,5 @@ There are 2 MAC protocols available currently. They bellong to the project [gr-m
 SOMAC uses the PHY layer from the project IEEE 802.11 a/g/p Transceiver. More information is available in [https://github.com/bastibl/gr-ieee802-11](https://github.com/bastibl/gr-ieee802-11).
 
 ## Author
-Full name: André Vinícius Gomes Santos Gonçalves (usually André Gomes)
+Full name: André Vinícius Gomes Santos Gonçalves (usually André Gomes) <br />
 E-mail: andre.gomes@dcc.ufmg.br
