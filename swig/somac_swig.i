@@ -8,6 +8,15 @@
 %include "somac_swig_doc.i"
 
 %{
+#include "somac/sensor.h"
+#include "somac/broadcaster.h"
+#include "somac/metrics_gen.h"
 %}
 
 
+%include "somac/sensor.h"
+GR_SWIG_BLOCK_MAGIC2(somac, sensor);
+%include "somac/broadcaster.h"
+GR_SWIG_BLOCK_MAGIC2(somac, broadcaster);
+%include "somac/metrics_gen.h"
+GR_SWIG_BLOCK_MAGIC2(somac, metrics_gen);

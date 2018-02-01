@@ -18,5 +18,8 @@
 # Boston, MA 02110-1301, USA.
 
 install(FILES
-    DESTINATION share/gnuradio/grc/blocks
+    somac_decision.xml
+    somac_sensor.xml
+    somac_broadcaster.xml
+    somac_metrics_gen.xml DESTINATION share/gnuradio/grc/blocks
 )

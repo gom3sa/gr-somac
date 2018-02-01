@@ -22,5 +22,7 @@
 ########################################################################
 install(FILES
     api.h
-    DESTINATION include/somac
+    sensor.h
+    broadcaster.h
+    metrics_gen.h DESTINATION include/somac
 )

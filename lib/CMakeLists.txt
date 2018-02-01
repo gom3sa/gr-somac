@@ -26,6 +26,9 @@ include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
 
 list(APPEND somac_sources
+    sensor.cc
+    broadcaster.cc
+    metrics_gen.cc
 )
 
 set(somac_sources "${somac_sources}" PARENT_SCOPE)

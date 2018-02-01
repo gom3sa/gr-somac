@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<block>
+  <name>Decision block</name>
+  <key>somac_decision</key>
+  <category>[SOMAC]</category>
+  <import>import somac</import>
+  <make>somac.decision($coord, $dec_gran, $broad_gran)</make>
+  <!-- Make one 'param' node for every Parameter you want settable from the GUI.
+       Sub-nodes:
+       * name
+       * key (makes the value accessible as $keyname, e.g. in the make node)
+       * type -->
+  <param>
+    <name>Coordinator</name>
+    <key>coord</key>
+    <type>bool</type>
+    <option>
+      <name>True</name>
+      <key>True</key>
+    </option>
+    <option>
+      <name>False</name>
+      <key>False</key>
+    </option>
+  </param>
+
+  <param>
+    <name>Decision granul (s)</name>
+    <key>dec_gran</key>
+    <type>int</type>
+  </param>
+
+  <param>
+    <name>Broadcast granul (s)</name>
+    <key>broad_gran</key>
+    <type>int</type>
+  </param>
+  <!-- Make one 'sink' node per input. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+
+  <sink>
+    <name>act prot in</name>
+    <type>message</type>
+    <optional>1</optional>
+  </sink>
+
+  <!-- Make one 'source' node per output. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+
+  <source>
+    <name>ctrl out</name>
+    <type>message</type>
+    <optional>1</optional>
+  </source>
+
+  <source>
+    <name>broad out</name>
+    <type>message</type>
+    <optional>1</optional>
+  </source>
+</block>
