@@ -10,6 +10,7 @@
        * name
        * key (makes the value accessible as $keyname, e.g. in the make node)
        * type -->
+
   <param>
     <name>Debug</name>
     <key>debug</key>
@@ -59,7 +60,7 @@
        * vlen
        * optional (set to 1 for optional inputs) -->
   <source>
-    <name>stats out</name>
+    <name>broad out</name>
     <type>message</type>
     <optional>1</optional>
   </source>

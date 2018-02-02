@@ -33,12 +33,13 @@ class decision(gr.basic_block):
 		CSMA/CA:	portid = 0
 		TDMA:		portid = 1
 	"""
-	def __init__(self, coord, dec_gran, broad_gran):
+	def __init__(self, coord, dec_gran, broad_gran, metrics_gran):
 		gr.basic_block.__init__(self, name="decision", in_sig=None, out_sig=None)
 
 		self.coord = coord; # Is coordinator? 
 		self.dec_gran = dec_gran; # Granularity of decision
 		self.broad_gran = broad_gran;
+		self.metrics_gran = metrics_gran;
 		# TODO: if node has not got portid from network, it should wait and transmit nothing. Perhaps change portid to an invalid one;
 
 		# Input ports
@@ -51,6 +52,8 @@ class decision(gr.basic_block):
 		self.message_port_register_out(self.msg_port_ctrl_out);
 		self.msg_port_broad_out = pmt.intern('broad out');
 		self.message_port_register_out(self.msg_port_broad_out);
+		self.msg_port_metrics_out = pmt.intern('metrics out');
+		self.message_port_register_out(self.msg_port_metrics_out);
 
 		self.start_block();
 
@@ -79,7 +82,7 @@ class decision(gr.basic_block):
 		global portid;
 
 		print "Decision block as Coordinator"
-		portid = 1; # First MAC protocol
+		portid = 0; # First MAC protocol
 
 		while True:
 			if portid == 0:
@@ -115,3 +118,8 @@ class decision(gr.basic_block):
 
 		print "Decision block as Normal node"
 		self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol('portid' + str(portid))); # Sets no MAC protocol at the beginning
+
+		while True:
+			time.sleep(self.metrics_gran);
+			msg = "send_metrics";
+			self.message_port_pub(self.msg_port_metrics_out, pmt.string_to_symbol(msg));

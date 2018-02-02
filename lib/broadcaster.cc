@@ -31,6 +31,7 @@
 #define FC_PROTOCOL 0x2900
 #define CSMA 0x00
 #define TDMA 0x01
+#define FC_METRICS 0x2100
 
 using namespace gr::somac;
 
@@ -52,56 +53,67 @@ class broadcaster_impl : public broadcaster {
 			}
 		}
 
-	void msg_in(pmt::pmt_t msg) {
-		std::string str = pmt::symbol_to_string(msg);
-		uint8_t act_prot;
+		void msg_in(pmt::pmt_t msg) {
+			std::string str = pmt::symbol_to_string(msg);
+			pmt::pmt_t frame;
 
-		if(str == "act_prot:0") act_prot = CSMA;
-		else if(str == "act_prot:1") act_prot = TDMA;
-		else return;
+			if(str == "act_prot:0") {
+				uint8_t msdu[1];
+				msdu[0] = CSMA;
+				frame = generate_frame(msdu, 1, FC_PROTOCOL, 0x0000, pr_broadcast_addr);
+			} else if(str == "act_prot:1") {
+				uint8_t msdu[1];
+				msdu[0] = TDMA;
+				frame = generate_frame(msdu, 1, FC_PROTOCOL, 0x0000, pr_broadcast_addr);
+			} else {
+				if(str.length() > 1500) {
+					std::cout << "Size of metrics' message exceeds 1500 bytes! Message will not be sent!" << std::endl << std::flush;
+					return;
+				}
 
-		uint8_t msdu[1];
-		msdu[0] = act_prot;
-		int msdu_size = 1;
+				const char *msdu = str.c_str();
+				int msdu_size = str.length();
 
-		pmt::pmt_t frame = generate_frame(msdu, msdu_size, FC_PROTOCOL, 0x0000, pr_broadcast_addr);
-		message_port_pub(msg_port_frame_out, frame);
-	}
+				frame = generate_frame((uint8_t*)msdu, msdu_size, FC_METRICS, 0x0000, pr_broadcast_addr);
+			}
 
-	pmt::pmt_t generate_frame(uint8_t *msdu, int msdu_size, uint16_t fc, uint16_t seq_nr, uint8_t *dst_addr) {
-		// Inputs: (data, data size, frame control, sequence number, destination address)
-		mac_header header;
-		header.frame_control = fc;
-		header.duration = 0x0000;
-		header.seq_nr = seq_nr;
-
-		memcpy(header.addr1, dst_addr, 6);
-		memcpy(header.addr2, pr_mac_addr, 6);
-		memcpy(header.addr3, pr_broadcast_addr, 6);
-
-		uint8_t psdu[1528];
-		memcpy(psdu, &header, 24); // Header is 24 bytes long
-		memcpy(psdu + 24, msdu, msdu_size); 
-
-		boost::crc_32_type result;
-		result.process_bytes(&psdu, 24 + msdu_size);
-		uint32_t fcs = result.checksum();
-
-		memcpy(psdu + 24 + msdu_size, &fcs, sizeof(uint32_t));
-
-		// Building frame from cdr & car
-		pmt::pmt_t frame = pmt::make_blob(psdu, 24 + msdu_size + sizeof(uint32_t));
-		pmt::pmt_t dict = pmt::make_dict();
-		dict = pmt::dict_add(dict, pmt::mp("crc_included"), pmt::PMT_T);
-
-		return pmt::cons(dict, frame);
-	}
+			message_port_pub(msg_port_frame_out, frame);
+		}
 
 	private:
 		uint8_t pr_mac_addr[6], pr_broadcast_addr[6];
 
 		pmt::pmt_t msg_port_msg_in = pmt::mp("msg in");
 		pmt::pmt_t msg_port_frame_out = pmt::mp("frame out");
+
+		pmt::pmt_t generate_frame(uint8_t *msdu, int msdu_size, uint16_t fc, uint16_t seq_nr, uint8_t *dst_addr) {
+			// Inputs: (data, data size, frame control, sequence number, destination address)
+			mac_header header;
+			header.frame_control = fc;
+			header.duration = 0x0000;
+			header.seq_nr = seq_nr;
+
+			memcpy(header.addr1, dst_addr, 6);
+			memcpy(header.addr2, pr_mac_addr, 6);
+			memcpy(header.addr3, pr_broadcast_addr, 6);
+
+			uint8_t psdu[1528];
+			memcpy(psdu, &header, 24); // Header is 24 bytes long
+			memcpy(psdu + 24, msdu, msdu_size); 
+
+			boost::crc_32_type result;
+			result.process_bytes(&psdu, 24 + msdu_size);
+			uint32_t fcs = result.checksum();
+
+			memcpy(psdu + 24 + msdu_size, &fcs, sizeof(uint32_t));
+
+			// Building frame from cdr & car
+			pmt::pmt_t frame = pmt::make_blob(psdu, 24 + msdu_size + sizeof(uint32_t));
+			pmt::pmt_t dict = pmt::make_dict();
+			dict = pmt::dict_add(dict, pmt::mp("crc_included"), pmt::PMT_T);
+
+			return pmt::cons(dict, frame);
+		}
 };
 
 broadcaster::sptr

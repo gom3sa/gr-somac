@@ -4,7 +4,7 @@
   <key>somac_decision</key>
   <category>[SOMAC]</category>
   <import>import somac</import>
-  <make>somac.decision($coord, $dec_gran, $broad_gran)</make>
+  <make>somac.decision($coord, $dec_gran, $broad_gran, $metrics_gran)</make>
   <!-- Make one 'param' node for every Parameter you want settable from the GUI.
        Sub-nodes:
        * name
@@ -35,6 +35,12 @@
     <key>broad_gran</key>
     <type>int</type>
   </param>
+
+  <param>
+    <name>Metrics granul (s)</name>
+    <key>metrics_gran</key>
+    <type>int</type>
+  </param>
   <!-- Make one 'sink' node per input. Sub-nodes:
        * name (an identifier for the GUI)
        * type
@@ -61,6 +67,12 @@
 
   <source>
     <name>broad out</name>
+    <type>message</type>
+    <optional>1</optional>
+  </source>
+
+  <source>
+    <name>metrics out</name>
     <type>message</type>
     <optional>1</optional>
   </source>

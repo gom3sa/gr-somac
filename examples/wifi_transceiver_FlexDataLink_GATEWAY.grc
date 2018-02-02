@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.11'?>
+<?grc format='1' created='3.7.9'?>
 <flow_graph>
   <timestamp>Fri Jul 18 10:38:08 2014</timestamp>
   <block>
@@ -406,7 +406,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(472, 518)</value>
+      <value>(472, 558)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -453,11 +453,11 @@
     </param>
     <param>
       <key>file</key>
-      <value>/tmp/wifi_rx.pcap</value>
+      <value>/tmp/wifi_tx_all.pcap</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(472, 334)</value>
+      <value>(472, 406)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -504,7 +504,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(832, 596)</value>
+      <value>(832, 636)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -626,7 +626,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1016, 305)</value>
+      <value>(1016, 345)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -689,7 +689,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(608, 696)</value>
+      <value>(608, 736)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -740,7 +740,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(672, 525)</value>
+      <value>(672, 565)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -787,7 +787,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(672, 341)</value>
+      <value>(672, 413)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -842,7 +842,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1016, 89)</value>
+      <value>(1016, 97)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -855,6 +855,10 @@ Coordinator: True/ False</value>
     <param>
       <key>maxoutbuf</key>
       <value>0</value>
+    </param>
+    <param>
+      <key>metrics_gran</key>
+      <value>10</value>
     </param>
     <param>
       <key>minoutbuf</key>
@@ -885,7 +889,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1016, 164)</value>
+      <value>(1016, 209)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -928,7 +932,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(853, 144)</value>
+      <value>(853, 184)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1623,7 +1627,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(760, 673)</value>
+      <value>(760, 713)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1750,10 +1754,6 @@ Coordinator: True/ False</value>
       <value>False</value>
     </param>
     <param>
-      <key>hide_lo_controls</key>
-      <value>True</value>
-    </param>
-    <param>
       <key>stream_args</key>
       <value></value>
     </param>
@@ -1809,14 +1809,6 @@ Coordinator: True/ False</value>
       <value>rx_gain</value>
     </param>
     <param>
-      <key>lo_export0</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source0</key>
-      <value>internal</value>
-    </param>
-    <param>
       <key>ant10</key>
       <value></value>
     </param>
@@ -1843,14 +1835,6 @@ Coordinator: True/ False</value>
     <param>
       <key>gain10</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lo_export10</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source10</key>
-      <value>internal</value>
     </param>
     <param>
       <key>ant11</key>
@@ -1881,14 +1865,6 @@ Coordinator: True/ False</value>
       <value>0</value>
     </param>
     <param>
-      <key>lo_export11</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source11</key>
-      <value>internal</value>
-    </param>
-    <param>
       <key>ant12</key>
       <value></value>
     </param>
@@ -1915,14 +1891,6 @@ Coordinator: True/ False</value>
     <param>
       <key>gain12</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lo_export12</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source12</key>
-      <value>internal</value>
     </param>
     <param>
       <key>ant13</key>
@@ -1953,14 +1921,6 @@ Coordinator: True/ False</value>
       <value>0</value>
     </param>
     <param>
-      <key>lo_export13</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source13</key>
-      <value>internal</value>
-    </param>
-    <param>
       <key>ant14</key>
       <value></value>
     </param>
@@ -1987,14 +1947,6 @@ Coordinator: True/ False</value>
     <param>
       <key>gain14</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lo_export14</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source14</key>
-      <value>internal</value>
     </param>
     <param>
       <key>ant15</key>
@@ -2025,14 +1977,6 @@ Coordinator: True/ False</value>
       <value>0</value>
     </param>
     <param>
-      <key>lo_export15</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source15</key>
-      <value>internal</value>
-    </param>
-    <param>
       <key>ant16</key>
       <value></value>
     </param>
@@ -2059,14 +2003,6 @@ Coordinator: True/ False</value>
     <param>
       <key>gain16</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lo_export16</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source16</key>
-      <value>internal</value>
     </param>
     <param>
       <key>ant17</key>
@@ -2097,14 +2033,6 @@ Coordinator: True/ False</value>
       <value>0</value>
     </param>
     <param>
-      <key>lo_export17</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source17</key>
-      <value>internal</value>
-    </param>
-    <param>
       <key>ant18</key>
       <value></value>
     </param>
@@ -2131,14 +2059,6 @@ Coordinator: True/ False</value>
     <param>
       <key>gain18</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lo_export18</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source18</key>
-      <value>internal</value>
     </param>
     <param>
       <key>ant19</key>
@@ -2169,14 +2089,6 @@ Coordinator: True/ False</value>
       <value>0</value>
     </param>
     <param>
-      <key>lo_export19</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source19</key>
-      <value>internal</value>
-    </param>
-    <param>
       <key>ant1</key>
       <value></value>
     </param>
@@ -2203,14 +2115,6 @@ Coordinator: True/ False</value>
     <param>
       <key>gain1</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lo_export1</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source1</key>
-      <value>internal</value>
     </param>
     <param>
       <key>ant20</key>
@@ -2241,14 +2145,6 @@ Coordinator: True/ False</value>
       <value>0</value>
     </param>
     <param>
-      <key>lo_export20</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source20</key>
-      <value>internal</value>
-    </param>
-    <param>
       <key>ant21</key>
       <value></value>
     </param>
@@ -2275,14 +2171,6 @@ Coordinator: True/ False</value>
     <param>
       <key>gain21</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lo_export21</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source21</key>
-      <value>internal</value>
     </param>
     <param>
       <key>ant22</key>
@@ -2313,14 +2201,6 @@ Coordinator: True/ False</value>
       <value>0</value>
     </param>
     <param>
-      <key>lo_export22</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source22</key>
-      <value>internal</value>
-    </param>
-    <param>
       <key>ant23</key>
       <value></value>
     </param>
@@ -2347,14 +2227,6 @@ Coordinator: True/ False</value>
     <param>
       <key>gain23</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lo_export23</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source23</key>
-      <value>internal</value>
     </param>
     <param>
       <key>ant24</key>
@@ -2385,14 +2257,6 @@ Coordinator: True/ False</value>
       <value>0</value>
     </param>
     <param>
-      <key>lo_export24</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source24</key>
-      <value>internal</value>
-    </param>
-    <param>
       <key>ant25</key>
       <value></value>
     </param>
@@ -2419,14 +2283,6 @@ Coordinator: True/ False</value>
     <param>
       <key>gain25</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lo_export25</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source25</key>
-      <value>internal</value>
     </param>
     <param>
       <key>ant26</key>
@@ -2457,14 +2313,6 @@ Coordinator: True/ False</value>
       <value>0</value>
     </param>
     <param>
-      <key>lo_export26</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source26</key>
-      <value>internal</value>
-    </param>
-    <param>
       <key>ant27</key>
       <value></value>
     </param>
@@ -2491,14 +2339,6 @@ Coordinator: True/ False</value>
     <param>
       <key>gain27</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lo_export27</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source27</key>
-      <value>internal</value>
     </param>
     <param>
       <key>ant28</key>
@@ -2529,14 +2369,6 @@ Coordinator: True/ False</value>
       <value>0</value>
     </param>
     <param>
-      <key>lo_export28</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source28</key>
-      <value>internal</value>
-    </param>
-    <param>
       <key>ant29</key>
       <value></value>
     </param>
@@ -2563,14 +2395,6 @@ Coordinator: True/ False</value>
     <param>
       <key>gain29</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lo_export29</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source29</key>
-      <value>internal</value>
     </param>
     <param>
       <key>ant2</key>
@@ -2601,14 +2425,6 @@ Coordinator: True/ False</value>
       <value>0</value>
     </param>
     <param>
-      <key>lo_export2</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source2</key>
-      <value>internal</value>
-    </param>
-    <param>
       <key>ant30</key>
       <value></value>
     </param>
@@ -2635,14 +2451,6 @@ Coordinator: True/ False</value>
     <param>
       <key>gain30</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lo_export30</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source30</key>
-      <value>internal</value>
     </param>
     <param>
       <key>ant31</key>
@@ -2673,14 +2481,6 @@ Coordinator: True/ False</value>
       <value>0</value>
     </param>
     <param>
-      <key>lo_export31</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source31</key>
-      <value>internal</value>
-    </param>
-    <param>
       <key>ant3</key>
       <value></value>
     </param>
@@ -2707,14 +2507,6 @@ Coordinator: True/ False</value>
     <param>
       <key>gain3</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lo_export3</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source3</key>
-      <value>internal</value>
     </param>
     <param>
       <key>ant4</key>
@@ -2745,14 +2537,6 @@ Coordinator: True/ False</value>
       <value>0</value>
     </param>
     <param>
-      <key>lo_export4</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source4</key>
-      <value>internal</value>
-    </param>
-    <param>
       <key>ant5</key>
       <value></value>
     </param>
@@ -2779,14 +2563,6 @@ Coordinator: True/ False</value>
     <param>
       <key>gain5</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lo_export5</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source5</key>
-      <value>internal</value>
     </param>
     <param>
       <key>ant6</key>
@@ -2817,14 +2593,6 @@ Coordinator: True/ False</value>
       <value>0</value>
     </param>
     <param>
-      <key>lo_export6</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source6</key>
-      <value>internal</value>
-    </param>
-    <param>
       <key>ant7</key>
       <value></value>
     </param>
@@ -2851,14 +2619,6 @@ Coordinator: True/ False</value>
     <param>
       <key>gain7</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lo_export7</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source7</key>
-      <value>internal</value>
     </param>
     <param>
       <key>ant8</key>
@@ -2889,14 +2649,6 @@ Coordinator: True/ False</value>
       <value>0</value>
     </param>
     <param>
-      <key>lo_export8</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source8</key>
-      <value>internal</value>
-    </param>
-    <param>
       <key>ant9</key>
       <value></value>
     </param>
@@ -2925,14 +2677,6 @@ Coordinator: True/ False</value>
       <value>0</value>
     </param>
     <param>
-      <key>lo_export9</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source9</key>
-      <value>internal</value>
-    </param>
-    <param>
       <key>clock_rate</key>
       <value>0.0</value>
     </param>
@@ -2958,7 +2702,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(968, 672)</value>
+      <value>(968, 712)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3093,10 +2837,6 @@ Coordinator: True/ False</value>
       <value>False</value>
     </param>
     <param>
-      <key>hide_lo_controls</key>
-      <value>True</value>
-    </param>
-    <param>
       <key>stream_args</key>
       <value></value>
     </param>
@@ -3133,7 +2873,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1032, 536)</value>
+      <value>(1032, 576)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3192,6 +2932,12 @@ Coordinator: True/ False</value>
   </connection>
   <connection>
     <source_block_id>data_link_0</source_block_id>
+    <sink_block_id>foo_wireshark_connector_0_0</sink_block_id>
+    <source_key>phy out</source_key>
+    <sink_key>in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>data_link_0</source_block_id>
     <sink_block_id>somac_metrics_gen_0</sink_block_id>
     <source_key>phy out</source_key>
     <sink_key>mac in</sink_key>
@@ -3207,12 +2953,6 @@ Coordinator: True/ False</value>
     <sink_block_id>blocks_tuntap_pdu_0</sink_block_id>
     <source_key>tap out</source_key>
     <sink_key>pdus</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>data_link_0</source_block_id>
-    <sink_block_id>foo_wireshark_connector_0_0</sink_block_id>
-    <source_key>tap out</source_key>
-    <sink_key>in</sink_key>
   </connection>
   <connection>
     <source_block_id>foo_packet_pad2_0</source_block_id>
@@ -3243,6 +2983,18 @@ Coordinator: True/ False</value>
     <sink_block_id>data_link_0</sink_block_id>
     <source_key>ctrl out</source_key>
     <sink_key>prot switch</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_decision_0</source_block_id>
+    <sink_block_id>somac_metrics_gen_0</sink_block_id>
+    <source_key>metrics out</source_key>
+    <sink_key>ctrl in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_metrics_gen_0</source_block_id>
+    <sink_block_id>data_link_0</sink_block_id>
+    <source_key>broad out</source_key>
+    <sink_key>broad in</sink_key>
   </connection>
   <connection>
     <source_block_id>somac_sensor_0</source_block_id>

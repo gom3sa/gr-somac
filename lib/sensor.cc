@@ -37,6 +37,7 @@
 #define FC_PROTOCOL 0x2900 // Active protocol on network
 #define CSMA 0x00
 #define TDMA 0x01
+#define FC_METRICS 0x2100
 
 using namespace gr::somac;
 
@@ -65,7 +66,9 @@ class sensor_impl : public sensor {
 
 			int is_broadcast = memcmp(h->addr1, pr_broadcast, 6); // 0 if frame IS for broadcast
 			int is_mine = memcmp(h->addr1, pr_mac, 6); // 0 if frame IS mine
-
+			//int from_me = memcmp(h->addr2, pr_mac, 6); // 0 if I generated the frame
+			int from_me = 1;
+			
 			if(is_mine != 0 and is_broadcast != 0) {
 				if(pr_debug) std::cout << "Neither for me nor broadcast" << std::endl << std::flush;
 				return;
@@ -76,7 +79,7 @@ class sensor_impl : public sensor {
 
 			switch(h->frame_control) {
 				case FC_PROTOCOL: {
-					if(is_broadcast == 0) {
+					if(is_broadcast == 0 and from_me != 0) {
 						uint8_t prot[1];
 						memcpy(prot, f + 24, 1);
 
@@ -100,6 +103,21 @@ class sensor_impl : public sensor {
 						pmt::pmt_t msg = pmt::from_long(pr_protocol);
 						message_port_pub(msg_port_act_prot_out, msg);
 					}
+				} break;
+
+				case FC_METRICS: {
+					if(is_broadcast == 0 and from_me != 0) {
+						char msdu[f_len];
+						memcpy(msdu, f + 24, f_len);
+
+						std::string str(msdu);
+
+						if(pr_debug) std::cout << str << std::endl << std::flush;
+					}
+				} break; 
+
+				default: {
+					return;
 				}
 			}
 		}

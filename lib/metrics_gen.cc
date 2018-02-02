@@ -31,6 +31,7 @@
 
 #define FC_ACK 0x2B00
 #define FC_DATA 0x0008
+#define FC_METRICS 0x2100
 
 using namespace gr::somac;
 
@@ -58,17 +59,25 @@ class metrics_gen_impl : public metrics_gen {
 			set_msg_handler(msg_port_ctrl_in, boost::bind(&metrics_gen_impl::ctrl_in, this, _1));
 
 			// Output msg ports
-			message_port_register_out(msg_port_stats_out);
+			message_port_register_out(msg_port_broad_out);
 
 			// Init counters
 			pr_appin_count = 0;
 			pr_tx_count = 0;
 			pr_retx_count = 0;
+			pr_ack_count = 0;
+			pr_interpkt_tic = clock::now();
+			pr_thr_tic = clock::now();
 		}
 
 		void app_in(pmt::pmt_t frame) { // Same frame that is given to "Frame Buffer"
 			// TODO
 			pr_appin_count++;
+
+			pr_interpkt_toc = clock::now();
+			float interpkt_delay = (float) std::chrono::duration_cast<std::chrono::milliseconds>(pr_interpkt_toc - pr_interpkt_tic).count();
+			pr_interpkt_list.push_back(interpkt_delay);
+			pr_interpkt_tic = clock::now();
 		}
 
 		void mac_in(pmt::pmt_t frame) { // Same frame that is given to PHY
@@ -86,7 +95,7 @@ class metrics_gen_impl : public metrics_gen {
 					pr_curr_frame.seq_nr = h->seq_nr;
 
 					pr_tx_count++;
-					pr_tic = clock::now(); // Start counting latency
+					pr_lat_tic = clock::now(); // Start counting latency
 				}
 			}
 		}
@@ -98,8 +107,9 @@ class metrics_gen_impl : public metrics_gen {
 			if(h->frame_control == FC_ACK) { // Stats over ACK frames
 				if(h->addr1 == pr_curr_frame.addr2 and h->addr2 == pr_curr_frame.addr1 and h->seq_nr == pr_curr_frame.seq_nr) { 
 					// ACK bellongs to last sent frame
-					pr_toc = clock::now();
-					float latency = (float) std::chrono::duration_cast<std::chrono::milliseconds>(pr_toc - pr_tic).count();
+					pr_ack_count++;
+					pr_lat_toc = clock::now();
+					float latency = (float) std::chrono::duration_cast<std::chrono::milliseconds>(pr_lat_toc - pr_lat_tic).count();
 					pr_lat_list.push_back(latency);
 				}
 			}
@@ -107,26 +117,64 @@ class metrics_gen_impl : public metrics_gen {
 
 		void ctrl_in(pmt::pmt_t msg) {
 			// TODO: all counters
+			if(pmt::symbol_to_string(msg) == "send_metrics") {
+				if(pr_debug) std::cout << "Metrics were requested. Calculation starts now." << std::endl << std::flush;
+				// Common variables
+				float sum;
+				int count;
+				float elapsed_time;
 
-			// START: calc avg latency
-			float sum = 0;
-			int count = 0;
-			while(pr_lat_list.size() > 0) {
-				sum += pr_lat_list[0];
-				count++;
-				pr_lat_list.pop_front();
+				// START: calc avg latency (ms)
+				if(pr_debug) std::cout << "Calculating: latency" << std::endl << std::flush;
+				sum = 0;
+				count = 0;
+				while(pr_lat_list.size() > 0) {
+					sum += pr_lat_list[0];
+					count++;
+					pr_lat_list.pop_front();
+				}
+				if(count == 0) count = 1; // No division by zero
+				float avg_lat = sum/count;
+				// END: calc avg latency
+
+				// START: calc avg interpacket dealy (ms)
+				if(pr_debug) std::cout << "Calculating: interpacket delay" << std::endl << std::flush;
+				sum = 0;
+				count = 0;
+				while(pr_interpkt_list.size() > 0) {
+					sum += pr_interpkt_list[0];
+					count++;
+					pr_interpkt_list.pop_front();
+				}
+				if(count == 0) count = 1;
+				float avg_interpkt = sum/count;
+				// END: calc avg interpacket dealy (ms)
+
+				// START: calc RNP (required number of packet transmissions)
+				if(pr_debug) std::cout << "Calculating: rnp" << std::endl << std::flush;
+				float rnp = (pr_tx_count + pr_retx_count)/(pr_ack_count + 1) - 1;
+				// END: calc RNP (required number of packet transmissions)
+
+				// START: calc throughput (frame/s)
+				if(pr_debug) std::cout << "Calculating: throughput" << std::endl << std::flush;
+				pr_thr_toc = clock::now();
+				elapsed_time = (float) std::chrono::duration_cast<std::chrono::seconds>(pr_thr_toc - pr_thr_tic).count();
+				float thr = pr_ack_count/elapsed_time;
+				// END: calc throughput (frame/s)
+
+				// max(msdu) = max(psdu) - (24 (header) + 4 (fcs)) = 1500 bytes
+				std::string str = "lat=" + std::to_string(avg_lat) + ":interpkt=" + std::to_string(avg_interpkt) + ":rnp=" + std::to_string(rnp) + ":thr=" + std::to_string(thr); 
+				pmt::pmt_t metrics = pmt::string_to_symbol(str);
+
+				message_port_pub(msg_port_broad_out, metrics);
+
+				// Reseting counters
+				pr_appin_count = 0;
+				pr_tx_count = 0;
+				pr_retx_count = 0;
+				pr_ack_count = 0;
+				pr_thr_tic = clock::now();
 			}
-			if(count == 0) count = 1; // No division by zero
-
-			float avg_lat = sum/count;
-			// END: calc avg latency
-
-			// TODO: build frame and send metrics
-
-			// Reseting counters
-			pr_appin_count = 0;
-			pr_tx_count = 0;
-			pr_retx_count = 0;
 		}
 
 	private:
@@ -139,44 +187,13 @@ class metrics_gen_impl : public metrics_gen {
 		pmt::pmt_t msg_port_ctrl_in = pmt::mp("ctrl in");
 
 		// Output msg ports
-		pmt::pmt_t msg_port_stats_out = pmt::mp("stats out");
+		pmt::pmt_t msg_port_broad_out = pmt::mp("broad out");
 
 		// Variables
 		mac_header pr_curr_frame;
-		uint32_t pr_appin_count, pr_tx_count, pr_retx_count;
-		decltype(clock::now()) pr_tic, pr_toc;
-		boost::circular_buffer<float> pr_lat_list;
-
-		pmt::pmt_t generate_frame(uint8_t *msdu, int msdu_size, uint16_t fc, uint16_t seq_nr, uint8_t *src_addr, uint8_t *dst_addr) {
-			// Inputs: (data, data size, frame control, sequence number, destination address)
-			mac_header header;
-			header.frame_control = fc;
-			header.duration = 0x0000;
-			header.seq_nr = seq_nr;
-
-			uint8_t broadcast_addr[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-
-			memcpy(header.addr1, dst_addr, 6);
-			memcpy(header.addr2, src_addr, 6);
-			memcpy(header.addr3, broadcast_addr, 6);
-
-			uint8_t psdu[1528];
-			memcpy(psdu, &header, 24); // Header is 24 bytes long
-			memcpy(psdu + 24, msdu, msdu_size); 
-
-			boost::crc_32_type result;
-			result.process_bytes(&psdu, 24 + msdu_size);
-			uint32_t fcs = result.checksum();
-
-			memcpy(psdu + 24 + msdu_size, &fcs, sizeof(uint32_t));
-
-			// Building frame from cdr & car
-			pmt::pmt_t frame = pmt::make_blob(psdu, 24 + msdu_size + sizeof(uint32_t));
-			pmt::pmt_t dict = pmt::make_dict();
-			dict = pmt::dict_add(dict, pmt::mp("crc_included"), pmt::PMT_T);
-
-			return pmt::cons(dict, frame);
-		}
+		uint32_t pr_appin_count, pr_tx_count, pr_retx_count, pr_ack_count;
+		decltype(clock::now()) pr_lat_tic, pr_lat_toc, pr_interpkt_tic, pr_interpkt_toc, pr_thr_tic, pr_thr_toc;
+		boost::circular_buffer<float> pr_lat_list, pr_interpkt_list;
 };
 
 metrics_gen::sptr
