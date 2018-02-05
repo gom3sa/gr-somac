@@ -32,6 +32,7 @@
 #define FC_ACK 0x2B00
 #define FC_DATA 0x0008
 #define FC_METRICS 0x2100
+#define BUFFER_SIZE 1024
 
 using namespace gr::somac;
 
@@ -55,6 +56,12 @@ class metrics_gen_impl : public metrics_gen {
 			message_port_register_in(msg_port_phy_in);
 			set_msg_handler(msg_port_phy_in, boost::bind(&metrics_gen_impl::phy_in, this, _1));
 
+			message_port_register_in(msg_port_buffer_in);
+			set_msg_handler(msg_port_buffer_in, boost::bind(&metrics_gen_impl::buffer_in, this, _1));
+
+			message_port_register_in(msg_port_snr_in);
+			set_msg_handler(msg_port_snr_in, boost::bind(&metrics_gen_impl::snr_in, this, _1));
+
 			message_port_register_in(msg_port_ctrl_in);
 			set_msg_handler(msg_port_ctrl_in, boost::bind(&metrics_gen_impl::ctrl_in, this, _1));
 
@@ -68,6 +75,10 @@ class metrics_gen_impl : public metrics_gen {
 			pr_ack_count = 0;
 			pr_interpkt_tic = clock::now();
 			pr_thr_tic = clock::now();
+
+			pr_interpkt_list.rset_capacity(BUFFER_SIZE);
+			pr_lat_list.rset_capacity(BUFFER_SIZE);
+			pr_snr_list.rset_capacity(BUFFER_SIZE);
 		}
 
 		void app_in(pmt::pmt_t frame) { // Same frame that is given to "Frame Buffer"
@@ -95,7 +106,6 @@ class metrics_gen_impl : public metrics_gen {
 					pr_curr_frame.seq_nr = h->seq_nr;
 
 					pr_tx_count++;
-					pr_lat_tic = clock::now(); // Start counting latency
 				}
 			}
 		}
@@ -105,7 +115,8 @@ class metrics_gen_impl : public metrics_gen {
 			mac_header *h = (mac_header*)pmt::blob_data(cdr);
 
 			if(h->frame_control == FC_ACK) { // Stats over ACK frames
-				if(h->addr1 == pr_curr_frame.addr2 and h->addr2 == pr_curr_frame.addr1 and h->seq_nr == pr_curr_frame.seq_nr) { 
+				if(memcmp(h->addr1, pr_curr_frame.addr2, 6) == 0 and memcmp(h->addr2, pr_curr_frame.addr1, 6) == 0
+						and h->seq_nr == pr_curr_frame.seq_nr) {
 					// ACK bellongs to last sent frame
 					pr_ack_count++;
 					pr_lat_toc = clock::now();
@@ -115,17 +126,24 @@ class metrics_gen_impl : public metrics_gen {
 			}
 		}
 
+		void buffer_in(pmt::pmt_t frame) {
+			pr_lat_tic = clock::now(); // Start counting latency
+		}
+
+		void snr_in(pmt::pmt_t msg) {
+			pr_snr_list.push_back(pmt::to_float(msg));
+		}
+
 		void ctrl_in(pmt::pmt_t msg) {
 			// TODO: all counters
 			if(pmt::symbol_to_string(msg) == "send_metrics") {
 				if(pr_debug) std::cout << "Metrics were requested. Calculation starts now." << std::endl << std::flush;
 				// Common variables
-				float sum;
+				double sum;
 				int count;
 				float elapsed_time;
 
 				// START: calc avg latency (ms)
-				if(pr_debug) std::cout << "Calculating: latency" << std::endl << std::flush;
 				sum = 0;
 				count = 0;
 				while(pr_lat_list.size() > 0) {
@@ -133,12 +151,15 @@ class metrics_gen_impl : public metrics_gen {
 					count++;
 					pr_lat_list.pop_front();
 				}
-				if(count == 0) count = 1; // No division by zero
+				if(count == 0) {
+					sum = -1; // Latency -> 0 is too good! -1 means there is no latency.
+					count = 1; // No division by zero
+				}
 				float avg_lat = sum/count;
+				if(pr_debug) std::cout << "Latency (ms) = " << avg_lat << std::endl << std::flush;
 				// END: calc avg latency
 
 				// START: calc avg interpacket dealy (ms)
-				if(pr_debug) std::cout << "Calculating: interpacket delay" << std::endl << std::flush;
 				sum = 0;
 				count = 0;
 				while(pr_interpkt_list.size() > 0) {
@@ -146,24 +167,42 @@ class metrics_gen_impl : public metrics_gen {
 					count++;
 					pr_interpkt_list.pop_front();
 				}
-				if(count == 0) count = 1;
+				if(count == 0) {
+					count = 1;
+					sum = -1; // Interpacket delay -> 0 means that too many packets are coming. -1 means it is iddle.
+				}
 				float avg_interpkt = sum/count;
+				if(pr_debug) std::cout << "Interpacket delay (ms) = " << avg_interpkt << std::endl << std::flush;
 				// END: calc avg interpacket dealy (ms)
 
 				// START: calc RNP (required number of packet transmissions)
-				if(pr_debug) std::cout << "Calculating: rnp" << std::endl << std::flush;
 				float rnp = (pr_tx_count + pr_retx_count)/(pr_ack_count + 1) - 1;
+				std::cout << "pr_tx_count = " << pr_tx_count << ", pr_retx_count = " << pr_retx_count << ", pr_ack_count = " << pr_ack_count << std::endl << std::flush;
+				if(pr_debug) std::cout << "RNP = " << rnp << std::endl << std::flush;
 				// END: calc RNP (required number of packet transmissions)
 
 				// START: calc throughput (frame/s)
-				if(pr_debug) std::cout << "Calculating: throughput" << std::endl << std::flush;
 				pr_thr_toc = clock::now();
 				elapsed_time = (float) std::chrono::duration_cast<std::chrono::seconds>(pr_thr_toc - pr_thr_tic).count();
 				float thr = pr_ack_count/elapsed_time;
+				if(pr_debug) std::cout << "Throughput (frame/s) = " << thr << std::endl << std::flush;
 				// END: calc throughput (frame/s)
 
+				// START: calc avg SNR
+				sum = 0;
+				count = 0;
+				while(pr_snr_list.size() > 0) {
+					sum += pr_snr_list[0];
+					count++;
+					pr_snr_list.pop_front();
+				}
+				if(count == 0) count = 1; // No division by zero
+				float avg_snr = sum/count;
+				if(pr_debug) std::cout << "SNR (dB) = " << avg_snr << std::endl << std::flush;
+				// END: calc avg SNR
+
 				// max(msdu) = max(psdu) - (24 (header) + 4 (fcs)) = 1500 bytes
-				std::string str = "lat=" + std::to_string(avg_lat) + ":interpkt=" + std::to_string(avg_interpkt) + ":rnp=" + std::to_string(rnp) + ":thr=" + std::to_string(thr); 
+				std::string str = "lat=" + std::to_string(avg_lat) + ":interpkt=" + std::to_string(avg_interpkt) + ":rnp=" + std::to_string(rnp) + ":thr=" + std::to_string(thr) + ":snr=" + std::to_string(avg_snr); 
 				pmt::pmt_t metrics = pmt::string_to_symbol(str);
 
 				message_port_pub(msg_port_broad_out, metrics);
@@ -184,6 +223,8 @@ class metrics_gen_impl : public metrics_gen {
 		pmt::pmt_t msg_port_app_in = pmt::mp("app in");
 		pmt::pmt_t msg_port_mac_in = pmt::mp("mac in");
 		pmt::pmt_t msg_port_phy_in = pmt::mp("phy in");
+		pmt::pmt_t msg_port_buffer_in = pmt::mp("buffer in");
+		pmt::pmt_t msg_port_snr_in = pmt::mp("snr in");
 		pmt::pmt_t msg_port_ctrl_in = pmt::mp("ctrl in");
 
 		// Output msg ports
@@ -191,9 +232,9 @@ class metrics_gen_impl : public metrics_gen {
 
 		// Variables
 		mac_header pr_curr_frame;
-		uint32_t pr_appin_count, pr_tx_count, pr_retx_count, pr_ack_count;
+		int pr_appin_count, pr_tx_count, pr_retx_count, pr_ack_count;
 		decltype(clock::now()) pr_lat_tic, pr_lat_toc, pr_interpkt_tic, pr_interpkt_toc, pr_thr_tic, pr_thr_toc;
-		boost::circular_buffer<float> pr_lat_list, pr_interpkt_list;
+		boost::circular_buffer<float> pr_lat_list, pr_interpkt_list, pr_snr_list;
 };
 
 metrics_gen::sptr

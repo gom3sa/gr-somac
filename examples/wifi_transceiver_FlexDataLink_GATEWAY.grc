@@ -406,7 +406,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(472, 558)</value>
+      <value>(472, 726)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -457,7 +457,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(472, 406)</value>
+      <value>(472, 574)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -504,7 +504,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(832, 636)</value>
+      <value>(832, 804)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -618,7 +618,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>debug</key>
-      <value>True</value>
+      <value>False</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -626,7 +626,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1016, 345)</value>
+      <value>(1016, 513)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -689,7 +689,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(608, 736)</value>
+      <value>(608, 904)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -740,7 +740,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(672, 565)</value>
+      <value>(672, 733)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -787,7 +787,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(672, 413)</value>
+      <value>(672, 581)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -858,7 +858,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>metrics_gran</key>
-      <value>10</value>
+      <value>30</value>
     </param>
     <param>
       <key>minoutbuf</key>
@@ -932,7 +932,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(853, 184)</value>
+      <value>(853, 352)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1627,7 +1627,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(760, 713)</value>
+      <value>(760, 881)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2702,7 +2702,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(968, 712)</value>
+      <value>(968, 880)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2873,7 +2873,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1032, 576)</value>
+      <value>(1032, 744)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2932,6 +2932,12 @@ Coordinator: True/ False</value>
   </connection>
   <connection>
     <source_block_id>data_link_0</source_block_id>
+    <sink_block_id>somac_metrics_gen_0</sink_block_id>
+    <source_key>buffer out</source_key>
+    <sink_key>buffer in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>data_link_0</source_block_id>
     <sink_block_id>foo_wireshark_connector_0_0</sink_block_id>
     <source_key>phy out</source_key>
     <sink_key>in</sink_key>
@@ -2947,6 +2953,12 @@ Coordinator: True/ False</value>
     <sink_block_id>wifi_phy_hier_0</sink_block_id>
     <source_key>phy out</source_key>
     <sink_key>mac_in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>data_link_0</source_block_id>
+    <sink_block_id>somac_metrics_gen_0</sink_block_id>
+    <source_key>snr out</source_key>
+    <sink_key>snr in</sink_key>
   </connection>
   <connection>
     <source_block_id>data_link_0</source_block_id>

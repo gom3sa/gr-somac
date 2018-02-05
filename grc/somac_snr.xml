@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<block>
+  <name>snr</name>
+  <key>somac_snr</key>
+  <category>somac</category>
+  <import>import somac</import>
+  <make>somac.snr($window_size, $threshold, $periodicity)</make>
+
+  <param>
+    <name>Window size</name>
+    <key>window_size</key>
+    <type>int</type>
+  </param>
+
+  <param>
+    <name>Threshold</name>
+    <key>threshold</key>
+    <type>float</type>
+  </param>
+
+  <param>
+    <name>Periodicity (sec)</name>
+    <key>periodicity</key>
+    <type>int</type>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>float</type>
+  </sink>
+
+  <source>
+    <name>snr out</name>
+    <type>message</type>
+    <optional>1</optional>
+  </source>
+
+  <doc>
+    It assumes input signals are stationary or close enough. Implementation is based on threshold while classifying noise and signal.
+  </doc>
+  
+</block>

@@ -80,9 +80,9 @@ class decision(gr.basic_block):
 	# Coordinator selects the MAC protocol to use in the network
 	def coord_loop(self, name, id):
 		global portid;
+		portid = 0;
 
 		print "Decision block as Coordinator"
-		portid = 0; # First MAC protocol
 
 		while True:
 			if portid == 0:
@@ -115,9 +115,10 @@ class decision(gr.basic_block):
 	# Useful at the beginning, in order to inform normal node to use no MAC protocol (portid = -1)
 	def normal_loop(self, name, id):
 		global portid;
+		portid = -1;
 
 		print "Decision block as Normal node"
-		self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol('portid' + str(portid))); # Sets no MAC protocol at the beginning
+		self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol('portid' + str(portid))); # Sets no MAC protocol at the beginning (portid = -1)
 
 		while True:
 			time.sleep(self.metrics_gran);

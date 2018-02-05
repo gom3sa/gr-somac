@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Transceiver Flexdatalink 2
-# Generated: Wed Jan 31 15:33:00 2018
+# Generated: Mon Feb  5 15:58:42 2018
 ##################################################
 
 import os
@@ -78,7 +78,8 @@ class wifi_transceiver_FlexDataLink_2(gr.top_block):
         self.uhd_usrp_sink_0_0.set_center_freq(uhd.tune_request(freq, rf_freq = freq - lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
         self.uhd_usrp_sink_0_0.set_normalized_gain(tx_gain, 0)
         self.somac_sensor_0 = somac.sensor((mac_addr), True)
-        self.somac_decision_0 = somac.decision(False, 60, 5)
+        self.somac_metrics_gen_0 = somac.metrics_gen(True)
+        self.somac_decision_0 = somac.decision(False, 60, 5, 30)
         self.foo_wireshark_connector_0 = foo.wireshark_connector(127, True)
         self.foo_packet_pad2_0 = foo.packet_pad2(False, False, 0.001, 10000, 10000)
         (self.foo_packet_pad2_0).set_min_output_buffer(100000)
@@ -102,13 +103,20 @@ class wifi_transceiver_FlexDataLink_2(gr.top_block):
         # Connections
         ##################################################
         self.msg_connect((self.blocks_tuntap_pdu_0, 'pdus'), (self.data_link_0, 'tap in'))    
+        self.msg_connect((self.blocks_tuntap_pdu_0, 'pdus'), (self.somac_metrics_gen_0, 'app in'))    
         self.msg_connect((self.data_link_0, 'tap out'), (self.blocks_tuntap_pdu_0, 'pdus'))    
+        self.msg_connect((self.data_link_0, 'buffer out'), (self.somac_metrics_gen_0, 'buffer in'))    
+        self.msg_connect((self.data_link_0, 'phy out'), (self.somac_metrics_gen_0, 'mac in'))    
+        self.msg_connect((self.data_link_0, 'snr out'), (self.somac_metrics_gen_0, 'snr in'))    
         self.msg_connect((self.data_link_0, 'phy out'), (self.wifi_phy_hier_0, 'mac_in'))    
-        self.msg_connect((self.somac_decision_0, 'ctrl out'), (self.data_link_0, 'prot switch'))    
         self.msg_connect((self.somac_decision_0, 'broad out'), (self.data_link_0, 'broad in'))    
+        self.msg_connect((self.somac_decision_0, 'ctrl out'), (self.data_link_0, 'prot switch'))    
+        self.msg_connect((self.somac_decision_0, 'metrics out'), (self.somac_metrics_gen_0, 'ctrl in'))    
+        self.msg_connect((self.somac_metrics_gen_0, 'broad out'), (self.data_link_0, 'broad in'))    
         self.msg_connect((self.somac_sensor_0, 'act prot out'), (self.somac_decision_0, 'act prot in'))    
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.data_link_0, 'phy in'))    
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.foo_wireshark_connector_0, 'in'))    
+        self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.somac_metrics_gen_0, 'phy in'))    
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.somac_sensor_0, 'phy in'))    
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.foo_packet_pad2_0, 0))    
         self.connect((self.foo_packet_pad2_0, 0), (self.uhd_usrp_sink_0_0, 0))    

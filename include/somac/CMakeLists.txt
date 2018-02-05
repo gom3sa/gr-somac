@@ -24,5 +24,6 @@ install(FILES
     api.h
     sensor.h
     broadcaster.h
-    metrics_gen.h DESTINATION include/somac
+    metrics_gen.h
+    snr.h DESTINATION include/somac
 )

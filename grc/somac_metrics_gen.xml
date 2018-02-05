@@ -49,6 +49,18 @@
   </sink>
 
   <sink>
+    <name>buffer in</name>
+    <type>message</type>
+    <optional>1</optional>
+  </sink>
+
+  <sink>
+    <name>snr in</name>
+    <type>message</type>
+    <optional>1</optional>
+  </sink>
+
+  <sink>
     <name>ctrl in</name>
     <type>message</type>
     <optional>1</optional>

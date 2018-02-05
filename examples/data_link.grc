@@ -905,6 +905,92 @@
     </param>
   </block>
   <block>
+    <key>pad_sink</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(968, 172)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>pad_sink_2</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>message</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>buffer out</value>
+    </param>
+    <param>
+      <key>num_streams</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>optional</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>pad_sink</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1212, 712)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>270</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>pad_sink_3</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>message</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>snr out</value>
+    </param>
+    <param>
+      <key>num_streams</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>optional</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
     <key>pad_source</key>
     <param>
       <key>comment</key>
@@ -1250,6 +1336,57 @@
     </param>
   </block>
   <block>
+    <key>somac_snr</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1198, 528)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>270</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>somac_snr_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>periodicity</key>
+      <value>5</value>
+    </param>
+    <param>
+      <key>threshold</key>
+      <value>-60</value>
+    </param>
+    <param>
+      <key>window_size</key>
+      <value>1024</value>
+    </param>
+  </block>
+  <block>
     <key>toolkit_cs</key>
     <param>
       <key>alias</key>
@@ -1288,6 +1425,12 @@
       <value>0</value>
     </param>
   </block>
+  <connection>
+    <source_block_id>blocks_vector_to_stream_0</source_block_id>
+    <sink_block_id>somac_snr_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
   <connection>
     <source_block_id>blocks_vector_to_stream_0</source_block_id>
     <sink_block_id>toolkit_cs_0</sink_block_id>
@@ -1350,9 +1493,27 @@
   </connection>
   <connection>
     <source_block_id>macprotocols_frame_buffer_0</source_block_id>
+    <sink_block_id>pad_sink_2</sink_block_id>
+    <source_key>frame out 0</source_key>
+    <sink_key>in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>macprotocols_frame_buffer_0</source_block_id>
     <sink_block_id>macprotocols_tdma_0</sink_block_id>
     <source_key>frame out 1</source_key>
     <sink_key>frame from buffer</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>macprotocols_frame_buffer_0</source_block_id>
+    <sink_block_id>pad_sink_2</sink_block_id>
+    <source_key>frame out 1</source_key>
+    <sink_key>in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>macprotocols_frame_buffer_0</source_block_id>
+    <sink_block_id>pad_sink_2</sink_block_id>
+    <source_key>frame out 2</source_key>
+    <sink_key>in</sink_key>
   </connection>
   <connection>
     <source_block_id>macprotocols_myswitch_0</source_block_id>
@@ -1449,6 +1610,12 @@
     <sink_block_id>macprotocols_frame_buffer_0</sink_block_id>
     <source_key>frame out</source_key>
     <sink_key>broad in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_snr_0</source_block_id>
+    <sink_block_id>pad_sink_3</sink_block_id>
+    <source_key>snr out</source_key>
+    <sink_key>in</sink_key>
   </connection>
   <connection>
     <source_block_id>toolkit_cs_0</source_block_id>

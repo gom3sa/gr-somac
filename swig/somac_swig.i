@@ -11,6 +11,7 @@
 #include "somac/sensor.h"
 #include "somac/broadcaster.h"
 #include "somac/metrics_gen.h"
+#include "somac/snr.h"
 %}
 
 
@@ -20,3 +21,5 @@ GR_SWIG_BLOCK_MAGIC2(somac, sensor);
 GR_SWIG_BLOCK_MAGIC2(somac, broadcaster);
 %include "somac/metrics_gen.h"
 GR_SWIG_BLOCK_MAGIC2(somac, metrics_gen);
+%include "somac/snr.h"
+GR_SWIG_BLOCK_MAGIC2(somac, snr);

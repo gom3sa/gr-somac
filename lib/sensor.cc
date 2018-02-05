@@ -39,6 +39,8 @@
 #define TDMA 0x01
 #define FC_METRICS 0x2100
 
+#define MAX_NON 256
+
 using namespace gr::somac;
 
 class sensor_impl : public sensor {
@@ -58,6 +60,8 @@ class sensor_impl : public sensor {
 				pr_mac[i] = mac[i];
 				pr_broadcast[i] = 0xff;
 			}
+
+			pr_non = 0;
 		}
 
 		void phy_in(pmt::pmt_t frame) {
@@ -66,8 +70,7 @@ class sensor_impl : public sensor {
 
 			int is_broadcast = memcmp(h->addr1, pr_broadcast, 6); // 0 if frame IS for broadcast
 			int is_mine = memcmp(h->addr1, pr_mac, 6); // 0 if frame IS mine
-			//int from_me = memcmp(h->addr2, pr_mac, 6); // 0 if I generated the frame
-			int from_me = 1;
+			int from_me = memcmp(h->addr2, pr_mac, 6); // 0 if I generated the frame
 			
 			if(is_mine != 0 and is_broadcast != 0) {
 				if(pr_debug) std::cout << "Neither for me nor broadcast" << std::endl << std::flush;
@@ -76,6 +79,19 @@ class sensor_impl : public sensor {
 
 			uint8_t *f = (uint8_t*)pmt::blob_data(cdr); // Get the complete frame rather than just the header
 			int f_len = pmt::blob_length(cdr) - 24; // Strips header
+
+			// Counting active nodes
+			bool listed = false;
+			for(int i = 0; i < pr_non; i++) {
+				if(memcmp(h->addr2, pr_addr_list + i*6, 6) == 0) {
+					listed = true;
+				}
+			}
+			if(!listed) { // Addr is not listed, so add it to the addr list
+				memcpy(pr_addr_list + pr_non*6, h->addr2, 6);
+				pr_non++;
+			}
+			// TODO: reset pr_non and other counters
 
 			switch(h->frame_control) {
 				case FC_PROTOCOL: {
@@ -107,12 +123,13 @@ class sensor_impl : public sensor {
 
 				case FC_METRICS: {
 					if(is_broadcast == 0 and from_me != 0) {
-						char msdu[f_len];
+						char msdu[f_len + 1];
+						msdu[f_len] = '\0'; // End of string
 						memcpy(msdu, f + 24, f_len);
 
 						std::string str(msdu);
 
-						if(pr_debug) std::cout << str << std::endl << std::flush;
+						if(pr_debug) std::cout << str << ":non=" << pr_non << std::endl << std::flush;
 					}
 				} break; 
 
@@ -124,8 +141,8 @@ class sensor_impl : public sensor {
 
 	private:
 		bool pr_debug;
-		uint8_t pr_mac[6], pr_broadcast[6];
-		int pr_protocol;
+		uint8_t pr_mac[6], pr_broadcast[6], pr_addr_list[6*MAX_NON];
+		int pr_protocol, pr_non;
 
 		// Input ports
 		pmt::pmt_t msg_port_phy_in = pmt::mp("phy in");

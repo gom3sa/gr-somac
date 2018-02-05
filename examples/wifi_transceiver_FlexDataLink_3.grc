@@ -406,7 +406,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(472, 382)</value>
+      <value>(472, 630)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -453,7 +453,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(832, 460)</value>
+      <value>(832, 708)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -575,7 +575,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1008, 193)</value>
+      <value>(1008, 441)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -638,7 +638,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(608, 560)</value>
+      <value>(608, 808)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -689,7 +689,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(672, 389)</value>
+      <value>(672, 637)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -744,7 +744,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1008, 110)</value>
+      <value>(1008, 89)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -753,6 +753,53 @@ Coordinator: True/ False</value>
     <param>
       <key>id</key>
       <value>somac_decision_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>metrics_gran</key>
+      <value>30</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+  </block>
+  <block>
+    <key>somac_metrics_gen</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>debug</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1008, 193)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>somac_metrics_gen_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -787,7 +834,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(877, 200)</value>
+      <value>(877, 448)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1482,7 +1529,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(760, 537)</value>
+      <value>(760, 785)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2557,7 +2604,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(968, 536)</value>
+      <value>(968, 784)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2728,7 +2775,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1032, 400)</value>
+      <value>(1032, 648)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2780,10 +2827,34 @@ Coordinator: True/ False</value>
     <sink_key>tap in</sink_key>
   </connection>
   <connection>
+    <source_block_id>blocks_tuntap_pdu_0</source_block_id>
+    <sink_block_id>somac_metrics_gen_0</sink_block_id>
+    <source_key>pdus</source_key>
+    <sink_key>app in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>data_link_0</source_block_id>
+    <sink_block_id>somac_metrics_gen_0</sink_block_id>
+    <source_key>buffer out</source_key>
+    <sink_key>buffer in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>data_link_0</source_block_id>
+    <sink_block_id>somac_metrics_gen_0</sink_block_id>
+    <source_key>phy out</source_key>
+    <sink_key>mac in</sink_key>
+  </connection>
+  <connection>
     <source_block_id>data_link_0</source_block_id>
     <sink_block_id>wifi_phy_hier_0</sink_block_id>
     <source_key>phy out</source_key>
     <sink_key>mac_in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>data_link_0</source_block_id>
+    <sink_block_id>somac_metrics_gen_0</sink_block_id>
+    <source_key>snr out</source_key>
+    <sink_key>snr in</sink_key>
   </connection>
   <connection>
     <source_block_id>data_link_0</source_block_id>
@@ -2816,6 +2887,18 @@ Coordinator: True/ False</value>
     <sink_key>prot switch</sink_key>
   </connection>
   <connection>
+    <source_block_id>somac_decision_0</source_block_id>
+    <sink_block_id>somac_metrics_gen_0</sink_block_id>
+    <source_key>metrics out</source_key>
+    <sink_key>ctrl in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_metrics_gen_0</source_block_id>
+    <sink_block_id>data_link_0</sink_block_id>
+    <source_key>broad out</source_key>
+    <sink_key>broad in</sink_key>
+  </connection>
+  <connection>
     <source_block_id>somac_sensor_0</source_block_id>
     <sink_block_id>somac_decision_0</sink_block_id>
     <source_key>act prot out</source_key>
@@ -2844,6 +2927,12 @@ Coordinator: True/ False</value>
     <sink_block_id>foo_wireshark_connector_0</sink_block_id>
     <source_key>mac_out</source_key>
     <sink_key>in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>wifi_phy_hier_0</source_block_id>
+    <sink_block_id>somac_metrics_gen_0</sink_block_id>
+    <source_key>mac_out</source_key>
+    <sink_key>phy in</sink_key>
   </connection>
   <connection>
     <source_block_id>wifi_phy_hier_0</source_block_id>
