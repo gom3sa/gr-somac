@@ -85,17 +85,17 @@ class decision(gr.basic_block):
 		print "Decision block as Coordinator"
 
 		while True:
-			if portid == 0:
-				print "Active protocol: CSMA/CA"
-			elif portid == 1:
-				print "Active protocol: TDMA"
-
 			## START: set portid
 			portid = portid + 1;
 			if portid > 1:
 				portid = 0;
 			## END: set portid
 
+			if portid == 0:
+				print "Active protocol: CSMA/CA"
+			elif portid == 1:
+				print "Active protocol: TDMA"
+				
 			## START: select MAC protocol according to portid
 			self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol('portid' + str(portid)));
 			time.sleep(self.dec_gran);

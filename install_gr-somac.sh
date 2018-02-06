@@ -57,7 +57,7 @@ sudo ldconfig
 
 echo "Installing SOMAC (Self-Organizing MAC sublayer)"
 cd ~
-# git ...
+git clone https://github.com/andreviniciusgsg/gr-somac.git
 cd gr-somac
 mkdir build
 cd build
