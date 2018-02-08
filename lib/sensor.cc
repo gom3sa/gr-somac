@@ -25,6 +25,8 @@
 #include <gnuradio/io_signature.h>
 #include "sensor.h"
 #include <pmt/pmt.h>
+#include <boost/thread.hpp>
+#include <time.h>
 
 #define FC_ACK 0x2B00
 #define FC_DATA 0x0008
@@ -38,8 +40,12 @@
 #define CSMA 0x00
 #define TDMA 0x01
 #define FC_METRICS 0x2100
-
+// In order to set the buffer size of some counters
 #define MAX_NON 256
+// Time to reset counters
+#define GRANULARITY 30
+#define COORD true
+
 
 using namespace gr::somac;
 
@@ -55,16 +61,69 @@ class sensor_impl : public sensor {
 
 			// Output ports
 			message_port_register_out(msg_port_act_prot_out);
+			message_port_register_out(msg_port_met_out0);
+			message_port_register_out(msg_port_met_out1);
+			message_port_register_out(msg_port_met_out2);
+			message_port_register_out(msg_port_met_out3);
+			message_port_register_out(msg_port_met_out4);
+			message_port_register_out(msg_port_met_out5);
 
 			for(int i = 0; i < 6; i++) {
 				pr_mac[i] = mac[i];
 				pr_broadcast[i] = 0xff;
 			}
 
+			// Counters
 			pr_non = 0;
+			pr_count = 0;
+			pr_lat = 0;
+			pr_rnp = 0;
+			pr_interpkt = 0;
+			pr_thr = 0;
+			pr_snr = 0;
+		}
+
+		bool start() {
+			if(COORD) thread_reset_counters = boost::shared_ptr<gr::thread::thread> (new gr::thread::thread(boost::bind(&sensor_impl::reset, this)));
+			return block::start();
+		}
+
+		void reset() { // Reset counters and send metrics to decision block
+			while(true) {
+				sleep(GRANULARITY);
+				// Averaging 
+				if(pr_count == 0) pr_count = 1;
+				pr_thr = pr_thr/pr_count;
+				pr_lat = pr_lat/pr_count;
+				pr_rnp = pr_rnp/pr_count;
+				pr_interpkt = pr_interpkt/pr_count;
+				pr_snr = pr_snr/pr_count;
+				pr_non = pr_non/1;
+
+				// Sending metrics to decision block
+				message_port_pub(msg_port_met_out0, pmt::from_float(pr_thr));
+				message_port_pub(msg_port_met_out1, pmt::from_float(pr_lat));
+				message_port_pub(msg_port_met_out2, pmt::from_float(pr_rnp));
+				message_port_pub(msg_port_met_out3, pmt::from_float(pr_interpkt));
+				message_port_pub(msg_port_met_out4, pmt::from_float(pr_snr));
+				message_port_pub(msg_port_met_out5, pmt::from_float(pr_non));
+
+				if(pr_debug) std::cout << "Sending metrics: thr = " << pr_thr << ", lat = " << pr_lat << ", rnp = " << pr_rnp << ", interpkt = " << pr_interpkt << ", snr = " << pr_snr << ", non = " << pr_non	<< std::endl << std::flush;
+
+				// Resetting counters
+				pr_non = 0;
+				pr_count = 0;
+				pr_lat = 0;
+				pr_rnp = 0;
+				pr_interpkt = 0;
+				pr_thr = 0;
+				pr_snr = 0;
+			}
 		}
 
 		void phy_in(pmt::pmt_t frame) {
+			if(!COORD) return; // This is only required to coordinator
+
 			pmt::pmt_t cdr = pmt::cdr(frame);
 			mac_header *h = (mac_header*)pmt::blob_data(cdr); // Frame's header
 
@@ -91,7 +150,6 @@ class sensor_impl : public sensor {
 				memcpy(pr_addr_list + pr_non*6, h->addr2, 6);
 				pr_non++;
 			}
-			// TODO: reset pr_non and other counters
 
 			switch(h->frame_control) {
 				case FC_PROTOCOL: {
@@ -129,7 +187,8 @@ class sensor_impl : public sensor {
 
 						std::string str(msdu);
 
-						if(pr_debug) std::cout << str << ":non=" << pr_non << std::endl << std::flush;
+						parse_metrics(str);
+						pr_count++;
 					}
 				} break; 
 
@@ -142,13 +201,61 @@ class sensor_impl : public sensor {
 	private:
 		bool pr_debug;
 		uint8_t pr_mac[6], pr_broadcast[6], pr_addr_list[6*MAX_NON];
-		int pr_protocol, pr_non;
+		int pr_protocol, pr_non, pr_count;
+		float pr_lat, pr_rnp, pr_interpkt, pr_thr, pr_snr;
+
+		// Threads
+		boost::shared_ptr<gr::thread::thread> thread_reset_counters;
 
 		// Input ports
 		pmt::pmt_t msg_port_phy_in = pmt::mp("phy in");
 
 		// Output ports
 		pmt::pmt_t msg_port_act_prot_out = pmt::mp("act prot out");
+		pmt::pmt_t msg_port_met_out0 = pmt::mp("met out0");
+		pmt::pmt_t msg_port_met_out1 = pmt::mp("met out1");
+		pmt::pmt_t msg_port_met_out2 = pmt::mp("met out2");
+		pmt::pmt_t msg_port_met_out3 = pmt::mp("met out3");
+		pmt::pmt_t msg_port_met_out4 = pmt::mp("met out4");
+		pmt::pmt_t msg_port_met_out5 = pmt::mp("met out5");
+
+		void parse_metrics(std::string str) {
+			size_t len, s, e;
+			float lat, thr, rnp;
+			int eos = 1;
+
+			while(str.length() > 0) {
+				len = str.length();
+				s = str.find("=") + 1;
+				e = str.find(":");
+
+				if(e == -1) { // last metris
+					e = len;
+					eos--;
+				}
+
+				// Summing up metrics
+				std::string aux = str.substr(0, s);
+				if(aux == "lat=") {
+					pr_lat += std::stof(str.substr(s, e - s));
+					if(pr_debug) std::cout << "lat=" << std::stof(str.substr(s, e - s)) << std::endl;
+				} else if(aux == "interpkt=") {
+					pr_interpkt += std::stof(str.substr(s, e - s));
+					if(pr_debug) std::cout << "interpkt=" << std::stof(str.substr(s, e - s)) << std::endl;
+				} else if(aux == "rnp=") {
+					pr_rnp += std::stof(str.substr(s, e - s));
+					if(pr_debug) std::cout << "rnp=" << std::stof(str.substr(s, e - s)) << std::endl;
+				} else if(aux == "thr=") {
+					pr_thr += std::stof(str.substr(s, e - s));
+					if(pr_debug) std::cout << "thr=" << std::stof(str.substr(s, e - s)) << std::endl;
+				} else if(aux == "snr=") {
+					pr_snr += std::stof(str.substr(s, e - s));
+					if(pr_debug) std::cout << "snr=" << std::stof(str.substr(s, e - s)) << std::endl;
+				}
+
+				str = str.substr(e + eos, len - e);
+			}
+		}
 };
 
 sensor::sptr

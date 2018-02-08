@@ -406,7 +406,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(472, 622)</value>
+      <value>(96, 726)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -457,7 +457,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(472, 542)</value>
+      <value>(96, 630)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -504,7 +504,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(832, 700)</value>
+      <value>(832, 804)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -626,7 +626,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1008, 433)</value>
+      <value>(1008, 537)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -689,7 +689,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(608, 800)</value>
+      <value>(608, 904)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -740,7 +740,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(672, 629)</value>
+      <value>(296, 733)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -787,7 +787,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(672, 549)</value>
+      <value>(296, 637)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -889,7 +889,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1008, 185)</value>
+      <value>(1008, 329)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -932,11 +932,11 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(869, 432)</value>
+      <value>(568, 89)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>90</value>
+      <value>0</value>
     </param>
     <param>
       <key>id</key>
@@ -1627,7 +1627,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(760, 777)</value>
+      <value>(760, 881)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2702,7 +2702,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(968, 776)</value>
+      <value>(968, 880)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2873,7 +2873,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1032, 640)</value>
+      <value>(1032, 744)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3013,6 +3013,42 @@ Coordinator: True/ False</value>
     <sink_block_id>somac_decision_0</sink_block_id>
     <source_key>act prot out</source_key>
     <sink_key>act prot in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met out0</source_key>
+    <sink_key>met in0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met out1</source_key>
+    <sink_key>met in1</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met out2</source_key>
+    <sink_key>met in2</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met out3</source_key>
+    <sink_key>met in3</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met out4</source_key>
+    <sink_key>met in4</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met out5</source_key>
+    <sink_key>met in5</sink_key>
   </connection>
   <connection>
     <source_block_id>uhd_usrp_source_0</source_block_id>

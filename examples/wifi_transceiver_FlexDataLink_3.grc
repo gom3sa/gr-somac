@@ -406,7 +406,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(472, 630)</value>
+      <value>(256, 758)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -453,7 +453,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(832, 708)</value>
+      <value>(832, 836)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -504,7 +504,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1016, 6)</value>
+      <value>(1008, 6)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -575,7 +575,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1008, 441)</value>
+      <value>(1008, 529)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -638,7 +638,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(608, 808)</value>
+      <value>(608, 904)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -689,7 +689,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(672, 637)</value>
+      <value>(456, 765)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -791,7 +791,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1008, 193)</value>
+      <value>(1008, 329)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -834,11 +834,11 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(877, 448)</value>
+      <value>(728, 89)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>90</value>
+      <value>0</value>
     </param>
     <param>
       <key>id</key>
@@ -1529,7 +1529,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(760, 785)</value>
+      <value>(760, 881)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2604,7 +2604,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(968, 784)</value>
+      <value>(968, 880)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2775,7 +2775,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1032, 648)</value>
+      <value>(1008, 776)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2903,6 +2903,42 @@ Coordinator: True/ False</value>
     <sink_block_id>somac_decision_0</sink_block_id>
     <source_key>act prot out</source_key>
     <sink_key>act prot in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met out0</source_key>
+    <sink_key>met in0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met out1</source_key>
+    <sink_key>met in1</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met out2</source_key>
+    <sink_key>met in2</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met out3</source_key>
+    <sink_key>met in3</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met out4</source_key>
+    <sink_key>met in4</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met out5</source_key>
+    <sink_key>met in5</sink_key>
   </connection>
   <connection>
     <source_block_id>uhd_usrp_source_0</source_block_id>

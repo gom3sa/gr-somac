@@ -51,4 +51,40 @@
     <type>message</type>
     <optional>1</optional>
   </source>
+
+  <source>
+    <name>met out0</name>
+    <type>message</type>
+    <optional>1</optional>
+  </source>
+
+  <source>
+    <name>met out1</name>
+    <type>message</type>
+    <optional>1</optional>
+  </source>
+
+  <source>
+    <name>met out2</name>
+    <type>message</type>
+    <optional>1</optional>
+  </source>
+
+  <source>
+    <name>met out3</name>
+    <type>message</type>
+    <optional>1</optional>
+  </source>
+
+  <source>
+    <name>met out4</name>
+    <type>message</type>
+    <optional>1</optional>
+  </source>
+
+  <source>
+    <name>met out5</name>
+    <type>message</type>
+    <optional>1</optional>
+  </source>
 </block>

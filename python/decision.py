@@ -40,12 +40,37 @@ class decision(gr.basic_block):
 		self.dec_gran = dec_gran; # Granularity of decision
 		self.broad_gran = broad_gran;
 		self.metrics_gran = metrics_gran;
-		# TODO: if node has not got portid from network, it should wait and transmit nothing. Perhaps change portid to an invalid one;
+
+		self.met0 = self.met1 = self.met2 = self.met3 = self.met4 = self.met5 = 0;
 
 		# Input ports
 		self.msg_port_act_prot_in = pmt.intern('act prot in');
 		self.message_port_register_in(self.msg_port_act_prot_in);
 		self.set_msg_handler(self.msg_port_act_prot_in, self.act_prot_in);
+
+		self.msg_port_met_in0 = pmt.intern('met in0');
+		self.message_port_register_in(self.msg_port_met_in0);
+		self.set_msg_handler(self.msg_port_met_in0, self.met_in0);
+
+		self.msg_port_met_in1 = pmt.intern('met in1');
+		self.message_port_register_in(self.msg_port_met_in1);
+		self.set_msg_handler(self.msg_port_met_in1, self.met_in1);
+
+		self.msg_port_met_in2 = pmt.intern('met in2');
+		self.message_port_register_in(self.msg_port_met_in2);
+		self.set_msg_handler(self.msg_port_met_in2, self.met_in2);
+
+		self.msg_port_met_in3 = pmt.intern('met in3');
+		self.message_port_register_in(self.msg_port_met_in3);
+		self.set_msg_handler(self.msg_port_met_in3, self.met_in3);
+
+		self.msg_port_met_in4 = pmt.intern('met in4');
+		self.message_port_register_in(self.msg_port_met_in4);
+		self.set_msg_handler(self.msg_port_met_in4, self.met_in4);
+
+		self.msg_port_met_in5 = pmt.intern('met in5');
+		self.message_port_register_in(self.msg_port_met_in5);
+		self.set_msg_handler(self.msg_port_met_in5, self.met_in5);
 
 		# Output ports
 		self.msg_port_ctrl_out = pmt.intern('ctrl out');
@@ -69,6 +94,24 @@ class decision(gr.basic_block):
 			elif portid == 1:
 				print "Active protocol: TDMA"
 
+	def met_in0(self, msg):
+		self.met0 = self.met0 + pmt.to_float(msg);
+
+	def met_in1(self, msg):
+		self.met1 = self.met1 + pmt.to_float(msg);
+
+	def met_in2(self, msg):
+		self.met2 = self.met2 + pmt.to_float(msg);
+
+	def met_in3(self, msg):
+		self.met3 = self.met3 + pmt.to_float(msg);
+
+	def met_in4(self, msg):
+		self.met4 = self.met4 + pmt.to_float(msg);
+
+	def met_in5(self, msg):
+		self.met5 = self.met5 + pmt.to_float(msg);
+
 	# Init threads according to operation mode (Coord | Normal)
 	def start_block(self):
 		if self.coord:
@@ -85,6 +128,8 @@ class decision(gr.basic_block):
 		print "Decision block as Coordinator"
 
 		while True:
+			print "Cumulative metrics:";
+			print "thr = " + str(self.met0) + ", lat = " + str(self.met1) + ", rnp = " + str(self.met2) + ", interpkt = " + str(self.met3) + ", snr = " + str(self.met4) + ", non = " + str(self.met5);
 			## START: set portid
 			portid = portid + 1;
 			if portid > 1:
@@ -98,8 +143,12 @@ class decision(gr.basic_block):
 				
 			## START: select MAC protocol according to portid
 			self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol('portid' + str(portid)));
-			time.sleep(self.dec_gran);
 			## END: select MAC protocol according to portid
+
+			# Reseting metric counters
+			self.met0 = self.met1 = self.met2 = self.met3 = self.met4 = self.met5 = 0;
+
+			time.sleep(self.dec_gran);
 
 	# Coordinator broadcasts the MAC protocol in use
 	def broadcast_prot(self, name, id): 
