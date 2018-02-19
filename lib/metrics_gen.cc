@@ -33,6 +33,7 @@
 #define FC_DATA 0x0008
 #define FC_METRICS 0x2100
 #define BUFFER_SIZE 1024
+#define MAX_SEQ_NR 65536
 
 using namespace gr::somac;
 
@@ -47,8 +48,8 @@ class metrics_gen_impl : public metrics_gen {
 				pr_debug(debug) {
 
 			// Input msg ports
-			message_port_register_in(msg_port_app_in);
-			set_msg_handler(msg_port_app_in, boost::bind(&metrics_gen_impl::app_in, this, _1));
+			message_port_register_in(msg_port_new_frame_in);
+			set_msg_handler(msg_port_new_frame_in, boost::bind(&metrics_gen_impl::new_frame_in, this, _1));
 
 			message_port_register_in(msg_port_mac_in);
 			set_msg_handler(msg_port_mac_in, boost::bind(&metrics_gen_impl::mac_in, this, _1));
@@ -69,7 +70,7 @@ class metrics_gen_impl : public metrics_gen {
 			message_port_register_out(msg_port_broad_out);
 
 			// Init counters
-			pr_appin_count = 0;
+			pr_nfin_count = 0;
 			pr_tx_count = 0;
 			pr_retx_count = 0;
 			pr_ack_count = 0;
@@ -81,14 +82,20 @@ class metrics_gen_impl : public metrics_gen {
 			pr_snr_list.rset_capacity(BUFFER_SIZE);
 		}
 
-		void app_in(pmt::pmt_t frame) { // Same frame that is given to "Frame Buffer"
-			// TODO
-			pr_appin_count++;
+		void new_frame_in(pmt::pmt_t frame) { // Brand new frame, same that goes to Frame Buffer
+			pmt::pmt_t cdr = pmt::cdr(frame);
+			mac_header *h = (mac_header*)pmt::blob_data(cdr);
+			
+			// Interpacket delay
+			pr_nfin_count++;
 
 			pr_interpkt_toc = clock::now();
 			float interpkt_delay = (float) std::chrono::duration_cast<std::chrono::milliseconds>(pr_interpkt_toc - pr_interpkt_tic).count();
 			pr_interpkt_list.push_back(interpkt_delay);
 			pr_interpkt_tic = clock::now();
+
+			// Latency: mark when packet comes from upper layer
+			pr_lat_tic[(int)h->seq_nr] = clock::now();
 		}
 
 		void mac_in(pmt::pmt_t frame) { // Same frame that is given to PHY
@@ -120,14 +127,13 @@ class metrics_gen_impl : public metrics_gen {
 					// ACK bellongs to last sent frame
 					pr_ack_count++;
 					pr_lat_toc = clock::now();
-					float latency = (float) std::chrono::duration_cast<std::chrono::milliseconds>(pr_lat_toc - pr_lat_tic).count();
+					float latency = (float) std::chrono::duration_cast<std::chrono::milliseconds>(pr_lat_toc - pr_lat_tic[(int)h->seq_nr]).count();
 					pr_lat_list.push_back(latency);
 				}
 			}
 		}
 
 		void buffer_in(pmt::pmt_t frame) {
-			pr_lat_tic = clock::now(); // Start counting latency
 		}
 
 		void snr_in(pmt::pmt_t msg) {
@@ -208,7 +214,7 @@ class metrics_gen_impl : public metrics_gen {
 				message_port_pub(msg_port_broad_out, metrics);
 
 				// Reseting counters
-				pr_appin_count = 0;
+				pr_nfin_count = 0;
 				pr_tx_count = 0;
 				pr_retx_count = 0;
 				pr_ack_count = 0;
@@ -220,7 +226,7 @@ class metrics_gen_impl : public metrics_gen {
 		bool pr_debug;
 
 		// Input msg ports
-		pmt::pmt_t msg_port_app_in = pmt::mp("app in");
+		pmt::pmt_t msg_port_new_frame_in = pmt::mp("new frame in");
 		pmt::pmt_t msg_port_mac_in = pmt::mp("mac in");
 		pmt::pmt_t msg_port_phy_in = pmt::mp("phy in");
 		pmt::pmt_t msg_port_buffer_in = pmt::mp("buffer in");
@@ -232,8 +238,9 @@ class metrics_gen_impl : public metrics_gen {
 
 		// Variables
 		mac_header pr_curr_frame;
-		int pr_appin_count, pr_tx_count, pr_retx_count, pr_ack_count;
-		decltype(clock::now()) pr_lat_tic, pr_lat_toc, pr_interpkt_tic, pr_interpkt_toc, pr_thr_tic, pr_thr_toc;
+		decltype(clock::now()) pr_lat_tic[MAX_SEQ_NR];
+		int pr_nfin_count, pr_tx_count, pr_retx_count, pr_ack_count;
+		decltype(clock::now()) pr_lat_toc, pr_interpkt_tic, pr_interpkt_toc, pr_thr_tic, pr_thr_toc;
 		boost::circular_buffer<float> pr_lat_list, pr_interpkt_list, pr_snr_list;
 };
 

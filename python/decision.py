@@ -33,15 +33,24 @@ class decision(gr.basic_block):
 		CSMA/CA:	portid = 0
 		TDMA:		portid = 1
 	"""
-	def __init__(self, coord, dec_gran, broad_gran, metrics_gran):
+	def __init__(self, coord, dec_gran, broad_gran, metrics_gran, backlog_file, aggr0, aggr1, aggr2, aggr3, aggr4, aggr5):
 		gr.basic_block.__init__(self, name="decision", in_sig=None, out_sig=None)
 
 		self.coord = coord; # Is coordinator? 
 		self.dec_gran = dec_gran; # Granularity of decision
 		self.broad_gran = broad_gran;
 		self.metrics_gran = metrics_gran;
+		self.backlog_file = backlog_file;
 
 		self.met0 = self.met1 = self.met2 = self.met3 = self.met4 = self.met5 = 0;
+		self.count0 = self.count1 = self.count2 = self.count3 = self.count4 = self.count5 = 0;
+
+		self.aggr0 = aggr0;
+		self.aggr1 = aggr1;
+		self.aggr2 = aggr2;
+		self.aggr3 = aggr3;
+		self.aggr4 = aggr4;
+		self.aggr5 = aggr5;
 
 		# Input ports
 		self.msg_port_act_prot_in = pmt.intern('act prot in');
@@ -95,22 +104,88 @@ class decision(gr.basic_block):
 				print "Active protocol: TDMA"
 
 	def met_in0(self, msg):
-		self.met0 = self.met0 + pmt.to_float(msg);
+		met = pmt.to_float(msg);
+		if self.aggr0 == 0:
+			self.met0 = self.met0 + met;
+		elif self.aggr0 == 1:
+			self.met0 = self.met0 + met;
+			self.count0 = self.count0 + 1;
+		elif self.aggr0 == 2:
+			if self.met0 < met:
+				self.met0 = met;
+		elif self.aggr0 == 3:
+			if self.met0 > met:
+				self.met0 = met;
 
 	def met_in1(self, msg):
-		self.met1 = self.met1 + pmt.to_float(msg);
+		met = pmt.to_float(msg);
+		if self.aggr1 == 0:
+			self.met1 = self.met1 + met;
+		elif self.aggr1 == 1:
+			self.met1 = self.met1 + met;
+			self.count1 = self.count1 + 1;
+		elif self.aggr1 == 2:
+			if self.met1 < met:
+				self.met1 = met;
+		elif self.aggr1 == 3:
+			if self.met1 > met:
+				self.met1 = met;
 
 	def met_in2(self, msg):
-		self.met2 = self.met2 + pmt.to_float(msg);
+		met = pmt.to_float(msg);
+		if self.aggr2 == 0:
+			self.met2 = self.met2 + met;
+		elif self.aggr2 == 1:
+			self.met2 = self.met2 + met;
+			self.count2 = self.count2 + 1;
+		elif self.aggr2 == 2:
+			if self.met2 < met:
+				self.met2 = met;
+		elif self.aggr2 == 3:
+			if self.met2 > met:
+				self.met2 = met;
 
 	def met_in3(self, msg):
-		self.met3 = self.met3 + pmt.to_float(msg);
+		met = pmt.to_float(msg);
+		if self.aggr3 == 0:
+			self.met3 = self.met3 + met;
+		elif self.aggr3 == 1:
+			self.met3 = self.met3 + met;
+			self.count3 = self.count3 + 1;
+		elif self.aggr3 == 2:
+			if self.met3 < met:
+				self.met3 = met;
+		elif self.aggr3 == 3:
+			if self.met3 > met:
+				self.met3 = met;
 
 	def met_in4(self, msg):
-		self.met4 = self.met4 + pmt.to_float(msg);
+		met = pmt.to_float(msg);
+		if self.aggr4 == 0:
+			self.met4 = self.met4 + met;
+		elif self.aggr4 == 1:
+			self.met4 = self.met4 + met;
+			self.count4 = self.count4 + 1;
+		elif self.aggr4 == 2:
+			if self.met4 < met:
+				self.met4 = met;
+		elif self.aggr4 == 3:
+			if self.met4 > met:
+				self.met4 = met;
 
 	def met_in5(self, msg):
-		self.met5 = self.met5 + pmt.to_float(msg);
+		met = pmt.to_float(msg);
+		if self.aggr5 == 0:
+			self.met5 = self.met5 + met;
+		elif self.aggr5 == 1:
+			self.met5 = self.met5 + met;
+			self.count5 = self.count5 + 1;
+		elif self.aggr5 == 2:
+			if self.met5 < met:
+				self.met5 = met;
+		elif self.aggr5 == 3:
+			if self.met5 > met:
+				self.met5 = met;
 
 	# Init threads according to operation mode (Coord | Normal)
 	def start_block(self):
@@ -125,15 +200,33 @@ class decision(gr.basic_block):
 		global portid;
 		portid = 0;
 
+		f = open(self.backlog_file, "w", 0);
+
 		print "Decision block as Coordinator"
 
 		while True:
-			print "Cumulative metrics:";
-			print "thr = " + str(self.met0) + ", lat = " + str(self.met1) + ", rnp = " + str(self.met2) + ", interpkt = " + str(self.met3) + ", snr = " + str(self.met4) + ", non = " + str(self.met5);
+			# Handling avg aggregation
+			if self.aggr0 == 1 and self.count0 > 0:
+				self.met0 = self.met0/self.count0;
+			if self.aggr1 == 1 and self.count1 > 0:
+				self.met1 = self.met1/self.count1;
+			if self.aggr2 == 1 and self.count2 > 0:
+				self.met2 = self.met0/self.count2;
+			if self.aggr3 == 1 and self.count3 > 0:
+				self.met3 = self.met3/self.count3;
+			if self.aggr4 == 1 and self.count4 > 0:
+				self.met5 = self.met0/self.count5;
+
+			# Write metrics to backlog file
+			string = "thr = " + str(self.met0) + ", lat = " + str(self.met1) + ", rnp = " + str(self.met2) + ", interpkt = " + str(self.met3) + ", snr = " + str(self.met4) + ", non = " + str(self.met5);
+			f.write(string + "\n");
+			print string;
+
 			## START: set portid
 			portid = portid + 1;
 			if portid > 1:
 				portid = 0;
+			portid = 1;
 			## END: set portid
 
 			if portid == 0:
@@ -147,6 +240,7 @@ class decision(gr.basic_block):
 
 			# Reseting metric counters
 			self.met0 = self.met1 = self.met2 = self.met3 = self.met4 = self.met5 = 0;
+			self.count0 = self.count1 = self.count2 = self.count3 = self.count4 = self.count5 = 0;
 
 			time.sleep(self.dec_gran);
 

@@ -31,7 +31,7 @@
        * vlen
        * optional (set to 1 for optional inputs) -->
   <sink>
-    <name>app in</name>
+    <name>new frame in</name>
     <type>message</type>
     <optional>1</optional>
   </sink>

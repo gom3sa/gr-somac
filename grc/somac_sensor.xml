@@ -53,37 +53,37 @@
   </source>
 
   <source>
-    <name>met out0</name>
+    <name>met thr</name>
     <type>message</type>
     <optional>1</optional>
   </source>
 
   <source>
-    <name>met out1</name>
+    <name>met lat</name>
     <type>message</type>
     <optional>1</optional>
   </source>
 
   <source>
-    <name>met out2</name>
+    <name>met rnp</name>
     <type>message</type>
     <optional>1</optional>
   </source>
 
   <source>
-    <name>met out3</name>
+    <name>met interpkt</name>
     <type>message</type>
     <optional>1</optional>
   </source>
 
   <source>
-    <name>met out4</name>
+    <name>met snr</name>
     <type>message</type>
     <optional>1</optional>
   </source>
 
   <source>
-    <name>met out5</name>
+    <name>met non</name>
     <type>message</type>
     <optional>1</optional>
   </source>

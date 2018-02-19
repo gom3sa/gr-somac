@@ -813,6 +813,34 @@ Coordinator: True/ False</value>
   <block>
     <key>somac_decision</key>
     <param>
+      <key>aggr0</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>aggr1</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>aggr2</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>aggr3</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>aggr4</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>aggr5</key>
+      <value>2</value>
+    </param>
+    <param>
+      <key>backlog_file</key>
+      <value>/home/winet/backlog_file.txt</value>
+    </param>
+    <param>
       <key>alias</key>
       <value></value>
     </param>
@@ -2925,16 +2953,16 @@ Coordinator: True/ False</value>
     <sink_key>tap in</sink_key>
   </connection>
   <connection>
-    <source_block_id>blocks_tuntap_pdu_0</source_block_id>
-    <sink_block_id>somac_metrics_gen_0</sink_block_id>
-    <source_key>pdus</source_key>
-    <sink_key>app in</sink_key>
-  </connection>
-  <connection>
     <source_block_id>data_link_0</source_block_id>
     <sink_block_id>somac_metrics_gen_0</sink_block_id>
     <source_key>buffer out</source_key>
     <sink_key>buffer in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>data_link_0</source_block_id>
+    <sink_block_id>somac_metrics_gen_0</sink_block_id>
+    <source_key>new frame out</source_key>
+    <sink_key>new frame in</sink_key>
   </connection>
   <connection>
     <source_block_id>data_link_0</source_block_id>
@@ -3017,38 +3045,38 @@ Coordinator: True/ False</value>
   <connection>
     <source_block_id>somac_sensor_0</source_block_id>
     <sink_block_id>somac_decision_0</sink_block_id>
-    <source_key>met out0</source_key>
-    <sink_key>met in0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>somac_sensor_0</source_block_id>
-    <sink_block_id>somac_decision_0</sink_block_id>
-    <source_key>met out1</source_key>
-    <sink_key>met in1</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>somac_sensor_0</source_block_id>
-    <sink_block_id>somac_decision_0</sink_block_id>
-    <source_key>met out2</source_key>
-    <sink_key>met in2</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>somac_sensor_0</source_block_id>
-    <sink_block_id>somac_decision_0</sink_block_id>
-    <source_key>met out3</source_key>
+    <source_key>met interpkt</source_key>
     <sink_key>met in3</sink_key>
   </connection>
   <connection>
     <source_block_id>somac_sensor_0</source_block_id>
     <sink_block_id>somac_decision_0</sink_block_id>
-    <source_key>met out4</source_key>
+    <source_key>met lat</source_key>
+    <sink_key>met in1</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met non</source_key>
+    <sink_key>met in5</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met rnp</source_key>
+    <sink_key>met in2</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met snr</source_key>
     <sink_key>met in4</sink_key>
   </connection>
   <connection>
     <source_block_id>somac_sensor_0</source_block_id>
     <sink_block_id>somac_decision_0</sink_block_id>
-    <source_key>met out5</source_key>
-    <sink_key>met in5</sink_key>
+    <source_key>met thr</source_key>
+    <sink_key>met in0</sink_key>
   </connection>
   <connection>
     <source_block_id>uhd_usrp_source_0</source_block_id>

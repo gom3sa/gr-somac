@@ -212,12 +212,12 @@ class sensor_impl : public sensor {
 
 		// Output ports
 		pmt::pmt_t msg_port_act_prot_out = pmt::mp("act prot out");
-		pmt::pmt_t msg_port_met_out0 = pmt::mp("met out0");
-		pmt::pmt_t msg_port_met_out1 = pmt::mp("met out1");
-		pmt::pmt_t msg_port_met_out2 = pmt::mp("met out2");
-		pmt::pmt_t msg_port_met_out3 = pmt::mp("met out3");
-		pmt::pmt_t msg_port_met_out4 = pmt::mp("met out4");
-		pmt::pmt_t msg_port_met_out5 = pmt::mp("met out5");
+		pmt::pmt_t msg_port_met_out0 = pmt::mp("met thr");
+		pmt::pmt_t msg_port_met_out1 = pmt::mp("met lat");
+		pmt::pmt_t msg_port_met_out2 = pmt::mp("met rnp");
+		pmt::pmt_t msg_port_met_out3 = pmt::mp("met interpkt");
+		pmt::pmt_t msg_port_met_out4 = pmt::mp("met snr");
+		pmt::pmt_t msg_port_met_out5 = pmt::mp("met non");
 
 		void parse_metrics(std::string str) {
 			size_t len, s, e;
