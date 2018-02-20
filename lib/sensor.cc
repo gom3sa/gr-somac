@@ -139,18 +139,6 @@ class sensor_impl : public sensor {
 			uint8_t *f = (uint8_t*)pmt::blob_data(cdr); // Get the complete frame rather than just the header
 			int f_len = pmt::blob_length(cdr) - 24; // Strips header
 
-			// Counting active nodes
-			bool listed = false;
-			for(int i = 0; i < pr_non; i++) {
-				if(memcmp(h->addr2, pr_addr_list + i*6, 6) == 0) {
-					listed = true;
-				}
-			}
-			if(!listed) { // Addr is not listed, so add it to the addr list
-				memcpy(pr_addr_list + pr_non*6, h->addr2, 6);
-				pr_non++;
-			}
-
 			switch(h->frame_control) {
 				case FC_PROTOCOL: {
 					if(is_broadcast == 0 and from_me != 0) {
@@ -189,6 +177,18 @@ class sensor_impl : public sensor {
 
 						parse_metrics(str);
 						pr_count++;
+					}
+
+					// Counting active nodes
+					bool listed = false;
+					for(int i = 0; i < pr_non; i++) {
+						if(memcmp(h->addr2, pr_addr_list + i*6, 6) == 0) {
+							listed = true;
+						}
+					}
+					if(!listed) { // Addr is not listed, so add it to the addr list
+						memcpy(pr_addr_list + pr_non*6, h->addr2, 6);
+						pr_non++;
 					}
 				} break; 
 

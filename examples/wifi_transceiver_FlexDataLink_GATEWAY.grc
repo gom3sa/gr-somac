@@ -838,7 +838,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>backlog_file</key>
-      <value>/home/winet/backlog_file.txt</value>
+      <value>/home/andre/backlog_file.txt</value>
     </param>
     <param>
       <key>alias</key>
