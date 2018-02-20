@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Transceiver Flexdatalink 6
-# Generated: Tue Feb 20 14:11:43 2018
+# Generated: Tue Feb 20 14:15:07 2018
 ##################################################
 
 import os
@@ -37,7 +37,7 @@ class wifi_transceiver_FlexDataLink_6(gr.top_block):
         self.rx_gain = rx_gain = 500e-3
         self.pdu_length = pdu_length = 500
         self.mac_dst = mac_dst = [0x12,0x34,0x56,0x78,0x90,0xaa]
-        self.mac_addr = mac_addr = [0x12,0x34,0x56,0x78,0x90,0xb0]
+        self.mac_addr = mac_addr = [0x12,0x34,0x56,0x78,0x90,0xba]
         self.lo_offset = lo_offset = 0
         self.interval = interval = 1e3
         self.freq = freq = 2.52e9
