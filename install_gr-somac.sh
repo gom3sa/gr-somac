@@ -18,7 +18,7 @@ sudo make install
 sudo ldconfig
 
 cd ~
-git clone git://github.com/bastibl/gr-ieee802-11.git
+git clone -b master git://github.com/bastibl/gr-ieee802-11.git
 cd gr-ieee802-11
 mkdir build
 cd build
