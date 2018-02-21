@@ -158,7 +158,6 @@ class metrics_gen_impl : public metrics_gen {
 					pr_lat_list.pop_front();
 				}
 				if(count == 0) {
-					sum = -1; // Latency -> 0 is too good! -1 means there is no latency.
 					count = 1; // No division by zero
 				}
 				float avg_lat = sum/count;
@@ -175,7 +174,6 @@ class metrics_gen_impl : public metrics_gen {
 				}
 				if(count == 0) {
 					count = 1;
-					sum = -1; // Interpacket delay -> 0 means that too many packets are coming. -1 means it is iddle.
 				}
 				float avg_interpkt = sum/count;
 				if(pr_debug) std::cout << "Interpacket delay (ms) = " << avg_interpkt << std::endl << std::flush;
