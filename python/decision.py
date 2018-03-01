@@ -218,7 +218,7 @@ class decision(gr.basic_block):
 				self.met5 = self.met0/self.count5;
 
 			# Write metrics to backlog file
-			string = "thr = " + str(self.met0) + ", lat = " + str(self.met1) + ", rnp = " + str(self.met2) + ", interpkt = " + str(self.met3) + ", snr = " + str(self.met4) + ", non = " + str(self.met5);
+			string ="prot = " + str(portid) +  ", thr = " + str(self.met0) + ", lat = " + str(self.met1) + ", rnp = " + str(self.met2) + ", interpkt = " + str(self.met3) + ", snr = " + str(self.met4) + ", non = " + str(self.met5);
 			f.write(string + "\n");
 			print string;
 
@@ -226,14 +226,14 @@ class decision(gr.basic_block):
 			portid = portid + 1;
 			if portid > 1:
 				portid = 0;
-			portid = 1;
+
 			## END: set portid
 
 			if portid == 0:
 				print "Active protocol: CSMA/CA"
 			elif portid == 1:
 				print "Active protocol: TDMA"
-				
+
 			## START: select MAC protocol according to portid
 			self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol('portid' + str(portid)));
 			## END: select MAC protocol according to portid
