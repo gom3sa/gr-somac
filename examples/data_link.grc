@@ -760,10 +760,10 @@
     </param>
   </block>
   <block>
-    <key>macprotocols_tdma</key>
+    <key>macprotocols_naive_tdma</key>
     <param>
       <key>alpha</key>
-      <value>alpha</value>
+      <value>1000</value>
     </param>
     <param>
       <key>alias</key>
@@ -799,7 +799,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>macprotocols_tdma_0</value>
+      <value>macprotocols_naive_tdma_0</value>
     </param>
     <param>
       <key>src_mac</key>
@@ -1548,7 +1548,7 @@
   </connection>
   <connection>
     <source_block_id>macprotocols_frame_buffer_0</source_block_id>
-    <sink_block_id>macprotocols_tdma_0</sink_block_id>
+    <sink_block_id>macprotocols_naive_tdma_0</sink_block_id>
     <source_key>frame out 1</source_key>
     <sink_key>frame from buffer</sink_key>
   </connection>
@@ -1572,7 +1572,7 @@
   </connection>
   <connection>
     <source_block_id>macprotocols_myswitch_0</source_block_id>
-    <sink_block_id>macprotocols_tdma_0</sink_block_id>
+    <sink_block_id>macprotocols_naive_tdma_0</sink_block_id>
     <source_key>out1</source_key>
     <sink_key>frame from phy</sink_key>
   </connection>
@@ -1589,19 +1589,19 @@
     <sink_key>in</sink_key>
   </connection>
   <connection>
-    <source_block_id>macprotocols_tdma_0</source_block_id>
+    <source_block_id>macprotocols_naive_tdma_0</source_block_id>
     <sink_block_id>macprotocols_frame_buffer_0</sink_block_id>
     <source_key>frame request</source_key>
     <sink_key>req in 1</sink_key>
   </connection>
   <connection>
-    <source_block_id>macprotocols_tdma_0</source_block_id>
+    <source_block_id>macprotocols_naive_tdma_0</source_block_id>
     <sink_block_id>ieee802_11_ether_encap_0</sink_block_id>
     <source_key>frame to app</source_key>
     <sink_key>from wifi</sink_key>
   </connection>
   <connection>
-    <source_block_id>macprotocols_tdma_0</source_block_id>
+    <source_block_id>macprotocols_naive_tdma_0</source_block_id>
     <sink_block_id>macprotocols_myswitch_0_0</sink_block_id>
     <source_key>frame to phy</source_key>
     <sink_key>in1</sink_key>
