@@ -24,6 +24,7 @@ from gnuradio import gr
 import pmt
 import time
 import thread
+import numpy as np
 
 portid = 200; # Initially no MAC protocol is used. The normal node waits for coordinator's message.
 
@@ -42,9 +43,13 @@ class decision(gr.basic_block):
 		self.metrics_gran = metrics_gran;
 		self.backlog_file = backlog_file;
 
-		self.met0 = self.met1 = self.met2 = self.met3 = self.met4 = self.met5 = 0;
-		self.count0 = self.count1 = self.count2 = self.count3 = self.count4 = self.count5 = 0;
-
+		self.met0 = [];
+		self.met1 = [];
+		self.met2 = [];
+		self.met3 = [];
+		self.met4 = [];
+		self.met5 = [];
+		
 		self.aggr0 = aggr0;
 		self.aggr1 = aggr1;
 		self.aggr2 = aggr2;
@@ -91,6 +96,23 @@ class decision(gr.basic_block):
 
 		self.start_block();
 
+	# Aggregator
+	def aggr(self, aggr, list):
+		array = np.array(list);
+		if len(array) == 0:
+			met = None;
+		elif aggr == 0:
+			met = array.sum();
+		elif aggr == 1:
+			#met = array.mean();
+			met = array.sum()/(self.dec_gran/self.metrics_gran); # avg summation based on expected # of samples
+		elif aggr == 2: 
+			met = array.max();
+		elif aggr == 3:
+			met == array.min();
+
+		return met;
+
 	# This gets active MAC protocol on the network from sensor block
 	def act_prot_in(self, msg):
 		if self.coord == False: # Coord already knows the current MAC protocol
@@ -104,88 +126,22 @@ class decision(gr.basic_block):
 				print "Active protocol: TDMA"
 
 	def met_in0(self, msg):
-		met = pmt.to_float(msg);
-		if self.aggr0 == 0:
-			self.met0 = self.met0 + met;
-		elif self.aggr0 == 1:
-			self.met0 = self.met0 + met;
-			self.count0 = self.count0 + 1;
-		elif self.aggr0 == 2:
-			if self.met0 < met:
-				self.met0 = met;
-		elif self.aggr0 == 3:
-			if self.met0 > met:
-				self.met0 = met;
+		self.met0.append(pmt.to_float(msg));
 
 	def met_in1(self, msg):
-		met = pmt.to_float(msg);
-		if self.aggr1 == 0:
-			self.met1 = self.met1 + met;
-		elif self.aggr1 == 1:
-			self.met1 = self.met1 + met;
-			self.count1 = self.count1 + 1;
-		elif self.aggr1 == 2:
-			if self.met1 < met:
-				self.met1 = met;
-		elif self.aggr1 == 3:
-			if self.met1 > met:
-				self.met1 = met;
+		self.met1.append(pmt.to_float(msg));
 
 	def met_in2(self, msg):
-		met = pmt.to_float(msg);
-		if self.aggr2 == 0:
-			self.met2 = self.met2 + met;
-		elif self.aggr2 == 1:
-			self.met2 = self.met2 + met;
-			self.count2 = self.count2 + 1;
-		elif self.aggr2 == 2:
-			if self.met2 < met:
-				self.met2 = met;
-		elif self.aggr2 == 3:
-			if self.met2 > met:
-				self.met2 = met;
+		self.met2.append(pmt.to_float(msg));
 
 	def met_in3(self, msg):
-		met = pmt.to_float(msg);
-		if self.aggr3 == 0:
-			self.met3 = self.met3 + met;
-		elif self.aggr3 == 1:
-			self.met3 = self.met3 + met;
-			self.count3 = self.count3 + 1;
-		elif self.aggr3 == 2:
-			if self.met3 < met:
-				self.met3 = met;
-		elif self.aggr3 == 3:
-			if self.met3 > met:
-				self.met3 = met;
+		self.met3.append(pmt.to_float(msg));
 
 	def met_in4(self, msg):
-		met = pmt.to_float(msg);
-		if self.aggr4 == 0:
-			self.met4 = self.met4 + met;
-		elif self.aggr4 == 1:
-			self.met4 = self.met4 + met;
-			self.count4 = self.count4 + 1;
-		elif self.aggr4 == 2:
-			if self.met4 < met:
-				self.met4 = met;
-		elif self.aggr4 == 3:
-			if self.met4 > met:
-				self.met4 = met;
+		self.met4.append(pmt.to_float(msg));
 
 	def met_in5(self, msg):
-		met = pmt.to_float(msg);
-		if self.aggr5 == 0:
-			self.met5 = self.met5 + met;
-		elif self.aggr5 == 1:
-			self.met5 = self.met5 + met;
-			self.count5 = self.count5 + 1;
-		elif self.aggr5 == 2:
-			if self.met5 < met:
-				self.met5 = met;
-		elif self.aggr5 == 3:
-			if self.met5 > met:
-				self.met5 = met;
+		self.met5.append(pmt.to_float(msg));
 
 	# Init threads according to operation mode (Coord | Normal)
 	def start_block(self):
@@ -201,22 +157,17 @@ class decision(gr.basic_block):
 		portid = 0;
 
 		f = open(self.backlog_file, "w", 0);
-
 		print "Decision block as Coordinator"
 
 		time.sleep(3);
 		while True:
 			# Handling avg aggregation
-			if self.aggr0 == 1 and self.count0 > 0:
-				self.met0 = self.met0/self.count0;
-			if self.aggr1 == 1 and self.count1 > 0:
-				self.met1 = self.met1/self.count1;
-			if self.aggr2 == 1 and self.count2 > 0:
-				self.met2 = self.met0/self.count2;
-			if self.aggr3 == 1 and self.count3 > 0:
-				self.met3 = self.met3/self.count3;
-			if self.aggr4 == 1 and self.count4 > 0:
-				self.met5 = self.met0/self.count5;
+			self.met0 = self.aggr(self.aggr0, self.met0);
+			self.met1 = self.aggr(self.aggr1, self.met1);
+			self.met2 = self.aggr(self.aggr2, self.met2);
+			self.met3 = self.aggr(self.aggr3, self.met3);
+			self.met4 = self.aggr(self.aggr4, self.met4);
+			self.met5 = self.aggr(self.aggr5, self.met5);
 
 			# Write metrics to backlog file
 			string ="prot = " + str(portid) +  ", thr = " + str(self.met0) + ", lat = " + str(self.met1) + ", rnp = " + str(self.met2) + ", interpkt = " + str(self.met3) + ", snr = " + str(self.met4) + ", non = " + str(self.met5);
@@ -237,12 +188,15 @@ class decision(gr.basic_block):
 
 			## START: select MAC protocol according to portid
 			self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol('portid' + str(portid)));
-			print "Port id sent!"
 			## END: select MAC protocol according to portid
 
 			# Reseting metric counters
-			self.met0 = self.met1 = self.met2 = self.met3 = self.met4 = self.met5 = 0;
-			self.count0 = self.count1 = self.count2 = self.count3 = self.count4 = self.count5 = 0;
+			self.met0 = [];
+			self.met1 = [];
+			self.met2 = [];
+			self.met3 = [];
+			self.met4 = [];
+			self.met5 = [];
 
 			time.sleep(self.dec_gran);
 
