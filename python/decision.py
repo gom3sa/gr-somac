@@ -25,7 +25,7 @@ import pmt
 import time
 import thread
 
-portid = -1; # Initially no MAC protocol is used. The normal node waits for coordinator's message.
+portid = 200; # Initially no MAC protocol is used. The normal node waits for coordinator's message.
 
 class decision(gr.basic_block):
 	"""
@@ -257,13 +257,13 @@ class decision(gr.basic_block):
 			self.message_port_pub(self.msg_port_broad_out, pmt.string_to_symbol(msg));
 			time.sleep(self.broad_gran);
 
-	# Useful at the beginning, in order to inform normal node to use no MAC protocol (portid = -1)
+	# Useful at the beginning, in order to inform normal node to use no MAC protocol (portid = 200, none)
 	def normal_loop(self, name, id):
 		global portid;
-		portid = -1;
+		portid = 200;
 
 		print "Decision block as Normal node"
-		self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol('portid' + str(portid))); # Sets no MAC protocol at the beginning (portid = -1)
+		self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol('portid' + str(portid))); # Sets no MAC protocol at the beginning (portid = 200, none)
 
 		while True:
 			time.sleep(self.metrics_gran);
