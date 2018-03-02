@@ -321,7 +321,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>500e-3</value>
+      <value>1000e-3</value>
     </param>
   </block>
   <block>

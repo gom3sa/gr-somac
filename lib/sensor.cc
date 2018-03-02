@@ -27,6 +27,7 @@
 #include <pmt/pmt.h>
 #include <boost/thread.hpp>
 #include <time.h>
+#include <boost/crc.hpp>
 
 #define FC_ACK 0x2B00
 #define FC_DATA 0x0008
@@ -138,6 +139,14 @@ class sensor_impl : public sensor {
 
 			uint8_t *f = (uint8_t*)pmt::blob_data(cdr); // Get the complete frame rather than just the header
 			int f_len = pmt::blob_length(cdr) - 24; // Strips header
+
+			uint32_t crc = crc32(f, f_len);
+			if(crc != 0) {
+				if(pr_debug) std::cout << "Frame corrupted!" << std::endl << std::flush;
+				return;
+			} else {
+				if(pr_debug) std::cout << "CRC okay!" << std::endl << std::flush;
+			}
 
 			switch(h->frame_control) {
 				case FC_PROTOCOL: {
@@ -255,6 +264,23 @@ class sensor_impl : public sensor {
 
 				str = str.substr(e + eos, len - e);
 			}
+		}
+
+		uint32_t crc32(uint8_t *buf, int len) {
+			uint32_t crc = 0;
+
+			for (int i = 0; i < len; i++) {
+				for (int k = 0; k < 8; k++) {
+					int input_bit = (!!(buf[i] & (1 << k)) ^ (crc & 1));
+					crc = crc >> 1;
+					if (input_bit) {
+						crc ^= (1 << 15);
+						crc ^= (1 << 10);
+						crc ^= (1 << 3);
+					}
+				}
+			}
+			return crc;
 		}
 };
 
