@@ -618,7 +618,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>debug</key>
-      <value>False</value>
+      <value>True</value>
     </param>
     <param>
       <key>_enabled</key>
