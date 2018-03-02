@@ -618,7 +618,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>debug</key>
-      <value>False</value>
+      <value>True</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -646,7 +646,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>portid</key>
-      <value>1</value>
+      <value>255</value>
     </param>
     <param>
       <key>mac_src</key>

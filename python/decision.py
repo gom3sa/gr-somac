@@ -204,6 +204,7 @@ class decision(gr.basic_block):
 
 		print "Decision block as Coordinator"
 
+		time.sleep(3);
 		while True:
 			# Handling avg aggregation
 			if self.aggr0 == 1 and self.count0 > 0:
@@ -226,7 +227,7 @@ class decision(gr.basic_block):
 			portid = portid + 1;
 			if portid > 1:
 				portid = 0;
-
+			portid = 1;
 			## END: set portid
 
 			if portid == 0:
@@ -236,6 +237,7 @@ class decision(gr.basic_block):
 
 			## START: select MAC protocol according to portid
 			self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol('portid' + str(portid)));
+			print "Port id sent!"
 			## END: select MAC protocol according to portid
 
 			# Reseting metric counters
