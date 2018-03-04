@@ -82,10 +82,7 @@ class metrics_gen_impl : public metrics_gen {
 			pr_snr_list.rset_capacity(BUFFER_SIZE);
 		}
 
-		void new_frame_in(pmt::pmt_t frame) { // Brand new frame, same that goes to Frame Buffer
-			pmt::pmt_t cdr = pmt::cdr(frame);
-			mac_header *h = (mac_header*)pmt::blob_data(cdr);
-			
+		void new_frame_in(pmt::pmt_t frame) { // Brand new frame, same that goes to Frame Buffer	
 			// Interpacket delay
 			pr_nfin_count++;
 
@@ -95,7 +92,11 @@ class metrics_gen_impl : public metrics_gen {
 			pr_interpkt_tic = clock::now();
 
 			// Latency: mark when packet comes from upper layer
+			/*
+			pmt::pmt_t cdr = pmt::cdr(frame);
+			mac_header *h = (mac_header*)pmt::blob_data(cdr);
 			pr_lat_tic[(int)h->seq_nr] = clock::now();
+			*/
 		}
 
 		void mac_in(pmt::pmt_t frame) { // Same frame that is given to PHY
@@ -134,6 +135,9 @@ class metrics_gen_impl : public metrics_gen {
 		}
 
 		void buffer_in(pmt::pmt_t frame) {
+			pmt::pmt_t cdr = pmt::cdr(frame);
+			mac_header *h = (mac_header*)pmt::blob_data(cdr);
+			pr_lat_tic[(int)h->seq_nr] = clock::now();
 		}
 
 		void snr_in(pmt::pmt_t msg) {
