@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Transceiver Flexdatalink 4
-# Generated: Fri Mar  2 09:19:15 2018
+# Generated: Sun Mar  4 15:35:15 2018
 ##################################################
 
 import os
@@ -77,8 +77,8 @@ class wifi_transceiver_FlexDataLink_4(gr.top_block):
         self.uhd_usrp_sink_0_0.set_samp_rate(samp_rate)
         self.uhd_usrp_sink_0_0.set_center_freq(uhd.tune_request(freq, rf_freq = freq - lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
         self.uhd_usrp_sink_0_0.set_normalized_gain(tx_gain, 0)
-        self.somac_sensor_0 = somac.sensor((mac_addr), True)
-        self.somac_metrics_gen_0 = somac.metrics_gen(True)
+        self.somac_sensor_0 = somac.sensor((mac_addr), False)
+        self.somac_metrics_gen_0 = somac.metrics_gen(False)
         self.somac_decision_0 = somac.decision(False, 60, 5, 30, "", 0, 0, 0, 0, 0, 0)
         self.foo_wireshark_connector_0 = foo.wireshark_connector(127, True)
         self.foo_packet_pad2_0 = foo.packet_pad2(False, False, 0.001, 10000, 10000)
@@ -86,7 +86,7 @@ class wifi_transceiver_FlexDataLink_4(gr.top_block):
         self.data_link_0 = data_link(
             alpha=1000,
             coord=False,
-            debug=True,
+            debug=False,
             mac_bss=[0xff, 0xff, 0xff, 0xff, 0xff, 0xff],
             mac_dst=mac_dst,
             mac_src=mac_addr,

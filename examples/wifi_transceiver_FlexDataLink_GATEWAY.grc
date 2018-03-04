@@ -618,7 +618,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>debug</key>
-      <value>True</value>
+      <value>False</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -814,23 +814,23 @@ Coordinator: True/ False</value>
     <key>somac_decision</key>
     <param>
       <key>aggr0</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>aggr1</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>aggr2</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>aggr3</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>aggr4</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>aggr5</key>
@@ -909,7 +909,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>debug</key>
-      <value>True</value>
+      <value>False</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -952,7 +952,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>debug</key>
-      <value>True</value>
+      <value>False</value>
     </param>
     <param>
       <key>_enabled</key>
