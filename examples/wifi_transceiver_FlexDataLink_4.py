@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Transceiver Flexdatalink 4
-# Generated: Fri Mar  9 15:54:49 2018
+# Generated: Fri Mar  9 16:04:29 2018
 ##################################################
 
 import os
@@ -80,7 +80,6 @@ class wifi_transceiver_FlexDataLink_4(gr.top_block):
         self.somac_sensor_0 = somac.sensor((mac_addr), False, False)
         self.somac_metrics_gen_0 = somac.metrics_gen(False)
         self.somac_decision_0 = somac.decision(False, 60, 5, 30, "", 0, 0, 0, 0, 0, 0)
-        self.foo_wireshark_connector_0 = foo.wireshark_connector(127, True)
         self.foo_packet_pad2_0 = foo.packet_pad2(False, False, 0.001, 10000, 10000)
         (self.foo_packet_pad2_0).set_min_output_buffer(100000)
         self.data_link_0 = data_link(
@@ -96,8 +95,6 @@ class wifi_transceiver_FlexDataLink_4(gr.top_block):
         self.blocks_tuntap_pdu_0 = blocks.tuntap_pdu("tap0", 440, False)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((0.6, ))
         (self.blocks_multiply_const_vxx_0).set_min_output_buffer(100000)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, "/tmp/wifi_rx_all.pcap", False)
-        self.blocks_file_sink_0.set_unbuffered(True)
 
         ##################################################
         # Connections
@@ -121,12 +118,10 @@ class wifi_transceiver_FlexDataLink_4(gr.top_block):
         self.msg_connect((self.somac_sensor_0, 'met snr'), (self.somac_decision_0, 'met in4'))    
         self.msg_connect((self.somac_sensor_0, 'met thr'), (self.somac_decision_0, 'met in0'))    
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.data_link_0, 'phy in'))    
-        self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.foo_wireshark_connector_0, 'in'))    
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.somac_metrics_gen_0, 'phy in'))    
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.somac_sensor_0, 'phy in'))    
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.foo_packet_pad2_0, 0))    
         self.connect((self.foo_packet_pad2_0, 0), (self.uhd_usrp_sink_0_0, 0))    
-        self.connect((self.foo_wireshark_connector_0, 0), (self.blocks_file_sink_0, 0))    
         self.connect((self.uhd_usrp_source_0, 0), (self.data_link_0, 0))    
         self.connect((self.uhd_usrp_source_0, 0), (self.wifi_phy_hier_0, 0))    
         self.connect((self.wifi_phy_hier_0, 0), (self.blocks_multiply_const_vxx_0, 0))    

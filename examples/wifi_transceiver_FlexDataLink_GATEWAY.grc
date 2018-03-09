@@ -862,7 +862,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>dec_gran</key>
-      <value>60</value>
+      <value>180</value>
     </param>
     <param>
       <key>_enabled</key>
