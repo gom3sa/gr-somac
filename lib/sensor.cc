@@ -121,8 +121,6 @@ class sensor_impl : public sensor {
 		}
 
 		void phy_in(pmt::pmt_t frame) {
-			if(!pr_is_coord) return; // This is only required to coordinator
-
 			pmt::pmt_t cdr = pmt::cdr(frame);
 			mac_header *h = (mac_header*)pmt::blob_data(cdr); // Frame's header
 
@@ -140,7 +138,7 @@ class sensor_impl : public sensor {
 
 			switch(h->frame_control) {
 				case FC_PROTOCOL: {
-					if(is_broadcast == 0 and from_me != 0) {
+					if(is_broadcast == 0 and from_me != 0 and !pr_is_coord) {
 						uint8_t prot[1];
 						memcpy(prot, f + 24, 1);
 
@@ -167,7 +165,7 @@ class sensor_impl : public sensor {
 				} break;
 
 				case FC_METRICS: {
-					if(is_broadcast == 0 and from_me != 0) {
+					if(is_broadcast == 0 and from_me != 0 and pr_is_coord) {
 						char msdu[f_len + 1];
 						msdu[f_len] = '\0'; // End of string
 						memcpy(msdu, f + 24, f_len);
@@ -237,7 +235,7 @@ class sensor_impl : public sensor {
 				std::string aux = str.substr(0, s);
 				if(aux == "lat=") {
 					pr_lat += std::stof(str.substr(s, e - s));
-					if(pr_debug) std::cout << "lat=" << std::stof(str.substr(s, e - s)) << std::endl;
+					std::cout << "lat sensor = " << std::stof(str.substr(s, e - s)) << std::endl;
 				} else if(aux == "interpkt=") {
 					pr_interpkt += std::stof(str.substr(s, e - s));
 					if(pr_debug) std::cout << "interpkt=" << std::stof(str.substr(s, e - s)) << std::endl;
