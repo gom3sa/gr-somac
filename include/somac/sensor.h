@@ -46,7 +46,7 @@ namespace gr {
        * class. somac::sensor::make is the public interface for
        * creating new instances.
        */
-      static sptr make(std::vector<uint8_t> mac, bool debug);
+      static sptr make(std::vector<uint8_t> mac, bool is_coord, bool debug);
     };
 
   } // namespace somac

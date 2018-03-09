@@ -4,7 +4,7 @@
   <key>somac_sensor</key>
   <category>[SOMAC]</category>
   <import>import somac</import>
-  <make>somac.sensor($mac, $debug)</make>
+  <make>somac.sensor($mac, $is_coord, $debug)</make>
   <!-- Make one 'param' node for every Parameter you want settable from the GUI.
        Sub-nodes:
        * name
@@ -14,6 +14,20 @@
     <name>Mac addr</name>
     <key>mac</key>
     <type>int_vector</type>
+  </param>
+
+  <param>
+    <name>Coordinator?</name>
+    <key>is_coord</key>
+    <type>bool</type>
+    <option>
+      <name>True</name>
+      <key>True</key>
+    </option>
+    <option>
+      <name>False</name>
+      <key>False</key>
+    </option>
   </param>
 
   <param>

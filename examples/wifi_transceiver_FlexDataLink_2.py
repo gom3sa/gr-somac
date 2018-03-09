@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Transceiver Flexdatalink 2
-# Generated: Fri Mar  9 14:40:35 2018
+# Generated: Fri Mar  9 15:54:35 2018
 ##################################################
 
 import os
@@ -77,7 +77,7 @@ class wifi_transceiver_FlexDataLink_2(gr.top_block):
         self.uhd_usrp_sink_0_0.set_samp_rate(samp_rate)
         self.uhd_usrp_sink_0_0.set_center_freq(uhd.tune_request(freq, rf_freq = freq - lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
         self.uhd_usrp_sink_0_0.set_normalized_gain(tx_gain, 0)
-        self.somac_sensor_0 = somac.sensor((mac_addr), False)
+        self.somac_sensor_0 = somac.sensor((mac_addr), False, False)
         self.somac_metrics_gen_0 = somac.metrics_gen(False)
         self.somac_decision_0 = somac.decision(False, 60, 5, 30, "", 0, 0, 0, 0, 0, 0)
         self.foo_wireshark_connector_0 = foo.wireshark_connector(127, True)

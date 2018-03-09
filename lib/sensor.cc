@@ -45,16 +45,14 @@
 #define MAX_NON 256
 // Time to reset counters
 #define GRANULARITY 30
-#define COORD true
-
 
 using namespace gr::somac;
 
 class sensor_impl : public sensor {
 	public:
-		sensor_impl(std::vector<uint8_t> mac, bool debug)
+		sensor_impl(std::vector<uint8_t> mac, bool is_coord, bool debug)
 			: gr::block("sensor", gr::io_signature::make(0, 0, 0), gr::io_signature::make(0, 0, 0)),
-			pr_debug(debug) {
+			pr_is_coord(is_coord), pr_debug(debug) {
 
 			// Input ports
 			message_port_register_in(msg_port_phy_in);
@@ -85,7 +83,7 @@ class sensor_impl : public sensor {
 		}
 
 		bool start() {
-			if(COORD) thread_reset_counters = boost::shared_ptr<gr::thread::thread> (new gr::thread::thread(boost::bind(&sensor_impl::reset, this)));
+			if(pr_is_coord) thread_reset_counters = boost::shared_ptr<gr::thread::thread> (new gr::thread::thread(boost::bind(&sensor_impl::reset, this)));
 			return block::start();
 		}
 
@@ -123,7 +121,7 @@ class sensor_impl : public sensor {
 		}
 
 		void phy_in(pmt::pmt_t frame) {
-			if(!COORD) return; // This is only required to coordinator
+			if(!pr_is_coord) return; // This is only required to coordinator
 
 			pmt::pmt_t cdr = pmt::cdr(frame);
 			mac_header *h = (mac_header*)pmt::blob_data(cdr); // Frame's header
@@ -200,7 +198,7 @@ class sensor_impl : public sensor {
 		}
 
 	private:
-		bool pr_debug;
+		bool pr_is_coord, pr_debug;
 		uint8_t pr_mac[6], pr_broadcast[6], pr_addr_list[6*MAX_NON];
 		int pr_protocol, pr_non, pr_count;
 		float pr_lat, pr_rnp, pr_interpkt, pr_thr, pr_snr;
@@ -260,6 +258,6 @@ class sensor_impl : public sensor {
 };
 
 sensor::sptr
-sensor::make(std::vector<uint8_t> mac, bool debug) {
-	return gnuradio::get_initial_sptr (new sensor_impl(mac, debug));
+sensor::make(std::vector<uint8_t> mac, bool is_coord, bool debug) {
+	return gnuradio::get_initial_sptr (new sensor_impl(mac, is_coord, debug));
 }

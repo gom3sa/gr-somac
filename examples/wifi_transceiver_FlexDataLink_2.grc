@@ -849,6 +849,10 @@ Coordinator: True/ False</value>
       <value></value>
     </param>
     <param>
+      <key>is_coord</key>
+      <value>False</value>
+    </param>
+    <param>
       <key>affinity</key>
       <value></value>
     </param>

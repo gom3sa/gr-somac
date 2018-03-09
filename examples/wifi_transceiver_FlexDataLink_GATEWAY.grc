@@ -618,7 +618,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>debug</key>
-      <value>True</value>
+      <value>False</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -838,7 +838,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>backlog_file</key>
-      <value>/home/avgsg/backlog_file.txt</value>
+      <value>/home/winet/backlog_file.txt</value>
     </param>
     <param>
       <key>alias</key>
@@ -945,6 +945,10 @@ Coordinator: True/ False</value>
     <param>
       <key>comment</key>
       <value></value>
+    </param>
+    <param>
+      <key>is_coord</key>
+      <value>True</value>
     </param>
     <param>
       <key>affinity</key>
