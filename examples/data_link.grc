@@ -277,7 +277,7 @@
     </param>
     <param>
       <key>debug</key>
-      <value>True</value>
+      <value>False</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -815,7 +815,7 @@
     </param>
     <param>
       <key>slot_time</key>
-      <value>9</value>
+      <value>6</value>
     </param>
   </block>
   <block>
