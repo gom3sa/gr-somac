@@ -27,7 +27,6 @@
 #include <pmt/pmt.h>
 #include <boost/thread.hpp>
 #include <time.h>
-#include <boost/crc.hpp>
 
 #define FC_ACK 0x2B00
 #define FC_DATA 0x0008
@@ -47,6 +46,14 @@
 #define GRANULARITY 30
 
 using namespace gr::somac;
+
+struct metrics {
+	float thr; 
+	float lat;
+	float rnp;
+	float interpkt;
+	float snr;
+};
 
 class sensor_impl : public sensor {
 	public:
@@ -72,14 +79,15 @@ class sensor_impl : public sensor {
 				pr_broadcast[i] = 0xff;
 			}
 
-			// Counters
+			for(int id = 0; id < 256; id++) { // id is related to the last byte of mac addr
+				pr_metrics[id].thr = 0;
+				pr_metrics[id].lat = 0;
+				pr_metrics[id].rnp = 0;
+				pr_metrics[id].interpkt = 0;
+				pr_metrics[id].snr = 0;
+			}
+
 			pr_non = 0;
-			pr_count = 0;
-			pr_lat = 0;
-			pr_rnp = 0;
-			pr_interpkt = 0;
-			pr_thr = 0;
-			pr_snr = 0;
 		}
 
 		bool start() {
@@ -88,35 +96,31 @@ class sensor_impl : public sensor {
 		}
 
 		void reset() { // Reset counters and send metrics to decision block
+			int count = 0;
+
 			while(true) {
 				sleep(GRANULARITY);
-				// Averaging 
-				if(pr_count == 0) pr_count = 1;
-				pr_thr = pr_thr/pr_count;
-				pr_lat = pr_lat/pr_count;
-				pr_rnp = pr_rnp/pr_count;
-				pr_interpkt = pr_interpkt/pr_count;
-				pr_snr = pr_snr/pr_count;
-				pr_non = pr_non/1;
+				
+				int id;
+				for(int i = 0; i < pr_non; i++) {
+					id = (int) pr_addr_list[i*6 + 5]; 
 
-				// Sending metrics to decision block
-				message_port_pub(msg_port_met_out0, pmt::from_float(pr_thr));
-				message_port_pub(msg_port_met_out1, pmt::from_float(pr_lat));
-				message_port_pub(msg_port_met_out2, pmt::from_float(pr_rnp));
-				message_port_pub(msg_port_met_out3, pmt::from_float(pr_interpkt));
-				message_port_pub(msg_port_met_out4, pmt::from_float(pr_snr));
-				message_port_pub(msg_port_met_out5, pmt::from_float(pr_non));
-
-				if(pr_debug) std::cout << "Sending metrics: thr = " << pr_thr << ", lat = " << pr_lat << ", rnp = " << pr_rnp << ", interpkt = " << pr_interpkt << ", snr = " << pr_snr << ", non = " << pr_non	<< std::endl << std::flush;
+					std::cout << "lat sensor = " << pr_metrics[id].lat << std::endl << std::flush;
+					message_port_pub(msg_port_met_out0, pmt::from_float(pr_metrics[id].thr));
+					message_port_pub(msg_port_met_out1, pmt::from_float(pr_metrics[id].lat));
+					message_port_pub(msg_port_met_out2, pmt::from_float(pr_metrics[id].rnp));
+					message_port_pub(msg_port_met_out3, pmt::from_float(pr_metrics[id].interpkt));
+					message_port_pub(msg_port_met_out4, pmt::from_float(pr_metrics[id].snr));
+					message_port_pub(msg_port_met_out5, pmt::from_float(pr_non));
+				}
 
 				// Resetting counters
-				pr_non = 0;
-				pr_count = 0;
-				pr_lat = 0;
-				pr_rnp = 0;
-				pr_interpkt = 0;
-				pr_thr = 0;
-				pr_snr = 0;
+				count++;
+				if(count > 2) {
+					pr_non = 0;
+					count = 0;
+					std::cout << "==============================================" << std::endl << std::flush;
+				}
 			}
 		}
 
@@ -135,6 +139,20 @@ class sensor_impl : public sensor {
 
 			uint8_t *f = (uint8_t*)pmt::blob_data(cdr); // Get the complete frame rather than just the header
 			int f_len = pmt::blob_length(cdr) - 24; // Strips header
+
+			// Counting active nodes
+			if(pr_is_coord) {
+				bool listed = false;
+				for(int i = 0; i < pr_non; i++) {
+					if(memcmp(h->addr2, pr_addr_list + i*6, 6) == 0) {
+						listed = true;
+					}
+				}
+				if(!listed) { // Addr is not listed, so add it to the addr list
+					memcpy(pr_addr_list + pr_non*6, h->addr2, 6);
+					pr_non++;
+				}
+			}
 
 			switch(h->frame_control) {
 				case FC_PROTOCOL: {
@@ -172,20 +190,9 @@ class sensor_impl : public sensor {
 
 						std::string str(msdu);
 
-						parse_metrics(str);
+						int id = (int) h->addr2[5];
+						parse_metrics(str, id);
 						pr_count++;
-					}
-
-					// Counting active nodes
-					bool listed = false;
-					for(int i = 0; i < pr_non; i++) {
-						if(memcmp(h->addr2, pr_addr_list + i*6, 6) == 0) {
-							listed = true;
-						}
-					}
-					if(!listed) { // Addr is not listed, so add it to the addr list
-						memcpy(pr_addr_list + pr_non*6, h->addr2, 6);
-						pr_non++;
 					}
 				} break; 
 
@@ -199,7 +206,7 @@ class sensor_impl : public sensor {
 		bool pr_is_coord, pr_debug;
 		uint8_t pr_mac[6], pr_broadcast[6], pr_addr_list[6*MAX_NON];
 		int pr_protocol, pr_non, pr_count;
-		float pr_lat, pr_rnp, pr_interpkt, pr_thr, pr_snr;
+		metrics pr_metrics[256];
 
 		// Threads
 		boost::shared_ptr<gr::thread::thread> thread_reset_counters;
@@ -216,7 +223,7 @@ class sensor_impl : public sensor {
 		pmt::pmt_t msg_port_met_out4 = pmt::mp("met snr");
 		pmt::pmt_t msg_port_met_out5 = pmt::mp("met non");
 
-		void parse_metrics(std::string str) {
+		void parse_metrics(std::string str, int id) {
 			size_t len, s, e;
 			float lat, thr, rnp;
 			int eos = 1;
@@ -234,19 +241,19 @@ class sensor_impl : public sensor {
 				// Summing up metrics
 				std::string aux = str.substr(0, s);
 				if(aux == "lat=") {
-					pr_lat += std::stof(str.substr(s, e - s));
-					std::cout << "lat sensor = " << std::stof(str.substr(s, e - s)) << std::endl;
+					pr_metrics[id].lat = std::stof(str.substr(s, e - s));
+					if(pr_debug) std::cout << "lat=" << std::stof(str.substr(s, e - s)) << std::endl;
 				} else if(aux == "interpkt=") {
-					pr_interpkt += std::stof(str.substr(s, e - s));
+					pr_metrics[id].interpkt = std::stof(str.substr(s, e - s));
 					if(pr_debug) std::cout << "interpkt=" << std::stof(str.substr(s, e - s)) << std::endl;
 				} else if(aux == "rnp=") {
-					pr_rnp += std::stof(str.substr(s, e - s));
+					pr_metrics[id].rnp = std::stof(str.substr(s, e - s));
 					if(pr_debug) std::cout << "rnp=" << std::stof(str.substr(s, e - s)) << std::endl;
 				} else if(aux == "thr=") {
-					pr_thr += std::stof(str.substr(s, e - s));
+					pr_metrics[id].thr = std::stof(str.substr(s, e - s));
 					if(pr_debug) std::cout << "thr=" << std::stof(str.substr(s, e - s)) << std::endl;
 				} else if(aux == "snr=") {
-					pr_snr += std::stof(str.substr(s, e - s));
+					pr_metrics[id].snr = std::stof(str.substr(s, e - s));
 					if(pr_debug) std::cout << "snr=" << std::stof(str.substr(s, e - s)) << std::endl;
 				}
 
