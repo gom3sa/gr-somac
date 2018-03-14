@@ -149,7 +149,7 @@ class sensor_impl : public sensor {
 			int f_len = pmt::blob_length(cdr) - 24; // Strips header
 
 			// Counting active nodes
-			if(pr_is_coord) {
+			if(pr_is_coord and from_me != 0) { // Does not count itself as a node in the network
 				bool listed = false;
 				for(int i = 0; i < pr_non; i++) {
 					if(memcmp(h->addr2, pr_addr_list + i*6, 6) == 0) {

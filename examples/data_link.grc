@@ -615,7 +615,7 @@
     </param>
     <param>
       <key>threshold</key>
-      <value>-25</value>
+      <value>-30</value>
     </param>
   </block>
   <block>
@@ -815,7 +815,7 @@
     </param>
     <param>
       <key>slot_time</key>
-      <value>6</value>
+      <value>3</value>
     </param>
   </block>
   <block>

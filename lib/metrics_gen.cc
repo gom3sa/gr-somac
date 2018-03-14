@@ -185,8 +185,8 @@ class metrics_gen_impl : public metrics_gen {
 
 				// START: calc RNP (required number of packet transmissions)
 				float rnp = 0;
-				if(pr_tx_count + pr_retx_count > 0) {
-					rnp = (pr_tx_count + pr_retx_count)/(pr_ack_count + 1) - 1;
+				if(pr_tx_count + pr_retx_count > 0 and pr_ack_count > 0) {
+					rnp = ((pr_tx_count + pr_retx_count)/pr_ack_count) - 1;
 				}
 				std::cout << "pr_tx_count = " << pr_tx_count << ", pr_retx_count = " << pr_retx_count << ", pr_ack_count = " << pr_ack_count << std::endl << std::flush;
 				if(pr_debug) std::cout << "RNP = " << rnp << std::endl << std::flush;
