@@ -27,6 +27,7 @@
 #include <pmt/pmt.h>
 #include <boost/thread.hpp>
 #include <time.h>
+#include <chrono>
 
 #define FC_ACK 0x2B00
 #define FC_DATA 0x0008
@@ -48,14 +49,18 @@
 using namespace gr::somac;
 
 struct metrics {
-	float thr; 
+	float thr;
 	float lat;
 	float rnp;
 	float interpkt;
 	float snr;
+
+	decltype(std::chrono::high_resolution_clock::now()) tstamp;
 };
 
 class sensor_impl : public sensor {
+	typedef std::chrono::high_resolution_clock clock;
+
 	public:
 		sensor_impl(std::vector<uint8_t> mac, bool is_coord, bool debug)
 			: gr::block("sensor", gr::io_signature::make(0, 0, 0), gr::io_signature::make(0, 0, 0)),
@@ -85,6 +90,7 @@ class sensor_impl : public sensor {
 				pr_metrics[id].rnp = 0;
 				pr_metrics[id].interpkt = 0;
 				pr_metrics[id].snr = 0;
+				pr_metrics[id].tstamp = clock::now();
 			}
 
 			pr_non = 0;
@@ -100,27 +106,29 @@ class sensor_impl : public sensor {
 
 			while(true) {
 				sleep(GRANULARITY);
-				
+
 				int id;
+				int non = 0;
+				auto tnow = clock::now();
+				float dt;
 				for(int i = 0; i < pr_non; i++) {
-					id = (int) pr_addr_list[i*6 + 5]; 
+					id = (int) pr_addr_list[i*6 + 5];
 
-					std::cout << "lat sensor = " << pr_metrics[id].lat << std::endl << std::flush;
-					message_port_pub(msg_port_met_out0, pmt::from_float(pr_metrics[id].thr));
-					message_port_pub(msg_port_met_out1, pmt::from_float(pr_metrics[id].lat));
-					message_port_pub(msg_port_met_out2, pmt::from_float(pr_metrics[id].rnp));
-					message_port_pub(msg_port_met_out3, pmt::from_float(pr_metrics[id].interpkt));
-					message_port_pub(msg_port_met_out4, pmt::from_float(pr_metrics[id].snr));
-					message_port_pub(msg_port_met_out5, pmt::from_float(pr_non));
+					dt = (float) std::chrono::duration_cast<std::chrono::seconds>(tnow - pr_metrics[id].tstamp).count();
+					if(dt < 2*GRANULARITY) {
+						if(pr_debug) std::cout << "lat sensor [" << id << "] = " << pr_metrics[id].lat << std::endl << std::flush;
+						message_port_pub(msg_port_met_out0, pmt::from_float(pr_metrics[id].thr));
+						message_port_pub(msg_port_met_out1, pmt::from_float(pr_metrics[id].lat));
+						message_port_pub(msg_port_met_out2, pmt::from_float(pr_metrics[id].rnp));
+						message_port_pub(msg_port_met_out3, pmt::from_float(pr_metrics[id].interpkt));
+						message_port_pub(msg_port_met_out4, pmt::from_float(pr_metrics[id].snr));
+						//message_port_pub(msg_port_met_out5, pmt::from_float(pr_non));
+						non++;
+					} else {
+						if(pr_debug) std::cout << "Node " << id << " had a timeout" << std::endl << std::flush;
+					}
 				}
-
-				// Resetting counters
-				count++;
-				if(count > 2) {
-					pr_non = 0;
-					count = 0;
-					std::cout << "==============================================" << std::endl << std::flush;
-				}
+				message_port_pub(msg_port_met_out5, pmt::from_float(non));
 			}
 		}
 
@@ -131,7 +139,7 @@ class sensor_impl : public sensor {
 			int is_broadcast = memcmp(h->addr1, pr_broadcast, 6); // 0 if frame IS for broadcast
 			int is_mine = memcmp(h->addr1, pr_mac, 6); // 0 if frame IS mine
 			int from_me = memcmp(h->addr2, pr_mac, 6); // 0 if I generated the frame
-			
+
 			if(is_mine != 0 and is_broadcast != 0) {
 				if(pr_debug) std::cout << "Neither for me nor broadcast" << std::endl << std::flush;
 				return;
@@ -152,6 +160,8 @@ class sensor_impl : public sensor {
 					memcpy(pr_addr_list + pr_non*6, h->addr2, 6);
 					pr_non++;
 				}
+				int id = (int) h->addr2[5];
+				pr_metrics[id].tstamp = clock::now();
 			}
 
 			switch(h->frame_control) {
@@ -164,12 +174,12 @@ class sensor_impl : public sensor {
 							case CSMA: {
 								pr_protocol = 0;
 								if(pr_debug) std::cout << "Active protocol: CSMA/CA" << std::endl << std::flush;
-							} break; 
+							} break;
 
 							case TDMA: {
 								pr_protocol = 1;
 								if(pr_debug) std::cout << "Active protocol: TDMA" << std::endl << std::flush;
-							} break; 
+							} break;
 
 							default: {
 								if(pr_debug) std::cout << "Active protocol: Unknwon" << std::endl << std::flush;
@@ -194,7 +204,7 @@ class sensor_impl : public sensor {
 						parse_metrics(str, id);
 						pr_count++;
 					}
-				} break; 
+				} break;
 
 				default: {
 					return;

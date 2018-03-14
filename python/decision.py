@@ -178,7 +178,7 @@ class decision(gr.basic_block):
 			portid = portid + 1;
 			if portid > 1:
 				portid = 0;
-			portid = 0;
+			portid = 1;
 			## END: set portid
 
 			if portid == 0:
