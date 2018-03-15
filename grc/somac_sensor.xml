@@ -97,6 +97,12 @@
   </source>
 
   <source>
+    <name>met contention</name>
+    <type>message</type>
+    <optional>1</optional>
+  </source>
+
+  <source>
     <name>met non</name>
     <type>message</type>
     <optional>1</optional>

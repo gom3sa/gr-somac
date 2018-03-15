@@ -54,6 +54,7 @@ struct metrics {
 	float rnp;
 	float interpkt;
 	float snr;
+	float contention;
 
 	decltype(std::chrono::high_resolution_clock::now()) tstamp;
 };
@@ -78,6 +79,7 @@ class sensor_impl : public sensor {
 			message_port_register_out(msg_port_met_out3);
 			message_port_register_out(msg_port_met_out4);
 			message_port_register_out(msg_port_met_out5);
+			message_port_register_out(msg_port_met_out6);
 
 			for(int i = 0; i < 6; i++) {
 				pr_mac[i] = mac[i];
@@ -90,6 +92,7 @@ class sensor_impl : public sensor {
 				pr_metrics[id].rnp = 0;
 				pr_metrics[id].interpkt = 0;
 				pr_metrics[id].snr = 0;
+				pr_metrics[id].contention = 0;
 				pr_metrics[id].tstamp = clock::now();
 			}
 
@@ -122,13 +125,13 @@ class sensor_impl : public sensor {
 						message_port_pub(msg_port_met_out2, pmt::from_float(pr_metrics[id].rnp));
 						message_port_pub(msg_port_met_out3, pmt::from_float(pr_metrics[id].interpkt));
 						message_port_pub(msg_port_met_out4, pmt::from_float(pr_metrics[id].snr));
-						//message_port_pub(msg_port_met_out5, pmt::from_float(pr_non));
+						message_port_pub(msg_port_met_out5, pmt::from_float(pr_metrics[id].contention));
 						non++;
 					} else {
 						if(pr_debug) std::cout << "Node " << id << " had a timeout" << std::endl << std::flush;
 					}
 				}
-				message_port_pub(msg_port_met_out5, pmt::from_float(non));
+				message_port_pub(msg_port_met_out6, pmt::from_float(non));
 			}
 		}
 
@@ -231,7 +234,8 @@ class sensor_impl : public sensor {
 		pmt::pmt_t msg_port_met_out2 = pmt::mp("met rnp");
 		pmt::pmt_t msg_port_met_out3 = pmt::mp("met interpkt");
 		pmt::pmt_t msg_port_met_out4 = pmt::mp("met snr");
-		pmt::pmt_t msg_port_met_out5 = pmt::mp("met non");
+		pmt::pmt_t msg_port_met_out5 = pmt::mp("met contention");
+		pmt::pmt_t msg_port_met_out6 = pmt::mp("met non");
 
 		void parse_metrics(std::string str, int id) {
 			size_t len, s, e;
@@ -265,6 +269,9 @@ class sensor_impl : public sensor {
 				} else if(aux == "snr=") {
 					pr_metrics[id].snr = std::stof(str.substr(s, e - s));
 					if(pr_debug) std::cout << "snr=" << std::stof(str.substr(s, e - s)) << std::endl;
+				} else if(aux == "cont") {
+					pr_metrics[id].contention = std::stof(str.substr(s, e - s));
+					if(pr_debug) std::cout << "cont=" << std::stof(str.substr(s, e - s)) << std::endl;
 				}
 
 				str = str.substr(e + eos, len - e);

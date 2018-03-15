@@ -641,6 +641,10 @@ Coordinator: True/ False</value>
       <value>0</value>
     </param>
     <param>
+      <key>aggr6</key>
+      <value>0</value>
+    </param>
+    <param>
       <key>backlog_file</key>
       <value></value>
     </param>
@@ -674,7 +678,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1008, 105)</value>
+      <value>(1008, 97)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -768,7 +772,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(728, 105)</value>
+      <value>(728, 97)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2835,6 +2839,12 @@ Coordinator: True/ False</value>
   <connection>
     <source_block_id>somac_sensor_0</source_block_id>
     <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met contention</source_key>
+    <sink_key>met in5</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
     <source_key>met interpkt</source_key>
     <sink_key>met in3</sink_key>
   </connection>
@@ -2848,7 +2858,7 @@ Coordinator: True/ False</value>
     <source_block_id>somac_sensor_0</source_block_id>
     <sink_block_id>somac_decision_0</sink_block_id>
     <source_key>met non</source_key>
-    <sink_key>met in5</sink_key>
+    <sink_key>met in6</sink_key>
   </connection>
   <connection>
     <source_block_id>somac_sensor_0</source_block_id>

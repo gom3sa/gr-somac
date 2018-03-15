@@ -4,7 +4,7 @@
   <key>somac_decision</key>
   <category>[SOMAC]</category>
   <import>import somac</import>
-  <make>somac.decision($coord, $dec_gran, $broad_gran, $metrics_gran, $backlog_file, $aggr0, $aggr1, $aggr2, $aggr3, $aggr4, $aggr5)</make>
+  <make>somac.decision($coord, $dec_gran, $broad_gran, $metrics_gran, $backlog_file, $aggr0, $aggr1, $aggr2, $aggr3, $aggr4, $aggr5, $aggr6)</make>
   <!-- Make one 'param' node for every Parameter you want settable from the GUI.
        Sub-nodes:
        * name
@@ -185,6 +185,29 @@
       <key>3</key>
     </option>
   </param>
+
+  <param>
+    <name>Aggr6</name>
+    <key>aggr6</key>
+    <value>0</value>
+    <type>int</type>
+    <option>
+      <name>sum</name>
+      <key>0</key>
+    </option>
+    <option>
+      <name>avg</name>
+      <key>1</key>
+    </option>
+    <option>
+      <name>max</name>
+      <key>2</key>
+    </option>
+    <option>
+      <name>min</name>
+      <key>3</key>
+    </option>
+  </param>
   <!-- Make one 'sink' node per input. Sub-nodes:
        * name (an identifier for the GUI)
        * type
@@ -229,6 +252,12 @@
 
   <sink>
     <name>met in5</name>
+    <type>message</type>
+    <optional>1</optional>
+  </sink>
+
+  <sink>
+    <name>met in6</name>
     <type>message</type>
     <optional>1</optional>
   </sink>

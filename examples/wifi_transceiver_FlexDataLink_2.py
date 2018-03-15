@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Transceiver Flexdatalink 2
-# Generated: Fri Mar  9 16:04:18 2018
+# Generated: Thu Mar 15 19:37:45 2018
 ##################################################
 
 import os
@@ -79,7 +79,7 @@ class wifi_transceiver_FlexDataLink_2(gr.top_block):
         self.uhd_usrp_sink_0_0.set_normalized_gain(tx_gain, 0)
         self.somac_sensor_0 = somac.sensor((mac_addr), False, False)
         self.somac_metrics_gen_0 = somac.metrics_gen(False)
-        self.somac_decision_0 = somac.decision(False, 60, 5, 30, "", 0, 0, 0, 0, 0, 0)
+        self.somac_decision_0 = somac.decision(False, 60, 5, 30, "", 0, 0, 0, 0, 0, 0, 0)
         self.foo_packet_pad2_0 = foo.packet_pad2(False, False, 0.001, 10000, 10000)
         (self.foo_packet_pad2_0).set_min_output_buffer(100000)
         self.data_link_0 = data_link(
@@ -113,10 +113,11 @@ class wifi_transceiver_FlexDataLink_2(gr.top_block):
         self.msg_connect((self.somac_sensor_0, 'act prot out'), (self.somac_decision_0, 'act prot in'))    
         self.msg_connect((self.somac_sensor_0, 'met interpkt'), (self.somac_decision_0, 'met in3'))    
         self.msg_connect((self.somac_sensor_0, 'met lat'), (self.somac_decision_0, 'met in1'))    
-        self.msg_connect((self.somac_sensor_0, 'met non'), (self.somac_decision_0, 'met in5'))    
         self.msg_connect((self.somac_sensor_0, 'met rnp'), (self.somac_decision_0, 'met in2'))    
         self.msg_connect((self.somac_sensor_0, 'met snr'), (self.somac_decision_0, 'met in4'))    
         self.msg_connect((self.somac_sensor_0, 'met thr'), (self.somac_decision_0, 'met in0'))    
+        self.msg_connect((self.somac_sensor_0, 'met non'), (self.somac_decision_0, 'met in6'))    
+        self.msg_connect((self.somac_sensor_0, 'met contention'), (self.somac_decision_0, 'met in5'))    
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.data_link_0, 'phy in'))    
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.somac_metrics_gen_0, 'phy in'))    
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.somac_sensor_0, 'phy in'))    

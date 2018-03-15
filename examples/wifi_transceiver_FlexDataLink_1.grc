@@ -504,7 +504,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(832, 804)</value>
+      <value>(840, 828)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -626,7 +626,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1008, 537)</value>
+      <value>(1016, 561)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -689,7 +689,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(608, 904)</value>
+      <value>(616, 928)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -837,6 +837,10 @@ Coordinator: True/ False</value>
       <value>0</value>
     </param>
     <param>
+      <key>aggr6</key>
+      <value>0</value>
+    </param>
+    <param>
       <key>backlog_file</key>
       <value></value>
     </param>
@@ -870,7 +874,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1008, 89)</value>
+      <value>(1016, 81)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -917,7 +921,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1008, 329)</value>
+      <value>(1016, 353)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -964,7 +968,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(568, 89)</value>
+      <value>(568, 81)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1659,7 +1663,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(760, 881)</value>
+      <value>(768, 905)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2734,7 +2738,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(968, 880)</value>
+      <value>(976, 904)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2905,7 +2909,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1032, 744)</value>
+      <value>(1040, 768)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3049,6 +3053,12 @@ Coordinator: True/ False</value>
   <connection>
     <source_block_id>somac_sensor_0</source_block_id>
     <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met contention</source_key>
+    <sink_key>met in5</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
     <source_key>met interpkt</source_key>
     <sink_key>met in3</sink_key>
   </connection>
@@ -3062,7 +3072,7 @@ Coordinator: True/ False</value>
     <source_block_id>somac_sensor_0</source_block_id>
     <sink_block_id>somac_decision_0</sink_block_id>
     <source_key>met non</source_key>
-    <sink_key>met in5</sink_key>
+    <sink_key>met in6</sink_key>
   </connection>
   <connection>
     <source_block_id>somac_sensor_0</source_block_id>

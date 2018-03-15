@@ -34,7 +34,7 @@ class decision(gr.basic_block):
 		CSMA/CA:	portid = 0
 		TDMA:		portid = 1
 	"""
-	def __init__(self, coord, dec_gran, broad_gran, metrics_gran, backlog_file, aggr0, aggr1, aggr2, aggr3, aggr4, aggr5):
+	def __init__(self, coord, dec_gran, broad_gran, metrics_gran, backlog_file, aggr0, aggr1, aggr2, aggr3, aggr4, aggr5, aggr6):
 		gr.basic_block.__init__(self, name="decision", in_sig=None, out_sig=None)
 
 		self.coord = coord; # Is coordinator? 
@@ -49,6 +49,7 @@ class decision(gr.basic_block):
 		self.met3 = [];
 		self.met4 = [];
 		self.met5 = [];
+		self.met6 = [];
 		
 		self.aggr0 = aggr0;
 		self.aggr1 = aggr1;
@@ -56,6 +57,7 @@ class decision(gr.basic_block):
 		self.aggr3 = aggr3;
 		self.aggr4 = aggr4;
 		self.aggr5 = aggr5;
+		self.aggr6 = aggr6;
 
 		# Input ports
 		self.msg_port_act_prot_in = pmt.intern('act prot in');
@@ -85,6 +87,10 @@ class decision(gr.basic_block):
 		self.msg_port_met_in5 = pmt.intern('met in5');
 		self.message_port_register_in(self.msg_port_met_in5);
 		self.set_msg_handler(self.msg_port_met_in5, self.met_in5);
+
+		self.msg_port_met_in6 = pmt.intern('met in6');
+		self.message_port_register_in(self.msg_port_met_in6);
+		self.set_msg_handler(self.msg_port_met_in6, self.met_in6);
 
 		# Output ports
 		self.msg_port_ctrl_out = pmt.intern('ctrl out');
@@ -143,6 +149,9 @@ class decision(gr.basic_block):
 	def met_in5(self, msg):
 		self.met5.append(pmt.to_float(msg));
 
+	def met_in6(self, msg):
+		self.met6.append(pmt.to_float(msg));
+
 	# Init threads according to operation mode (Coord | Normal)
 	def start_block(self):
 		if self.coord:
@@ -168,9 +177,10 @@ class decision(gr.basic_block):
 			self.met3 = self.aggr(self.aggr3, self.met3);
 			self.met4 = self.aggr(self.aggr4, self.met4);
 			self.met5 = self.aggr(self.aggr5, self.met5);
+			self.met6 = self.aggr(self.aggr6, self.met6);
 
 			# Write metrics to backlog file
-			string ="prot = " + str(portid) +  ", thr = " + str(self.met0) + ", lat = " + str(self.met1) + ", rnp = " + str(self.met2) + ", interpkt = " + str(self.met3) + ", snr = " + str(self.met4) + ", non = " + str(self.met5);
+			string ="prot = " + str(portid) +  ", thr = " + str(self.met0) + ", lat = " + str(self.met1) + ", rnp = " + str(self.met2) + ", interpkt = " + str(self.met3) + ", snr = " + str(self.met4) + ", cont = " + str(self.met5) + ", non = " + str(self.met6);
 			f.write(string + "\n");
 			print string;
 
@@ -197,6 +207,7 @@ class decision(gr.basic_block):
 			self.met3 = [];
 			self.met4 = [];
 			self.met5 = [];
+			self.met6 = [];
 
 			time.sleep(self.dec_gran);
 
