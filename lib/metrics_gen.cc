@@ -107,13 +107,13 @@ class metrics_gen_impl : public metrics_gen {
 					pr_curr_frame.seq_nr = h->seq_nr;
 
 					pr_tx_count++;
+
+					// Contention
+					auto toc = clock::now();
+					float dt = (float) std::chrono::duration_cast<std::chrono::milliseconds>(toc - pr_contention_tic[(int)h->seq_nr]).count();
+					pr_contention_list.push_back(dt);
 				}
 			}
-
-			// Contention
-			auto toc = clock::now();
-			float dt = (float) std::chrono::duration_cast<std::chrono::milliseconds>(toc - pr_contention_tic[(int)h->seq_nr]).count();
-			pr_contention_list.push_back(dt);
 		}
 
 		void phy_in(pmt::pmt_t frame) {

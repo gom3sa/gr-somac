@@ -269,7 +269,7 @@ class sensor_impl : public sensor {
 				} else if(aux == "snr=") {
 					pr_metrics[id].snr = std::stof(str.substr(s, e - s));
 					if(pr_debug) std::cout << "snr=" << std::stof(str.substr(s, e - s)) << std::endl;
-				} else if(aux == "cont") {
+				} else if(aux == "cont=") {
 					pr_metrics[id].contention = std::stof(str.substr(s, e - s));
 					if(pr_debug) std::cout << "cont=" << std::stof(str.substr(s, e - s)) << std::endl;
 				}
