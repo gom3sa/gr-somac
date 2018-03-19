@@ -57,7 +57,7 @@ sudo ldconfig
 
 echo "Installing Traffic Generator"
 cd ~
-git clone https://github.com/gmj93/gr-trafficgen.git
+git clone https://github.com/andreviniciusgsg/gr-trafficgen.git
 cd gr-trafficgen
 mkdir build
 cd build
