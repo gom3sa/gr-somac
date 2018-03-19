@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Flexdatalink Tg 1
-# Generated: Mon Mar 19 12:57:37 2018
+# Generated: Mon Mar 19 13:25:04 2018
 ##################################################
 
 import os
@@ -93,6 +93,7 @@ class wifi_FlexDataLink_TG_1(gr.top_block):
         (self.foo_packet_pad2_0).set_min_output_buffer(100000)
         self.data_link_0 = data_link(
             alpha=1000,
+            arp=False,
             coord=False,
             debug=False,
             mac_bss=[0xff, 0xff, 0xff, 0xff, 0xff, 0xff],
@@ -100,7 +101,6 @@ class wifi_FlexDataLink_TG_1(gr.top_block):
             mac_src=mac_addr,
             portid=0,
             samp_rate=5e6,
-            arp=False,
         )
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((0.6, ))
         (self.blocks_multiply_const_vxx_0).set_min_output_buffer(100000)
@@ -113,13 +113,13 @@ class wifi_FlexDataLink_TG_1(gr.top_block):
         # Connections
         ##################################################
         self.msg_connect((self.data_link_0, 'phy out'), (self.foo_wireshark_connector_0_0, 'in'))    
-        self.msg_connect((self.data_link_0, 'tap out'), (self.gaussian_traffic_gen_0, 'Data in'))    
+        self.msg_connect((self.data_link_0, 'data out'), (self.gaussian_traffic_gen_0, 'Data in'))    
         self.msg_connect((self.data_link_0, 'buffer out'), (self.somac_metrics_gen_0, 'buffer in'))    
         self.msg_connect((self.data_link_0, 'new frame out'), (self.somac_metrics_gen_0, 'new frame in'))    
         self.msg_connect((self.data_link_0, 'phy out'), (self.somac_metrics_gen_0, 'mac in'))    
         self.msg_connect((self.data_link_0, 'snr out'), (self.somac_metrics_gen_0, 'snr in'))    
         self.msg_connect((self.data_link_0, 'phy out'), (self.wifi_phy_hier_0, 'mac_in'))    
-        self.msg_connect((self.gaussian_traffic_gen_0, 'Data out'), (self.data_link_0, 'tap in'))    
+        self.msg_connect((self.gaussian_traffic_gen_0, 'Data out'), (self.data_link_0, 'data in'))    
         self.msg_connect((self.somac_decision_0, 'broad out'), (self.data_link_0, 'broad in'))    
         self.msg_connect((self.somac_decision_0, 'ctrl out'), (self.data_link_0, 'prot switch'))    
         self.msg_connect((self.somac_decision_0, 'metrics out'), (self.somac_metrics_gen_0, 'ctrl in'))    

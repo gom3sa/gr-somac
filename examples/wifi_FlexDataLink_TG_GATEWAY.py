@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Flexdatalink Tg Gateway
-# Generated: Mon Mar 19 12:58:40 2018
+# Generated: Mon Mar 19 13:24:33 2018
 ##################################################
 
 import os
@@ -93,6 +93,7 @@ class wifi_FlexDataLink_TG_GATEWAY(gr.top_block):
         (self.foo_packet_pad2_0).set_min_output_buffer(100000)
         self.data_link_0 = data_link(
             alpha=1000,
+            arp=True,
             coord=True,
             debug=False,
             mac_bss=[0xff, 0xff, 0xff, 0xff, 0xff, 0xff],
@@ -100,7 +101,6 @@ class wifi_FlexDataLink_TG_GATEWAY(gr.top_block):
             mac_src=mac_addr,
             portid=255,
             samp_rate=5e6,
-            arp=True,
         )
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((0.6, ))
         (self.blocks_multiply_const_vxx_0).set_min_output_buffer(100000)
@@ -113,13 +113,13 @@ class wifi_FlexDataLink_TG_GATEWAY(gr.top_block):
         # Connections
         ##################################################
         self.msg_connect((self.data_link_0, 'phy out'), (self.foo_wireshark_connector_0_0, 'in'))    
-        self.msg_connect((self.data_link_0, 'tap out'), (self.gaussian_traffic_gen_0, 'Data in'))    
+        self.msg_connect((self.data_link_0, 'data out'), (self.gaussian_traffic_gen_0, 'Data in'))    
         self.msg_connect((self.data_link_0, 'buffer out'), (self.somac_metrics_gen_0, 'buffer in'))    
         self.msg_connect((self.data_link_0, 'new frame out'), (self.somac_metrics_gen_0, 'new frame in'))    
         self.msg_connect((self.data_link_0, 'phy out'), (self.somac_metrics_gen_0, 'mac in'))    
         self.msg_connect((self.data_link_0, 'snr out'), (self.somac_metrics_gen_0, 'snr in'))    
         self.msg_connect((self.data_link_0, 'phy out'), (self.wifi_phy_hier_0, 'mac_in'))    
-        self.msg_connect((self.gaussian_traffic_gen_0, 'Data out'), (self.data_link_0, 'tap in'))    
+        self.msg_connect((self.gaussian_traffic_gen_0, 'Data out'), (self.data_link_0, 'data in'))    
         self.msg_connect((self.somac_decision_0, 'broad out'), (self.data_link_0, 'broad in'))    
         self.msg_connect((self.somac_decision_0, 'ctrl out'), (self.data_link_0, 'prot switch'))    
         self.msg_connect((self.somac_decision_0, 'metrics out'), (self.somac_metrics_gen_0, 'ctrl in'))    
@@ -157,9 +157,9 @@ class wifi_FlexDataLink_TG_GATEWAY(gr.top_block):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
+        self.uhd_usrp_sink_0_0.set_samp_rate(self.samp_rate)
         self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
         self.wifi_phy_hier_0.set_bandwidth(self.samp_rate)
-        self.uhd_usrp_sink_0_0.set_samp_rate(self.samp_rate)
 
     def get_rx_gain(self):
         return self.rx_gain
@@ -194,8 +194,8 @@ class wifi_FlexDataLink_TG_GATEWAY(gr.top_block):
 
     def set_lo_offset(self, lo_offset):
         self.lo_offset = lo_offset
-        self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
         self.uhd_usrp_sink_0_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
+        self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
 
     def get_interval(self):
         return self.interval
@@ -208,9 +208,9 @@ class wifi_FlexDataLink_TG_GATEWAY(gr.top_block):
 
     def set_freq(self, freq):
         self.freq = freq
+        self.uhd_usrp_sink_0_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
         self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
         self.wifi_phy_hier_0.set_frequency(self.freq)
-        self.uhd_usrp_sink_0_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
 
     def get_encoding(self):
         return self.encoding

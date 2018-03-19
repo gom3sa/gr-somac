@@ -940,7 +940,7 @@
     </param>
     <param>
       <key>optional</key>
-      <value>False</value>
+      <value>True</value>
     </param>
     <param>
       <key>vlen</key>
@@ -1077,6 +1077,49 @@
     </param>
   </block>
   <block>
+    <key>pad_sink</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(68, 192)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>90</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>pad_sink_5</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>message</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>data out</value>
+    </param>
+    <param>
+      <key>num_streams</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>optional</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
     <key>pad_source</key>
     <param>
       <key>comment</key>
@@ -1108,7 +1151,50 @@
     </param>
     <param>
       <key>optional</key>
-      <value>False</value>
+      <value>True</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>message</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>pad_source</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(256, 228)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>pad_source_0_0</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>data in</value>
+    </param>
+    <param>
+      <key>num_streams</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>optional</key>
+      <value>True</value>
     </param>
     <param>
       <key>type</key>
@@ -1567,6 +1653,12 @@
   </connection>
   <connection>
     <source_block_id>macprotocols_csma_ca_0</source_block_id>
+    <sink_block_id>pad_sink_5</sink_block_id>
+    <source_key>frame to app</source_key>
+    <sink_key>in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>macprotocols_csma_ca_0</source_block_id>
     <sink_block_id>macprotocols_myswitch_0_0</sink_block_id>
     <source_key>frame to phy</source_key>
     <sink_key>in0</sink_key>
@@ -1645,6 +1737,12 @@
   </connection>
   <connection>
     <source_block_id>macprotocols_naive_tdma_0</source_block_id>
+    <sink_block_id>pad_sink_5</sink_block_id>
+    <source_key>frame to app</source_key>
+    <sink_key>in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>macprotocols_naive_tdma_0</source_block_id>
     <sink_block_id>macprotocols_myswitch_0_0</sink_block_id>
     <source_key>frame to phy</source_key>
     <sink_key>in1</sink_key>
@@ -1654,6 +1752,12 @@
     <sink_block_id>ieee802_11_ether_encap_0</sink_block_id>
     <source_key>out</source_key>
     <sink_key>from tap</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>pad_source_0_0</source_block_id>
+    <sink_block_id>ieee802_11_mac_0</sink_block_id>
+    <source_key>out</source_key>
+    <sink_key>app in</sink_key>
   </connection>
   <connection>
     <source_block_id>pad_source_1</source_block_id>

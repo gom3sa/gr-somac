@@ -2970,6 +2970,12 @@ Coordinator: True/ False</value>
   </connection>
   <connection>
     <source_block_id>data_link_0</source_block_id>
+    <sink_block_id>gaussian_traffic_gen_0</sink_block_id>
+    <source_key>data out</source_key>
+    <sink_key>Data in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>data_link_0</source_block_id>
     <sink_block_id>somac_metrics_gen_0</sink_block_id>
     <source_key>new frame out</source_key>
     <sink_key>new frame in</sink_key>
@@ -2999,12 +3005,6 @@ Coordinator: True/ False</value>
     <sink_key>snr in</sink_key>
   </connection>
   <connection>
-    <source_block_id>data_link_0</source_block_id>
-    <sink_block_id>gaussian_traffic_gen_0</sink_block_id>
-    <source_key>tap out</source_key>
-    <sink_key>Data in</sink_key>
-  </connection>
-  <connection>
     <source_block_id>foo_packet_pad2_0</source_block_id>
     <sink_block_id>uhd_usrp_sink_0_0</sink_block_id>
     <source_key>0</source_key>
@@ -3026,7 +3026,7 @@ Coordinator: True/ False</value>
     <source_block_id>gaussian_traffic_gen_0</source_block_id>
     <sink_block_id>data_link_0</sink_block_id>
     <source_key>Data out</source_key>
-    <sink_key>tap in</sink_key>
+    <sink_key>data in</sink_key>
   </connection>
   <connection>
     <source_block_id>somac_decision_0</source_block_id>
