@@ -55,6 +55,16 @@ make
 sudo make install 
 sudo ldconfig
 
+echo "Installing Traffic Generator"
+cd ~
+git clone https://github.com/gmj93/gr-trafficgen.git
+cd gr-trafficgen
+mkdir build
+cd build
+cmake ..
+sudo make install
+sudo ldconfig
+
 echo "Installing SOMAC (Self-Organizing MAC sublayer)"
 cd ~
 git clone https://github.com/andreviniciusgsg/gr-somac.git
@@ -67,6 +77,7 @@ sudo ldconfig
 
 cd ../examples
 grcc ./data_link.grc
+grcc ./gauss_traffic_gen.grc
 
 echo ""
 echo "Done! You should be able to use gr-macprotocols based on gr-ieee802-11 right now. Please, report any problems <andre.gomes@dcc.ufmg.br>."
