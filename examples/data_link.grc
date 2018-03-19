@@ -1088,11 +1088,11 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(68, 192)</value>
+      <value>(656, 132)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>90</value>
+      <value>0</value>
     </param>
     <param>
       <key>id</key>
@@ -1174,7 +1174,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(256, 228)</value>
+      <value>(240, 220)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1623,6 +1623,12 @@
   </connection>
   <connection>
     <source_block_id>ieee802_11_mac_0</source_block_id>
+    <sink_block_id>pad_sink_5</sink_block_id>
+    <source_key>app out</source_key>
+    <sink_key>in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>ieee802_11_mac_0</source_block_id>
     <sink_block_id>macprotocols_frame_buffer_0</sink_block_id>
     <source_key>phy out</source_key>
     <sink_key>app in</sink_key>
@@ -1653,9 +1659,9 @@
   </connection>
   <connection>
     <source_block_id>macprotocols_csma_ca_0</source_block_id>
-    <sink_block_id>pad_sink_5</sink_block_id>
+    <sink_block_id>ieee802_11_mac_0</sink_block_id>
     <source_key>frame to app</source_key>
-    <sink_key>in</sink_key>
+    <sink_key>phy in</sink_key>
   </connection>
   <connection>
     <source_block_id>macprotocols_csma_ca_0</source_block_id>
@@ -1737,9 +1743,9 @@
   </connection>
   <connection>
     <source_block_id>macprotocols_naive_tdma_0</source_block_id>
-    <sink_block_id>pad_sink_5</sink_block_id>
+    <sink_block_id>ieee802_11_mac_0</sink_block_id>
     <source_key>frame to app</source_key>
-    <sink_key>in</sink_key>
+    <sink_key>phy in</sink_key>
   </connection>
   <connection>
     <source_block_id>macprotocols_naive_tdma_0</source_block_id>

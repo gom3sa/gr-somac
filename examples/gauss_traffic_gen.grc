@@ -82,49 +82,6 @@
     </param>
   </block>
   <block>
-    <key>pad_source</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(696, 364)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>data_in</value>
-    </param>
-    <param>
-      <key>label</key>
-      <value>Data in</value>
-    </param>
-    <param>
-      <key>num_streams</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>optional</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>message</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
-    </param>
-  </block>
-  <block>
     <key>pad_sink</key>
     <param>
       <key>comment</key>
@@ -544,41 +501,6 @@
     </param>
   </block>
   <block>
-    <key>trafficgen_receiver</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(872, 364)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>trafficgen_receiver_0</value>
-    </param>
-    <param>
-      <key>logfile</key>
-      <value>/tmp/trafficgen_receiver.log</value>
-    </param>
-  </block>
-  <block>
     <key>trafficgen_vbr_transmitter</key>
     <param>
       <key>alias</key>
@@ -641,12 +563,6 @@
       <value>True</value>
     </param>
   </block>
-  <connection>
-    <source_block_id>data_in</source_block_id>
-    <sink_block_id>trafficgen_receiver_0</sink_block_id>
-    <source_key>out</source_key>
-    <sink_key>input</sink_key>
-  </connection>
   <connection>
     <source_block_id>trafficgen_generator_constant_0_0</source_block_id>
     <sink_block_id>trafficgen_vbr_transmitter_0</sink_block_id>

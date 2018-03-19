@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Flexdatalink Tg Gateway
-# Generated: Mon Mar 19 13:24:33 2018
+# Generated: Mon Mar 19 16:10:14 2018
 ##################################################
 
 import os
@@ -80,13 +80,14 @@ class wifi_FlexDataLink_TG_GATEWAY(gr.top_block):
         self.uhd_usrp_sink_0_0.set_normalized_gain(tx_gain, 0)
         self.somac_sensor_0 = somac.sensor((mac_addr), True, True)
         self.somac_metrics_gen_0 = somac.metrics_gen(False)
-        self.somac_decision_0 = somac.decision(True, 180, 5, 30, "/home/winet/backlog_file.txt", 1, 1, 1, 1, 1, 1, 2)
+        self.somac_decision_0 = somac.decision(True, 180, 5, 30, "/tmp/backlog_file.txt", 1, 1, 1, 1, 1, 1, 2)
         self.gaussian_traffic_gen_0 = gaussian_traffic_gen(
-            std_0=256,
             mean_0=1024,
             mean_1=50,
+            std_0=256,
             std_1=20,
         )
+        self.foo_wireshark_connector_0_1 = foo.wireshark_connector(127, False)
         self.foo_wireshark_connector_0_0 = foo.wireshark_connector(127, False)
         self.foo_wireshark_connector_0 = foo.wireshark_connector(127, False)
         self.foo_packet_pad2_0 = foo.packet_pad2(False, False, 0.001, 10000, 10000)
@@ -104,6 +105,8 @@ class wifi_FlexDataLink_TG_GATEWAY(gr.top_block):
         )
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((0.6, ))
         (self.blocks_multiply_const_vxx_0).set_min_output_buffer(100000)
+        self.blocks_file_sink_0_1 = blocks.file_sink(gr.sizeof_char*1, "/tmp/wifi_rx.pcap", False)
+        self.blocks_file_sink_0_1.set_unbuffered(True)
         self.blocks_file_sink_0_0 = blocks.file_sink(gr.sizeof_char*1, "/tmp/wifi_tx_all.pcap", False)
         self.blocks_file_sink_0_0.set_unbuffered(True)
         self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, "/tmp/wifi_rx_all.pcap", False)
@@ -113,7 +116,7 @@ class wifi_FlexDataLink_TG_GATEWAY(gr.top_block):
         # Connections
         ##################################################
         self.msg_connect((self.data_link_0, 'phy out'), (self.foo_wireshark_connector_0_0, 'in'))    
-        self.msg_connect((self.data_link_0, 'data out'), (self.gaussian_traffic_gen_0, 'Data in'))    
+        self.msg_connect((self.data_link_0, 'data out'), (self.foo_wireshark_connector_0_1, 'in'))    
         self.msg_connect((self.data_link_0, 'buffer out'), (self.somac_metrics_gen_0, 'buffer in'))    
         self.msg_connect((self.data_link_0, 'new frame out'), (self.somac_metrics_gen_0, 'new frame in'))    
         self.msg_connect((self.data_link_0, 'phy out'), (self.somac_metrics_gen_0, 'mac in'))    
@@ -140,6 +143,7 @@ class wifi_FlexDataLink_TG_GATEWAY(gr.top_block):
         self.connect((self.foo_packet_pad2_0, 0), (self.uhd_usrp_sink_0_0, 0))    
         self.connect((self.foo_wireshark_connector_0, 0), (self.blocks_file_sink_0, 0))    
         self.connect((self.foo_wireshark_connector_0_0, 0), (self.blocks_file_sink_0_0, 0))    
+        self.connect((self.foo_wireshark_connector_0_1, 0), (self.blocks_file_sink_0_1, 0))    
         self.connect((self.uhd_usrp_source_0, 0), (self.data_link_0, 0))    
         self.connect((self.uhd_usrp_source_0, 0), (self.wifi_phy_hier_0, 0))    
         self.connect((self.wifi_phy_hier_0, 0), (self.blocks_multiply_const_vxx_0, 0))    
