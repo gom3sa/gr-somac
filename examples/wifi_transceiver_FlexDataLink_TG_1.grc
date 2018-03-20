@@ -897,7 +897,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>mean_1</key>
-      <value>50</value>
+      <value>200</value>
     </param>
     <param>
       <key>mean_0</key>
@@ -913,7 +913,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>std_0</key>
-      <value>256</value>
+      <value>128</value>
     </param>
   </block>
   <block>

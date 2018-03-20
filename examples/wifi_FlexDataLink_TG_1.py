@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Flexdatalink Tg 1
-# Generated: Mon Mar 19 16:10:21 2018
+# Generated: Tue Mar 20 12:43:03 2018
 ##################################################
 
 import os
@@ -83,8 +83,8 @@ class wifi_FlexDataLink_TG_1(gr.top_block):
         self.somac_decision_0 = somac.decision(False, 60, 5, 30, "", 0, 0, 0, 0, 0, 0, 0)
         self.gaussian_traffic_gen_0 = gaussian_traffic_gen(
             mean_0=1024,
-            mean_1=50,
-            std_0=256,
+            mean_1=200,
+            std_0=128,
             std_1=20,
         )
         self.foo_wireshark_connector_0_1 = foo.wireshark_connector(127, False)
