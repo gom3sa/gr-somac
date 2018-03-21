@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Flexdatalink Tg Gateway
-# Generated: Wed Mar 21 18:22:52 2018
+# Generated: Wed Mar 21 18:48:14 2018
 ##################################################
 
 import os
@@ -161,8 +161,8 @@ class wifi_FlexDataLink_TG_GATEWAY(gr.top_block):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.uhd_usrp_sink_0_0.set_samp_rate(self.samp_rate)
         self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
+        self.uhd_usrp_sink_0_0.set_samp_rate(self.samp_rate)
         self.wifi_phy_hier_0.set_bandwidth(self.samp_rate)
 
     def get_rx_gain(self):
@@ -198,8 +198,8 @@ class wifi_FlexDataLink_TG_GATEWAY(gr.top_block):
 
     def set_lo_offset(self, lo_offset):
         self.lo_offset = lo_offset
-        self.uhd_usrp_sink_0_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
         self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
+        self.uhd_usrp_sink_0_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
 
     def get_interval(self):
         return self.interval
@@ -212,8 +212,8 @@ class wifi_FlexDataLink_TG_GATEWAY(gr.top_block):
 
     def set_freq(self, freq):
         self.freq = freq
-        self.uhd_usrp_sink_0_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
         self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
+        self.uhd_usrp_sink_0_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
         self.wifi_phy_hier_0.set_frequency(self.freq)
 
     def get_encoding(self):
