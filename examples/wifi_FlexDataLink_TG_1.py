@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Flexdatalink Tg 1
-# Generated: Wed Mar 21 11:17:54 2018
+# Generated: Wed Mar 21 14:45:22 2018
 ##################################################
 
 import os
@@ -82,10 +82,10 @@ class wifi_FlexDataLink_TG_1(gr.top_block):
         self.somac_metrics_gen_0 = somac.metrics_gen(True)
         self.somac_decision_0 = somac.decision(False, 60, 5, 30, "", 0, 0, 0, 0, 0, 0, 0)
         self.gaussian_traffic_gen_0 = gaussian_traffic_gen(
-            mean_0=1024,
-            mean_1=200,
+            mean_0=512,
+            mean_1=1000,
             std_0=128,
-            std_1=20,
+            std_1=200,
         )
         self.foo_wireshark_connector_0_0 = foo.wireshark_connector(127, False)
         self.foo_wireshark_connector_0 = foo.wireshark_connector(127, False)
@@ -104,6 +104,7 @@ class wifi_FlexDataLink_TG_1(gr.top_block):
         )
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((0.6, ))
         (self.blocks_multiply_const_vxx_0).set_min_output_buffer(100000)
+        self.blocks_message_debug_0 = blocks.message_debug()
         self.blocks_file_sink_0_0 = blocks.file_sink(gr.sizeof_char*1, "/tmp/wifi_tx_all.pcap", False)
         self.blocks_file_sink_0_0.set_unbuffered(True)
         self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, "/tmp/wifi_rx_all.pcap", False)
@@ -112,6 +113,7 @@ class wifi_FlexDataLink_TG_1(gr.top_block):
         ##################################################
         # Connections
         ##################################################
+        self.msg_connect((self.data_link_0, 'data out'), (self.blocks_message_debug_0, 'print'))    
         self.msg_connect((self.data_link_0, 'phy out'), (self.foo_wireshark_connector_0_0, 'in'))    
         self.msg_connect((self.data_link_0, 'buffer out'), (self.somac_metrics_gen_0, 'buffer in'))    
         self.msg_connect((self.data_link_0, 'new frame out'), (self.somac_metrics_gen_0, 'new frame in'))    

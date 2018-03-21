@@ -481,6 +481,37 @@
     </param>
   </block>
   <block>
+    <key>blocks_message_debug</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(728, 489)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>180</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_message_debug_0</value>
+    </param>
+  </block>
+  <block>
     <key>blocks_multiply_const_vxx</key>
     <param>
       <key>alias</key>
@@ -799,11 +830,11 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>mean_1</key>
-      <value>200</value>
+      <value>1000</value>
     </param>
     <param>
       <key>mean_0</key>
-      <value>1024</value>
+      <value>512</value>
     </param>
     <param>
       <key>minoutbuf</key>
@@ -811,7 +842,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>std_1</key>
-      <value>20</value>
+      <value>200</value>
     </param>
     <param>
       <key>std_0</key>
@@ -2967,6 +2998,12 @@ Coordinator: True/ False</value>
     <sink_block_id>somac_metrics_gen_0</sink_block_id>
     <source_key>buffer out</source_key>
     <sink_key>buffer in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>data_link_0</source_block_id>
+    <sink_block_id>blocks_message_debug_0</sink_block_id>
+    <source_key>data out</source_key>
+    <sink_key>print</sink_key>
   </connection>
   <connection>
     <source_block_id>data_link_0</source_block_id>
