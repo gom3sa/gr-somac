@@ -46,7 +46,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>data_link</value>
+      <value>data_link_trafficgen</value>
     </param>
     <param>
       <key>max_nouts</key>
@@ -78,7 +78,7 @@
     </param>
     <param>
       <key>title</key>
-      <value>Flex Data Link Layer</value>
+      <value>Flex Data Link Layer (TG)</value>
     </param>
   </block>
   <block>
@@ -122,6 +122,49 @@
     <param>
       <key>value</key>
       <value>1000</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(248, 85)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>arp</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>Check ARP?</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>type</key>
+      <value></value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>True</value>
     </param>
   </block>
   <block>
@@ -259,49 +302,6 @@
     <param>
       <key>value</key>
       <value>True</value>
-    </param>
-  </block>
-  <block>
-    <key>ieee802_11_ether_encap</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>debug</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(184, 145)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>ieee802_11_ether_encap_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
     </param>
   </block>
   <block>
@@ -662,7 +662,7 @@
     </param>
     <param>
       <key>arp</key>
-      <value>True</value>
+      <value>arp</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -889,7 +889,7 @@
     </param>
     <param>
       <key>label</key>
-      <value>tap out</value>
+      <value>data out</value>
     </param>
     <param>
       <key>num_streams</key>
@@ -1045,7 +1045,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(24, 140)</value>
+      <value>(248, 172)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1057,7 +1057,7 @@
     </param>
     <param>
       <key>label</key>
-      <value>tap in</value>
+      <value>data in</value>
     </param>
     <param>
       <key>num_streams</key>
@@ -1481,18 +1481,6 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>ieee802_11_ether_encap_0</source_block_id>
-    <sink_block_id>pad_sink_1</sink_block_id>
-    <source_key>to tap</source_key>
-    <sink_key>in</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>ieee802_11_ether_encap_0</source_block_id>
-    <sink_block_id>ieee802_11_mac_0</sink_block_id>
-    <source_key>to wifi</source_key>
-    <sink_key>app in</sink_key>
-  </connection>
-  <connection>
     <source_block_id>ieee802_11_mac_0</source_block_id>
     <sink_block_id>macprotocols_frame_buffer_0</sink_block_id>
     <source_key>phy out</source_key>
@@ -1518,9 +1506,9 @@
   </connection>
   <connection>
     <source_block_id>macprotocols_csma_ca_0</source_block_id>
-    <sink_block_id>ieee802_11_ether_encap_0</sink_block_id>
+    <sink_block_id>pad_sink_1</sink_block_id>
     <source_key>frame to app</source_key>
-    <sink_key>from wifi</sink_key>
+    <sink_key>in</sink_key>
   </connection>
   <connection>
     <source_block_id>macprotocols_csma_ca_0</source_block_id>
@@ -1596,9 +1584,9 @@
   </connection>
   <connection>
     <source_block_id>macprotocols_naive_tdma_0</source_block_id>
-    <sink_block_id>ieee802_11_ether_encap_0</sink_block_id>
+    <sink_block_id>pad_sink_1</sink_block_id>
     <source_key>frame to app</source_key>
-    <sink_key>from wifi</sink_key>
+    <sink_key>in</sink_key>
   </connection>
   <connection>
     <source_block_id>macprotocols_naive_tdma_0</source_block_id>
@@ -1608,9 +1596,9 @@
   </connection>
   <connection>
     <source_block_id>pad_source_0</source_block_id>
-    <sink_block_id>ieee802_11_ether_encap_0</sink_block_id>
+    <sink_block_id>ieee802_11_mac_0</sink_block_id>
     <source_key>out</source_key>
-    <sink_key>from tap</sink_key>
+    <sink_key>app in</sink_key>
   </connection>
   <connection>
     <source_block_id>pad_source_1</source_block_id>
