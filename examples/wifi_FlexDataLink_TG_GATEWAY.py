@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Flexdatalink Tg Gateway
-# Generated: Wed Mar 21 18:48:14 2018
+# Generated: Thu Mar 22 12:23:13 2018
 ##################################################
 
 import os
@@ -11,7 +11,6 @@ import sys
 sys.path.append(os.environ.get('GRC_HIER_PATH', os.path.expanduser('~/.grc_gnuradio')))
 
 from data_link_trafficgen import data_link_trafficgen  # grc-generated hier_block
-from gaussian_traffic_gen import gaussian_traffic_gen  # grc-generated hier_block
 from gnuradio import blocks
 from gnuradio import eng_notation
 from gnuradio import gr
@@ -80,13 +79,7 @@ class wifi_FlexDataLink_TG_GATEWAY(gr.top_block):
         self.uhd_usrp_sink_0_0.set_normalized_gain(tx_gain, 0)
         self.somac_sensor_0 = somac.sensor((mac_addr), True, True)
         self.somac_metrics_gen_0 = somac.metrics_gen(False)
-        self.somac_decision_0 = somac.decision(True, 180, 5, 30, "/home/winet/backlog_file.txt", 1, 1, 1, 1, 1, 1, 2)
-        self.gaussian_traffic_gen_0 = gaussian_traffic_gen(
-            mean_0=512,
-            mean_1=1000,
-            std_0=128,
-            std_1=200,
-        )
+        self.somac_decision_0 = somac.decision(True, 180, 5, 30, "/tmp/backlog_file.txt", 1, 1, 1, 1, 1, 1, 2)
         self.foo_wireshark_connector_0_1 = foo.wireshark_connector(127, False)
         self.foo_wireshark_connector_0_0 = foo.wireshark_connector(127, False)
         self.foo_wireshark_connector_0 = foo.wireshark_connector(127, False)
@@ -122,7 +115,6 @@ class wifi_FlexDataLink_TG_GATEWAY(gr.top_block):
         self.msg_connect((self.data_link_trafficgen_0, 'phy out'), (self.somac_metrics_gen_0, 'mac in'))    
         self.msg_connect((self.data_link_trafficgen_0, 'snr out'), (self.somac_metrics_gen_0, 'snr in'))    
         self.msg_connect((self.data_link_trafficgen_0, 'phy out'), (self.wifi_phy_hier_0, 'mac_in'))    
-        self.msg_connect((self.gaussian_traffic_gen_0, 'Data out'), (self.data_link_trafficgen_0, 'data in'))    
         self.msg_connect((self.somac_decision_0, 'broad out'), (self.data_link_trafficgen_0, 'broad in'))    
         self.msg_connect((self.somac_decision_0, 'ctrl out'), (self.data_link_trafficgen_0, 'prot switch'))    
         self.msg_connect((self.somac_decision_0, 'metrics out'), (self.somac_metrics_gen_0, 'ctrl in'))    
@@ -161,8 +153,8 @@ class wifi_FlexDataLink_TG_GATEWAY(gr.top_block):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
         self.uhd_usrp_sink_0_0.set_samp_rate(self.samp_rate)
+        self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
         self.wifi_phy_hier_0.set_bandwidth(self.samp_rate)
 
     def get_rx_gain(self):
@@ -198,8 +190,8 @@ class wifi_FlexDataLink_TG_GATEWAY(gr.top_block):
 
     def set_lo_offset(self, lo_offset):
         self.lo_offset = lo_offset
-        self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
         self.uhd_usrp_sink_0_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
+        self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
 
     def get_interval(self):
         return self.interval
@@ -212,8 +204,8 @@ class wifi_FlexDataLink_TG_GATEWAY(gr.top_block):
 
     def set_freq(self, freq):
         self.freq = freq
-        self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
         self.uhd_usrp_sink_0_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
+        self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
         self.wifi_phy_hier_0.set_frequency(self.freq)
 
     def get_encoding(self):
