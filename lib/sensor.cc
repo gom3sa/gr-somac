@@ -51,6 +51,7 @@ using namespace gr::somac;
 struct metrics {
 	float thr;
 	float lat;
+	float jit;
 	float rnp;
 	float interpkt;
 	float snr;
@@ -80,6 +81,7 @@ class sensor_impl : public sensor {
 			message_port_register_out(msg_port_met_out4);
 			message_port_register_out(msg_port_met_out5);
 			message_port_register_out(msg_port_met_out6);
+			message_port_register_out(msg_port_met_out7);
 
 			for(int i = 0; i < 6; i++) {
 				pr_mac[i] = mac[i];
@@ -89,6 +91,7 @@ class sensor_impl : public sensor {
 			for(int id = 0; id < 256; id++) { // id is related to the last byte of mac addr
 				pr_metrics[id].thr = 0;
 				pr_metrics[id].lat = 0;
+				pr_metrics[id].jit = 0;
 				pr_metrics[id].rnp = 0;
 				pr_metrics[id].interpkt = 0;
 				pr_metrics[id].snr = 0;
@@ -126,6 +129,7 @@ class sensor_impl : public sensor {
 						message_port_pub(msg_port_met_out3, pmt::from_float(pr_metrics[id].interpkt));
 						message_port_pub(msg_port_met_out4, pmt::from_float(pr_metrics[id].snr));
 						message_port_pub(msg_port_met_out5, pmt::from_float(pr_metrics[id].contention));
+						message_port_pub(msg_port_met_out7, pmt::from_float(pr_metrics[id].jit));
 						non++;
 					} else {
 						if(pr_debug) std::cout << "Node " << id << " had a timeout" << std::endl << std::flush;
@@ -236,6 +240,7 @@ class sensor_impl : public sensor {
 		pmt::pmt_t msg_port_met_out4 = pmt::mp("met snr");
 		pmt::pmt_t msg_port_met_out5 = pmt::mp("met contention");
 		pmt::pmt_t msg_port_met_out6 = pmt::mp("met non");
+		pmt::pmt_t msg_port_met_out7 = pmt::mp("met jit");
 
 		void parse_metrics(std::string str, int id) {
 			size_t len, s, e;
@@ -257,6 +262,9 @@ class sensor_impl : public sensor {
 				if(aux == "lat=") {
 					pr_metrics[id].lat = std::stof(str.substr(s, e - s));
 					if(pr_debug) std::cout << "lat=" << std::stof(str.substr(s, e - s)) << std::endl;
+				} else if(aux == "jitter=") {
+					pr_metrics[id].jit = std::stof(str.substr(s, e - s));
+					if(pr_debug) std::cout << "jitter=" << std::stof(str.substr(s, e - s)) << std::endl;
 				} else if(aux == "interpkt=") {
 					pr_metrics[id].interpkt = std::stof(str.substr(s, e - s));
 					if(pr_debug) std::cout << "interpkt=" << std::stof(str.substr(s, e - s)) << std::endl;

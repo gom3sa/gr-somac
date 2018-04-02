@@ -79,6 +79,12 @@
   </source>
 
   <source>
+    <name>met jit</name>
+    <type>message</type>
+    <optional>1</optional>
+  </source>
+
+  <source>
     <name>met rnp</name>
     <type>message</type>
     <optional>1</optional>

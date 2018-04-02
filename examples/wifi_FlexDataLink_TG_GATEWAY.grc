@@ -885,6 +885,10 @@
     </param>
     <param>
       <key>aggr6</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>aggr7</key>
       <value>2</value>
     </param>
     <param>
@@ -921,7 +925,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1016, 145)</value>
+      <value>(1016, 105)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1015,7 +1019,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(688, 145)</value>
+      <value>(688, 105)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3101,13 +3105,19 @@
     <source_block_id>somac_sensor_0</source_block_id>
     <sink_block_id>somac_decision_0</sink_block_id>
     <source_key>met contention</source_key>
-    <sink_key>met in5</sink_key>
+    <sink_key>met in6</sink_key>
   </connection>
   <connection>
     <source_block_id>somac_sensor_0</source_block_id>
     <sink_block_id>somac_decision_0</sink_block_id>
     <source_key>met interpkt</source_key>
-    <sink_key>met in3</sink_key>
+    <sink_key>met in4</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met jit</source_key>
+    <sink_key>met in2</sink_key>
   </connection>
   <connection>
     <source_block_id>somac_sensor_0</source_block_id>
@@ -3119,19 +3129,19 @@
     <source_block_id>somac_sensor_0</source_block_id>
     <sink_block_id>somac_decision_0</sink_block_id>
     <source_key>met non</source_key>
-    <sink_key>met in6</sink_key>
+    <sink_key>met in7</sink_key>
   </connection>
   <connection>
     <source_block_id>somac_sensor_0</source_block_id>
     <sink_block_id>somac_decision_0</sink_block_id>
     <source_key>met rnp</source_key>
-    <sink_key>met in2</sink_key>
+    <sink_key>met in3</sink_key>
   </connection>
   <connection>
     <source_block_id>somac_sensor_0</source_block_id>
     <sink_block_id>somac_decision_0</sink_block_id>
     <source_key>met snr</source_key>
-    <sink_key>met in4</sink_key>
+    <sink_key>met in5</sink_key>
   </connection>
   <connection>
     <source_block_id>somac_sensor_0</source_block_id>

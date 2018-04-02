@@ -152,6 +152,20 @@ class metrics_gen_impl : public metrics_gen {
 				int count;
 				float elapsed_time;
 
+				// START: calc avg jitter
+				sum = 0; 
+				count = 0;
+				for(int i = 0; i < pr_lat_list.size() - 1; i++) {
+					sum += std::abs(pr_lat_list[i] - pr_lat_list[i+1]);
+					count++;
+				}
+				if(count == 0) {
+					count = 1;
+				}
+				float avg_jitter = sum/count;
+				if(pr_debug) std::cout << "Jitter = " << avg_jitter << std::endl << std::flush;
+				// END: calc avg jitter
+
 				// START: calc avg latency (ms)
 				sum = 0;
 				count = 0;
@@ -225,7 +239,7 @@ class metrics_gen_impl : public metrics_gen {
 				// END: calc avg contention
 
 				// max(msdu) = max(psdu) - (24 (header) + 4 (fcs)) = 1500 bytes
-				std::string str = "lat=" + std::to_string(avg_lat) + ":interpkt=" + std::to_string(avg_interpkt) + ":rnp=" + std::to_string(rnp) + ":thr=" + std::to_string(thr) + ":snr=" + std::to_string(avg_snr) + ":cont=" + std::to_string(avg_cont); 
+				std::string str = "lat=" + std::to_string(avg_lat) + ":jitter=" + std::to_string(avg_jitter) + ":interpkt=" + std::to_string(avg_interpkt) + ":rnp=" + std::to_string(rnp) + ":thr=" + std::to_string(thr) + ":snr=" + std::to_string(avg_snr) + ":cont=" + std::to_string(avg_cont); 
 				pmt::pmt_t metrics = pmt::string_to_symbol(str);
 
 				message_port_pub(msg_port_broad_out, metrics);
