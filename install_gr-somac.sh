@@ -69,6 +69,9 @@ echo "Installing SOMAC (Self-Organizing MAC sublayer)"
 cd ~
 git clone https://github.com/andreviniciusgsg/gr-somac.git
 cd gr-somac
+cd examples
+grcc ./gauss_traffic_gen.grc
+cd ..
 mkdir build
 cd build
 cmake ..
@@ -77,7 +80,6 @@ sudo ldconfig
 
 cd ../examples
 grcc ./data_link.grc
-grcc ./gauss_traffic_gen.grc
 
 echo ""
 echo "Done! You should be able to use gr-macprotocols based on gr-ieee802-11 right now. Please, report any problems <andre.gomes@dcc.ufmg.br>."
