@@ -149,15 +149,15 @@ class metrics_gen_impl : public metrics_gen {
 				if(pr_debug) std::cout << "Metrics were requested. Calculation starts now." << std::endl << std::flush;
 				// Common variables
 				double sum;
-				int count;
+				int count, c;
 				float elapsed_time;
 
 				// START: calc avg jitter
 				sum = 0; 
 				count = 0;
-				for(int i = 0; i < pr_lat_list.size() - 1; i++) {
-					sum += std::abs(pr_lat_list[i] - pr_lat_list[i+1]);
-					count++;
+				c = pr_lat_list.size();
+				while(c-- >= 2) {
+					sum += std::abs(pr_lat_list[c-1] - pr_lat_list[c-2]);
 				}
 				if(count == 0) {
 					count = 1;
@@ -169,7 +169,8 @@ class metrics_gen_impl : public metrics_gen {
 				// START: calc avg latency (ms)
 				sum = 0;
 				count = 0;
-				while(pr_lat_list.size() > 0) {
+				c = pr_lat_list.size();
+				while(c-- > 0) {
 					sum += pr_lat_list[0];
 					count++;
 					pr_lat_list.pop_front();
@@ -184,7 +185,8 @@ class metrics_gen_impl : public metrics_gen {
 				// START: calc avg interpacket dealy (ms)
 				sum = 0;
 				count = 0;
-				while(pr_interpkt_list.size() > 0) {
+				c = pr_interpkt_list.size();
+				while(c-- > 0) {
 					sum += pr_interpkt_list[0];
 					count++;
 					pr_interpkt_list.pop_front();
@@ -215,7 +217,8 @@ class metrics_gen_impl : public metrics_gen {
 				// START: calc avg SNR
 				sum = 0;
 				count = 0;
-				while(pr_snr_list.size() > 0) {
+				c = pr_snr_list.size();
+				while(c-- > 0) {
 					sum += pr_snr_list[0];
 					count++;
 					pr_snr_list.pop_front();
@@ -228,7 +231,8 @@ class metrics_gen_impl : public metrics_gen {
 				// START: calc avg contention
 				sum = 0;
 				count = 0;
-				while(pr_contention_list.size() > 0) {
+				c = pr_contention_list.size();
+				while(c-- > 0) {
 					sum += pr_contention_list[0];
 					count++;
 					pr_contention_list.pop_front();
