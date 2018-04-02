@@ -188,7 +188,7 @@ class decision(gr.basic_block):
 			self.met4 = self.aggr(self.aggr4, self.met4);
 			self.met5 = self.aggr(self.aggr5, self.met5);
 			self.met6 = self.aggr(self.aggr6, self.met6);
-			self.met7 = self.aggr(self.aggr6, self.met7);
+			self.met7 = self.aggr(self.aggr7, self.met7);
 
 			# Write metrics to backlog file
 			string ="prot = " + str(portid) +  ", thr = " + str(self.met0) + ", lat = " + str(self.met1) + \
