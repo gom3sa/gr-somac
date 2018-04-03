@@ -158,6 +158,7 @@ class metrics_gen_impl : public metrics_gen {
 				c = pr_lat_list.size();
 				while(c-- >= 2) {
 					sum += std::abs(pr_lat_list[c-1] - pr_lat_list[c-2]);
+					count++;
 				}
 				if(count == 0) {
 					count = 1;
