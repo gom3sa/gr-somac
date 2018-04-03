@@ -70,7 +70,7 @@ cd ~
 git clone https://github.com/andreviniciusgsg/gr-somac.git
 cd gr-somac
 cd examples
-grcc ./gauss_traffic_gen.grc
+grcc ./gaussian_traffic_gen.grc
 grcc ./data_link_trafficgen.grc
 cd ..
 mkdir build
