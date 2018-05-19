@@ -638,7 +638,7 @@
     </param>
     <param>
       <key>debug</key>
-      <value>debug</value>
+      <value>False</value>
     </param>
     <param>
       <key>portid</key>
