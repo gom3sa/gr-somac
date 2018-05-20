@@ -12,6 +12,7 @@
 #include "somac/broadcaster.h"
 #include "somac/metrics_gen.h"
 #include "somac/snr.h"
+#include "somac/metrics_frame.h"
 %}
 
 
@@ -23,3 +24,5 @@ GR_SWIG_BLOCK_MAGIC2(somac, broadcaster);
 GR_SWIG_BLOCK_MAGIC2(somac, metrics_gen);
 %include "somac/snr.h"
 GR_SWIG_BLOCK_MAGIC2(somac, snr);
+%include "somac/metrics_frame.h"
+GR_SWIG_BLOCK_MAGIC2(somac, metrics_frame);

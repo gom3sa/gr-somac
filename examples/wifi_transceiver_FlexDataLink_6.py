@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Transceiver Flexdatalink 6
-# Generated: Mon Apr  2 14:09:06 2018
+# Generated: Sun May 20 20:41:45 2018
 ##################################################
 
 import os
@@ -37,6 +37,7 @@ class wifi_transceiver_FlexDataLink_6(gr.top_block):
         self.rx_gain = rx_gain = 1000e-3
         self.pdu_length = pdu_length = 500
         self.mac_dst = mac_dst = [0x12,0x34,0x56,0x78,0x90,0xaa]
+        self.mac_coord = mac_coord = [0x12,0x34,0x56,0x78,0x90,0xaa]
         self.mac_addr = mac_addr = [0x12,0x34,0x56,0x78,0x90,0xba]
         self.lo_offset = lo_offset = 0
         self.interval = interval = 1e3
@@ -87,10 +88,11 @@ class wifi_transceiver_FlexDataLink_6(gr.top_block):
             coord=False,
             debug=True,
             mac_bss=[0xff, 0xff, 0xff, 0xff, 0xff, 0xff],
-            mac_dst=mac_dst,
-            mac_src=mac_addr,
             portid=0,
             samp_rate=5e6,
+            mac_src=mac_addr,
+            mac_dst=mac_dst,
+            mac_coord=mac_coord,
         )
         self.blocks_tuntap_pdu_0 = blocks.tuntap_pdu("tap0", 440, False)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((0.6, ))
@@ -109,16 +111,16 @@ class wifi_transceiver_FlexDataLink_6(gr.top_block):
         self.msg_connect((self.somac_decision_0, 'broad out'), (self.data_link_0, 'broad in'))    
         self.msg_connect((self.somac_decision_0, 'ctrl out'), (self.data_link_0, 'prot switch'))    
         self.msg_connect((self.somac_decision_0, 'metrics out'), (self.somac_metrics_gen_0, 'ctrl in'))    
-        self.msg_connect((self.somac_metrics_gen_0, 'broad out'), (self.data_link_0, 'broad in'))    
+        self.msg_connect((self.somac_metrics_gen_0, 'broad out'), (self.data_link_0, 'metrics in'))    
         self.msg_connect((self.somac_sensor_0, 'act prot out'), (self.somac_decision_0, 'act prot in'))    
-        self.msg_connect((self.somac_sensor_0, 'met lat'), (self.somac_decision_0, 'met in1'))    
-        self.msg_connect((self.somac_sensor_0, 'met thr'), (self.somac_decision_0, 'met in0'))    
-        self.msg_connect((self.somac_sensor_0, 'met jit'), (self.somac_decision_0, 'met in2'))    
-        self.msg_connect((self.somac_sensor_0, 'met rnp'), (self.somac_decision_0, 'met in3'))    
-        self.msg_connect((self.somac_sensor_0, 'met interpkt'), (self.somac_decision_0, 'met in4'))    
-        self.msg_connect((self.somac_sensor_0, 'met snr'), (self.somac_decision_0, 'met in5'))    
         self.msg_connect((self.somac_sensor_0, 'met contention'), (self.somac_decision_0, 'met in6'))    
+        self.msg_connect((self.somac_sensor_0, 'met interpkt'), (self.somac_decision_0, 'met in4'))    
+        self.msg_connect((self.somac_sensor_0, 'met jit'), (self.somac_decision_0, 'met in2'))    
+        self.msg_connect((self.somac_sensor_0, 'met lat'), (self.somac_decision_0, 'met in1'))    
         self.msg_connect((self.somac_sensor_0, 'met non'), (self.somac_decision_0, 'met in7'))    
+        self.msg_connect((self.somac_sensor_0, 'met rnp'), (self.somac_decision_0, 'met in3'))    
+        self.msg_connect((self.somac_sensor_0, 'met snr'), (self.somac_decision_0, 'met in5'))    
+        self.msg_connect((self.somac_sensor_0, 'met thr'), (self.somac_decision_0, 'met in0'))    
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.data_link_0, 'phy in'))    
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.somac_metrics_gen_0, 'phy in'))    
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.somac_sensor_0, 'phy in'))    
@@ -165,6 +167,13 @@ class wifi_transceiver_FlexDataLink_6(gr.top_block):
     def set_mac_dst(self, mac_dst):
         self.mac_dst = mac_dst
         self.data_link_0.set_mac_dst(self.mac_dst)
+
+    def get_mac_coord(self):
+        return self.mac_coord
+
+    def set_mac_coord(self, mac_coord):
+        self.mac_coord = mac_coord
+        self.data_link_0.set_mac_coord(self.mac_coord)
 
     def get_mac_addr(self):
         return self.mac_addr

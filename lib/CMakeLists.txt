@@ -30,6 +30,7 @@ list(APPEND somac_sources
     broadcaster.cc
     metrics_gen.cc
     snr_impl.cc
+    metrics_frame.cc
 )
 
 set(somac_sources "${somac_sources}" PARENT_SCOPE)
