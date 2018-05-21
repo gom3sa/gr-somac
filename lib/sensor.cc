@@ -156,7 +156,7 @@ class sensor_impl : public sensor {
 			int f_len = pmt::blob_length(cdr) - 24; // Strips header
 
 			// Counting active nodes
-			if(pr_is_coord and from_me != 0) { // Does not count itself as a node in the network
+			/*if(pr_is_coord and from_me != 0) { // Does not count itself as a node in the network
 				bool listed = false;
 				for(int i = 0; i < pr_non; i++) {
 					if(memcmp(h->addr2, pr_addr_list + i*6, 6) == 0) {
@@ -169,7 +169,7 @@ class sensor_impl : public sensor {
 				}
 				int id = (int) h->addr2[5];
 				pr_metrics[id].tstamp = clock::now();
-			}
+			}*/
 
 			switch(h->frame_control) {
 				case FC_PROTOCOL: {
@@ -201,6 +201,22 @@ class sensor_impl : public sensor {
 
 				case FC_METRICS: {
 					if(is_mine == 0 and from_me != 0 and pr_is_coord) {
+
+						if(pr_is_coord and from_me != 0) { // Does not count itself as a node in the network
+							bool listed = false;
+							for(int i = 0; i < pr_non; i++) {
+								if(memcmp(h->addr2, pr_addr_list + i*6, 6) == 0) {
+									listed = true;
+								}
+							}
+							if(!listed) { // Addr is not listed, so add it to the addr list
+								memcpy(pr_addr_list + pr_non*6, h->addr2, 6);
+								pr_non++;
+							}
+							int id = (int) h->addr2[5];
+							pr_metrics[id].tstamp = clock::now();
+						}
+
 						char msdu[f_len + 1];
 						msdu[f_len] = '\0'; // End of string
 						memcpy(msdu, f + 24, f_len);
