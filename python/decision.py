@@ -191,18 +191,17 @@ class decision(gr.basic_block):
 			self.met7 = self.aggr(self.aggr7, self.met7);
 
 			# Write metrics to backlog file
-			string ="prot = " + str(portid) +  ", thr = " + str(self.met0) + ", lat = " + str(self.met1) + \
-				", jit = " + str(self.met2) + ", rnp = " + str(self.met3) + ", interpkt = " + \
-				str(self.met4) + ", snr = " + str(self.met5) + ", cont = " + str(self.met6) + \
-				", non = " + str(self.met7);
-			f.write(string + "\n");
+			# prot;thr;lat;jit;rnp;interpkt;snr;cont;non
+			string = "{};{};{};{};{};{};{};{};{}\n".format(\
+				portid, self.met0, self.met1, self.met2, self.met3, self.met4, self.met5, self.met6, self.met7);
+
 			print string;
 
 			## START: set portid
 			portid = portid + 1;
 			if portid > 1:
 				portid = 0;
-			portid = 0;
+			portid = 1;
 			## END: set portid
 
 			if portid == 0:

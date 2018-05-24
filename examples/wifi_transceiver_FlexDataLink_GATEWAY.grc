@@ -901,7 +901,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>dec_gran</key>
-      <value>180</value>
+      <value>90</value>
     </param>
     <param>
       <key>_enabled</key>
