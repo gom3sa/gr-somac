@@ -4,7 +4,7 @@
   <key>somac_decision</key>
   <category>[SOMAC]</category>
   <import>import somac</import>
-  <make>somac.decision($coord, $dec_gran, $broad_gran, $metrics_gran, $backlog_file, $aggr0, $aggr1, $aggr2, $aggr3, $aggr4, $aggr5, $aggr6, $aggr7)</make>
+  <make>somac.decision($coord, $dec_gran, $broad_gran, $metrics_gran, $backlog_file, $train_file, $aggr0, $aggr1, $aggr2, $aggr3, $aggr4, $aggr5, $aggr6, $aggr7)</make>
   <!-- Make one 'param' node for every Parameter you want settable from the GUI.
        Sub-nodes:
        * name
@@ -46,6 +46,12 @@
     <name>Backlog file</name>
     <key>backlog_file</key>
     <type>file_save</type>
+  </param>
+
+  <param>
+    <name>Training file</name>
+    <key>train_file</key>
+    <type>file_open</type>
   </param>
 
   <param>
