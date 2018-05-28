@@ -681,7 +681,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>backlog_file</key>
-      <value></value>
+      <value>/tmp/back_log.txt</value>
     </param>
     <param>
       <key>alias</key>
@@ -724,6 +724,10 @@ Coordinator: True/ False</value>
       <value>somac_decision_0</value>
     </param>
     <param>
+      <key>ml_alg</key>
+      <value>0</value>
+    </param>
+    <param>
       <key>maxoutbuf</key>
       <value>0</value>
     </param>
@@ -734,6 +738,10 @@ Coordinator: True/ False</value>
     <param>
       <key>minoutbuf</key>
       <value>0</value>
+    </param>
+    <param>
+      <key>train_file</key>
+      <value>/tmp/training_data.txt</value>
     </param>
   </block>
   <block>
