@@ -40,7 +40,7 @@ class decision(gr.basic_block):
 		CSMA/CA:	portid = 0
 		TDMA:		portid = 1
 	"""
-	def __init__(self, coord, dec_gran, broad_gran, metrics_gran, backlog_file, train_file, \
+	def __init__(self, coord, dec_gran, broad_gran, metrics_gran, backlog_file, train_file, ml_alg, \
 			aggr0, aggr1, aggr2, aggr3, aggr4, aggr5, aggr6, aggr7):
 		gr.basic_block.__init__(self, name="decision", in_sig=None, out_sig=None)
 
@@ -50,6 +50,7 @@ class decision(gr.basic_block):
 		self.metrics_gran = metrics_gran;
 		self.backlog_file = backlog_file;
 		self.train_file = train_file;
+		self.ml_alg = ml_alg;
 
 		self.met0 = [];
 		self.met1 = [];
@@ -178,14 +179,16 @@ class decision(gr.basic_block):
 			thread.start_new_thread(self.normal_loop, ('thread 3', 3));
 
 	# Machine Learning model
-	def set_model(ml="dt"):
-		model = {"nnet": nnet(max_iter=1000000, hidden_layer_sizes=(200, )),
-			 "dt": dt.DecisionTreeRegressor(),
-			 "linsvr": svm.LinearSVR(random_state=0),
-			 "svr": svm.SVR(),
-			 "nusvr": svm.NuSVR(C=1.0, nu=0.1)};
+	def set_model(ml=0):
+		model = {0: {"model": nnet(max_iter=1000000, hidden_layer_sizes=(200, )), "name": "Neural Networks"},
+			 1: {"model": dt.DecisionTreeRegressor(), "name": "Decision Tree"},
+			 2: {"model": svm.LinearSVR(random_state=0), "name": "Linear SVR"},
+			 3: {"model": svm.SVR(), "name": "SVR"},
+			 3: {"model": svm.NuSVR(C=1.0, nu=0.1), "name": "NuSVR"}};
 
-		return model[ml], model[ml];
+		print "ML algorithm = {}".format(model[ml]["name"]);
+
+		return model[ml]["model"], model[ml]["model"];
 
 	# Feature-scaling
 	def feature_scaling(X, num, den):
@@ -229,7 +232,7 @@ class decision(gr.basic_block):
 		print "Decision block as Coordinator"
 
 		# Selecting ML model and training it
-		csma, tdma = set_model("dt");
+		csma, tdma = set_model(self.ml_alg);
 		X_csma, X_tdma, Y_csma, Y_tdma, u_csma, u_tdma = handle_data(self.train_file);
 		csma.fit(X_csma, Y_csma);
 		tdma.fit(X_tdma, Y_tdma);
