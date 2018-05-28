@@ -260,8 +260,6 @@ class decision(gr.basic_block):
 				f.write("{};{};{};{};{};{};{};{};{}\n".format(\
 					portid, self.met0, self.met1, self.met2, self.met3, self.met4, self.met5, self.met6, self.met7));
 
-				print "u_csma.shape = {}, X.shape = {}".format(u_csma.shape, X.shape);
-				print "u_csma = {}, X = {}".format(u_csma, X);
 				x_csma = self.feature_scaling(X, u_csma, u_csma);
 				x_tdma = self.feature_scaling(X, u_tdma, u_tdma);
 
