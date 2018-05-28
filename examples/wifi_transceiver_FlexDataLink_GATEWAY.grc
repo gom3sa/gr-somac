@@ -937,7 +937,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>train_file</key>
-      <value>/home/sdr/training_data.txt</value>
+      <value>/home/sdr/gr-somac/training_data/training_data.txt</value>
     </param>
   </block>
   <block>

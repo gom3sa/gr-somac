@@ -177,28 +177,29 @@ class decision(gr.basic_block):
 			thread.start_new_thread(self.broadcast_prot, ('thread 2', 2));
 		else:
 			thread.start_new_thread(self.normal_loop, ('thread 3', 3));
+		return;
 
 	# Machine Learning model
-	def set_model(ml=0):
+	def get_ml_model(self, mod=0):
 		model = {0: {"model": nnet(max_iter=1000000, hidden_layer_sizes=(200, )), "name": "Neural Networks"},
 			 1: {"model": dt.DecisionTreeRegressor(), "name": "Decision Tree"},
 			 2: {"model": svm.LinearSVR(random_state=0), "name": "Linear SVR"},
 			 3: {"model": svm.SVR(), "name": "SVR"},
 			 3: {"model": svm.NuSVR(C=1.0, nu=0.1), "name": "NuSVR"}};
 
-		print "ML algorithm = {}".format(model[ml]["name"]);
+		print "ML algorithm = {}".format(model[mod]["name"]);
 
-		return model[ml]["model"], model[ml]["model"];
+		return model[mod]["model"], model[mod]["model"];
 
 	# Feature-scaling
-	def feature_scaling(X, num, den):
+	def feature_scaling(self, X, num, den):
 		_X = cp.deepcopy(X);
 		for col in range(0, np.size(X, 1)):
 			_X[:, col] = (_X[:, col] - num[col])/den[col];
 		return _X;
 
 	# Load, select and scale data
-	def handle_data(train_file, parameter=1):
+	def handle_data(self, train_file, parameter=1):
 		# Load
 		data = np.loadtxt(train_file, delimiter=";");
 
@@ -218,8 +219,8 @@ class decision(gr.basic_block):
 		u_csma = np.mean(X_csma, 0);
 		u_tdma = np.mean(X_tdma, 0);
 
-		X_csma = feature_scaling(X_csma, u_csma, u_csma);
-		X_tdma = feature_scaling(X_tdma, u_tdma, u_tdma);
+		X_csma = self.feature_scaling(X_csma, u_csma, u_csma);
+		X_tdma = self.feature_scaling(X_tdma, u_tdma, u_tdma);
 
 		return X_csma, X_tdma, Y_csma, Y_tdma, u_csma, u_tdma;
 
@@ -232,8 +233,8 @@ class decision(gr.basic_block):
 		print "Decision block as Coordinator"
 
 		# Selecting ML model and training it
-		csma, tdma = set_model(self.ml_alg);
-		X_csma, X_tdma, Y_csma, Y_tdma, u_csma, u_tdma = handle_data(self.train_file);
+		csma, tdma = self.get_ml_model(mod=self.ml_alg);
+		X_csma, X_tdma, Y_csma, Y_tdma, u_csma, u_tdma = self.handle_data(self.train_file);
 		csma.fit(X_csma, Y_csma);
 		tdma.fit(X_tdma, Y_tdma);
 
@@ -251,14 +252,18 @@ class decision(gr.basic_block):
 
 			## START: set portid
 			X = np.array([self.met1, self.met2, self.met3, self.met4, self.met5, self.met6, self.met7]);
-			if None not in X:
+			X = X.reshape((1, np.size(X)));
+			
+			if True not in [x is None for x in X[0]]:
 				# Write to backlog file
 				# prot;thr;lat;jit;rnp;interpkt;snr;cont;non
 				f.write("{};{};{};{};{};{};{};{};{}\n".format(\
 					portid, self.met0, self.met1, self.met2, self.met3, self.met4, self.met5, self.met6, self.met7));
 
-				x_csma = feature_scaling(X, u_csma, u_csma);
-				x_tdma = feature_scaling(X, u_tdma, u_tdma);
+				print "u_csma.shape = {}, X.shape = {}".format(u_csma.shape, X.shape);
+				print "u_csma = {}, X = {}".format(u_csma, X);
+				x_csma = self.feature_scaling(X, u_csma, u_csma);
+				x_tdma = self.feature_scaling(X, u_tdma, u_tdma);
 
 				pred_csma = csma.predict([x_csma]);
 				pred_tdma = tdma.predict([x_tdma]);
