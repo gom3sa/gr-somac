@@ -229,16 +229,27 @@ class decision(gr.basic_block):
 		global portid;
 		portid = 0;
 
+		target = {"prot":	0,
+			  "thr":	1,
+			  "lat":	2,
+			  "jit":	3,
+			  "rnp":	4,
+			  "interpkt":	5,
+			  "snr":	6,
+			  "cont":	7,
+			  "non":	8};
+
 		f = open(self.backlog_file, "w", 0);
 		print "Decision block as Coordinator"
 
 		# Selecting ML model and training it
 		csma, tdma = self.get_ml_model(mod=self.ml_alg);
-		X_csma, X_tdma, Y_csma, Y_tdma, u_csma, u_tdma = self.handle_data(self.train_file);
+		X_csma, X_tdma, Y_csma, Y_tdma, u_csma, u_tdma = self.handle_data(self.train_file, parameter=target["thr"]);
 		csma.fit(X_csma, Y_csma);
 		tdma.fit(X_tdma, Y_tdma);
 
 		time.sleep(3);
+		count = 0;
 		while True:
 			# Handling avg aggregation
 			self.met0 = self.aggr(self.aggr0, self.met0);
@@ -250,8 +261,8 @@ class decision(gr.basic_block):
 			self.met6 = self.aggr(self.aggr6, self.met6);
 			self.met7 = self.aggr(self.aggr7, self.met7);
 
-			## START: set portid
-			X = np.array([self.met1, self.met2, self.met3, self.met4, self.met5, self.met6, self.met7]);
+			##{{{
+			X = np.array([portid, self.met0, self.met1, self.met2, self.met3, self.met4, self.met5, self.met6, self.met7]);
 			X = X.reshape((1, np.size(X)));
 			
 			if True not in [x is None for x in X[0]]:
@@ -260,28 +271,38 @@ class decision(gr.basic_block):
 				f.write("{};{};{};{};{};{};{};{};{}\n".format(\
 					portid, self.met0, self.met1, self.met2, self.met3, self.met4, self.met5, self.met6, self.met7));
 
-				x_csma = self.feature_scaling(X, u_csma, u_csma);
-				x_tdma = self.feature_scaling(X, u_tdma, u_tdma);
+				#y = X[:, target["thr"]];
+				#X = np.delete(X, [0, target["thr"]], axis=1); # remove prot and target metric
+				#x_csma = self.feature_scaling(X, u_csma, u_csma);
+				#x_tdma = self.feature_scaling(X, u_tdma, u_tdma);
 
-				pred_csma = csma.predict([x_csma]);
-				pred_tdma = tdma.predict([x_tdma]);
+				#pred_csma = float(csma.predict(x_csma));
+				#pred_tdma = float(tdma.predict(x_tdma));
 
-				print "act prot = {}, out = {}".format(portid, self.met0);
-				print "pred_csma = {}, pred_tdma = {}".format(pred_csma, pred_tdma);
+				#print "act prot = {}, out = {}".format(portid, self.met0);
+				#print "pred_csma = {}, pred_tdma = {}".format(pred_csma, pred_tdma);
 
-				global threshold;
-				if portid == 0: # current MAC protocol is CSMA
-					if pred_tdma > (1 + threshold) * pred_csma:
+				#global threshold;
+				#if portid == 0: # current MAC protocol is CSMA
+				#	if pred_tdma > (1 + threshold) * pred_csma:
+				#		portid = 1;
+				#elif portid == 1: # current MAC protocol is TDMA
+				#	if pred_csma > (1 + threshold) * pred_tdma:
+				#		portid = 0;
+
+				count = count + 1;
+				if count == 3:
+					if portid == 0:
 						portid = 1;
-				elif portid == 1: # current MAC protocol is TDMA
-					if pred_csma > (1 + threshold) * pred_tdma:
+					else:
 						portid = 0;
-			## END: set portid
+					count = 0;
+			##}}}
 
 			if portid == 0:
-				print "Active protocol: CSMA/CA"
+				print "Active protocol: CSMA/CA";
 			elif portid == 1:
-				print "Active protocol: TDMA"
+				print "Active protocol: TDMA";
 
 			## START: select MAC protocol according to portid
 			self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol('portid' + str(portid)));
