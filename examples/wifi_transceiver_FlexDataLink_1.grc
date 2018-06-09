@@ -939,6 +939,10 @@ Coordinator: True/ False</value>
       <key>train_file</key>
       <value>/tmp/training_data.txt</value>
     </param>
+    <param>
+      <key>onoff_learn</key>
+      <value>0</value>
+    </param>
   </block>
   <block>
     <key>somac_metrics_gen</key>

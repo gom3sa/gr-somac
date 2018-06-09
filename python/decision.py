@@ -41,7 +41,7 @@ class decision(gr.basic_block):
 		CSMA/CA:	portid = 0
 		TDMA:		portid = 1
 	"""
-	def __init__(self, coord, dec_gran, broad_gran, metrics_gran, backlog_file, train_file, ml_alg, \
+	def __init__(self, coord, dec_gran, broad_gran, metrics_gran, backlog_file, train_file, ml_alg, onoff_learn, \
 			aggr0, aggr1, aggr2, aggr3, aggr4, aggr5, aggr6, aggr7):
 		gr.basic_block.__init__(self, name="decision", in_sig=None, out_sig=None)
 
@@ -52,6 +52,7 @@ class decision(gr.basic_block):
 		self.backlog_file = backlog_file
 		self.train_file = train_file
 		self.ml_alg = ml_alg
+		self.onoff_learn = onoff_learn
 
 		self.met0 = []
 		self.met1 = []
@@ -222,9 +223,13 @@ class decision(gr.basic_block):
 		X = self.feature_scaling(X, num, den)
 
 		clf = self.get_ml_model()
-		#print clf.fit(X, Y)
-		print clf.partial_fit(X, Y, classes=[0, 1])
-		clf.set_params(max_iter=1)
+
+		# Training
+		if self.onoff_learn == 0:	# Offline learning
+			print clf.fit(X, Y)
+		elif self.onoff_learn == 1:	# Onine learning
+			print clf.partial_fit(X, Y, classes=[0, 1])
+			clf.set_params(max_iter=1)
 
 		_X_prev = np.ones(X[0].shape) * -1 # Online labeling
 		time.sleep(3)
@@ -275,7 +280,9 @@ class decision(gr.basic_block):
 				# Online labeling {{{
 				# Conditions below mean that the network has not changed at all
 				# Compares non, snr and interpkt delay, respectively
-				if count >= 0 and _X[0] != _X_prev[0]:
+				if (self.onoff_learn == 1 and count >= 0 and 
+				    _X[0] != _X_prev[0] and _X_prev[0] != -1):
+
 					if (	_X[8] == _X_prev[8] 			   and 
 						(0.8 * _X[6] <= _X_prev[6] <= 1.2 * _X[6]) and 
 						(0.8 * _X[5] <= _X_prev[5] <= 1.2 * _X[5]) ):
@@ -294,7 +301,9 @@ class decision(gr.basic_block):
 				_x = self.feature_scaling(_X, num, den)
 				prot = float(clf.predict(_x))
 
-				if prot != portid and count > 0:
+				if ((self.onoff_learn == 0 or self.onoff_learn == 1) and
+				     prot != portid and count > 0):
+					
 					_X_prev = cp.deepcopy(_X) # For online labeling purposes
 
 					print "MAC protocol changes from {} to {}".format(portid, prot)
@@ -306,13 +315,16 @@ class decision(gr.basic_block):
 					print "MAC protocol remains the same"
 
 				count = count + 1
-				#if count == 3:
-				#	if portid == 0:
-				#		portid = 1
-				#	else:
-				#		portid = 0
-				#	count = 0
-			##}}}
+
+				# Making training set
+				if self.onoff_learn == 2:
+					if count == 3:
+						if portid == 0:
+							portid = 1
+						else:
+							portid = 0
+						count = 0
+			## }}}
 
 			if portid == 0:
 				print "Active protocol: CSMA/CA"
