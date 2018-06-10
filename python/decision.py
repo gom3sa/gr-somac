@@ -231,7 +231,7 @@ class decision(gr.basic_block):
 			print clf.partial_fit(X, Y, classes=[0, 1])
 			clf.set_params(max_iter=1)
 
-		_X_prev = np.ones(X[0].shape) * -1 # Online labeling
+		_X_prev = np.ones((1, np.size(X, 1))) * -1 # Online labeling
 		time.sleep(3)
 		count = 0
 		while True:
@@ -253,7 +253,7 @@ class decision(gr.basic_block):
 			if True not in [x is None for x in _X[0]]:
 				# Write to backlog file
 				# prot;thr;lat;jit;rnp;interpkt;snr;cont;non
-				if count >= 0:
+				if count > 0:
 					f.write("{}{}{}{}{}{}{}{}{}\n".format(\
 						portid, self.met0, self.met1, self.met2, self.met3,\
 						self.met4, self.met5, self.met6, self.met7))
@@ -280,20 +280,25 @@ class decision(gr.basic_block):
 				# Online labeling {{{
 				# Conditions below mean that the network has not changed at all
 				# Compares non, snr and interpkt delay, respectively
-				if (self.onoff_learn == 1 and count >= 0 and 
-				    _X[0] != _X_prev[0] and _X_prev[0] != -1):
+				print "X.shape = {}, X_prev.shape = {}".format(_X.shape, _X_prev.shape)
+				if (self.onoff_learn == 1 and count > 0 and 
+				    _X[0, 0] != _X_prev[0, 0] and _X_prev[0, 0] != -1):
 
-					if (	_X[8] == _X_prev[8] 			   and 
-						(0.8 * _X[6] <= _X_prev[6] <= 1.2 * _X[6]) and 
-						(0.8 * _X[5] <= _X_prev[5] <= 1.2 * _X[5]) ):
+					# Otherwise I cannot lable because etheir network config is \
+					# diff. or medium has changed
+					if (_X[0, 8] == _X_prev[0, 8]		   		and 
+					   (0.8 * _X[0, 6] <= _X_prev[0, 6] <= 1.2 * _X[0, 6])	and 
+					   (0.8 * _X[0, 5] <= _X_prev[0, 5] <= 1.2 * _X[0, 5]) ):
 
-						if _X[1] >= 1.2 * _X_prev[1]: # Good move!
-							_Y = np.array(_X[0])
-						else:
-							_Y = np.array(_X_prev[0])
+						if _X[0, 1] >= 1.2 * _X_prev[0, 1]: 	# Good move!
+							_Y = _X[:, 0]
+						else: 					# Previous prot was better...
+							_Y = _X_prev[:, 0]
 
-					print "New sample: {}:  {}".format(_Y, _X_prev)
-					print clf.partial_fit(_X_prev, _Y)
+						print "New sample: {}:  {}".format(_Y, _X_prev)
+						print clf.partial_fit(_X_prev, _Y)
+
+					_X_prev = cp.deepcopy(_X)
 				# }}}
 
 				# Upper case X means no feature scaling
@@ -354,7 +359,6 @@ class decision(gr.basic_block):
 		print "Broadcasting thread"
 		while True:
 			msg = "act_prot:" + str(portid)
-			print msg
 			self.message_port_pub(self.msg_port_broad_out, pmt.string_to_symbol(msg))
 			time.sleep(self.broad_gran)
 

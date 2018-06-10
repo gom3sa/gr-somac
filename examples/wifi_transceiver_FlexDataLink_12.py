@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 ##################################################
 # GNU Radio Python Flow Graph
-# Title: Wifi Transceiver Flexdatalink 8
-# Generated: Sun Jun 10 13:11:49 2018
+# Title: Wifi Transceiver Flexdatalink 12
+# Generated: Sun Jun 10 13:10:48 2018
 ##################################################
 
 import os
@@ -24,10 +24,10 @@ import somac
 import time
 
 
-class wifi_transceiver_FlexDataLink_8(gr.top_block):
+class wifi_transceiver_FlexDataLink_12(gr.top_block):
 
     def __init__(self):
-        gr.top_block.__init__(self, "Wifi Transceiver Flexdatalink 8")
+        gr.top_block.__init__(self, "Wifi Transceiver Flexdatalink 12")
 
         ##################################################
         # Variables
@@ -38,7 +38,7 @@ class wifi_transceiver_FlexDataLink_8(gr.top_block):
         self.pdu_length = pdu_length = 500
         self.mac_dst = mac_dst = [0x12,0x34,0x56,0x78,0x90,0xaa]
         self.mac_coord = mac_coord = [0x12,0x34,0x56,0x78,0x90,0xaa]
-        self.mac_addr = mac_addr = [0x12,0x34,0x56,0x78,0x90,0xbc]
+        self.mac_addr = mac_addr = [0x12,0x34,0x56,0x78,0x90,0xca]
         self.lo_offset = lo_offset = 0
         self.interval = interval = 1e3
         self.freq = freq = 2.52e9
@@ -220,7 +220,7 @@ class wifi_transceiver_FlexDataLink_8(gr.top_block):
         self.wifi_phy_hier_0.set_chan_est(self.chan_est)
 
 
-def main(top_block_cls=wifi_transceiver_FlexDataLink_8, options=None):
+def main(top_block_cls=wifi_transceiver_FlexDataLink_12, options=None):
     if gr.enable_realtime_scheduling() != gr.RT_OK:
         print "Error: failed to enable real-time scheduling."
 
