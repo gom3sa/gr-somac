@@ -7,7 +7,9 @@ sudo port install swig
 sudo apt-get install liblog4cpp5-dev
 sudo port install log4cpp
 sudo apt install python-pip
+export LC_ALL=C
 sudo pip install scikit-learn
+sudo pip install scipy
 
 cd ~
 git clone -b master https://github.com/bastibl/gr-foo.git
