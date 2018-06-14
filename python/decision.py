@@ -42,7 +42,8 @@ class decision(gr.basic_block):
 		TDMA:		portid = 1
 	"""
 	def __init__(self, coord, dec_gran, broad_gran, metrics_gran, backlog_file, train_file, ml_alg, onoff_learn, \
-			aggr0, aggr1, aggr2, aggr3, aggr4, aggr5, aggr6, aggr7):
+			aggr0, aggr1, aggr2, aggr3, aggr4, aggr5, aggr6, aggr7): # {{{
+
 		gr.basic_block.__init__(self, name="decision", in_sig=None, out_sig=None)
 
 		self.coord = coord # Is coordinator? 
@@ -118,9 +119,10 @@ class decision(gr.basic_block):
 		self.message_port_register_out(self.msg_port_metrics_out)
 
 		self.start_block()
+	# }}} __init__()
 
 	# Aggregator
-	def aggr(self, aggr, list):
+	def aggr(self, aggr, list): # {{{
 		array = np.array(list)
 		if len(array) == 0:
 			met = None
@@ -132,12 +134,15 @@ class decision(gr.basic_block):
 		elif aggr == 2: 
 			met = array.max()
 		elif aggr == 3:
-			met == array.min()
+			met = array.min()
+		elif aggr == 4:
+			met = array.var()
 
 		return met
+	# }}} aggr()
 
 	# This gets active MAC protocol on the network from sensor block
-	def act_prot_in(self, msg):
+	def act_prot_in(self, msg): # {{{
 		if self.coord == False: # Coord already knows the current MAC protocol
 			portid = pmt.to_long(msg)
 
@@ -147,6 +152,7 @@ class decision(gr.basic_block):
 				print "Active protocol: CSMA/CA"
 			elif portid == 1:
 				print "Active protocol: TDMA"
+	# }}} act_prot_in()
 
 	def met_in0(self, msg):
 		self.met0.append(pmt.to_float(msg))
@@ -182,60 +188,109 @@ class decision(gr.basic_block):
 		return
 
 	# Machine Learning model
-	def get_ml_model(self, mod=0):
-		model = {0: {"model": MLPClassifier(tol=1e-6, learning_rate_init=0.0001, solver='sgd', alpha=1, hidden_layer_sizes=(25,), momentum=0.9, max_iter=10000), "name": "Neural Networks"}
-			 #1: {"model": dt.DecisionTreeRegressor(), "name": "Decision Tree"},
-			 #2: {"model": svm.LinearSVR(random_state=0), "name": "Linear SVR"},
-			 #3: {"model": svm.SVR(), "name": "SVR"},
-			 #3: {"model": svm.NuSVR(C=1.0, nu=0.1), "name": "NuSVR"}
-			}
+	def get_ml_model(self, mod=0): # {{{
+		model = {
+			0: {"model": nnet(max_iter=10000, hidden_layer_sizes=(20, ), solver="sgd", learning_rate_init=0.01), "name": "Neural Networks"}
+		}
 
 		print "ML algorithm = {}".format(model[mod]["name"])
 
 		return model[mod]["model"]
+	# }}} get_ml_model()
 
 	# Feature-scaling
-	def feature_scaling(self, X, num, den):
+	def feature_scaling(self, X, num, den): # {{{
 		_X = cp.deepcopy(X)
 		for col in range(0, np.size(X, 1)):
 			_X[:, col] = (_X[:, col] - num[col])/den[col]
 		return _X
+	# }}} feature_scaling()
+
+	# Train model based on training set
+	def train(self): # {{{
+		data = np.loadtxt(self.train_file, delimiter=";") * 1.
+		np.random.shuffle(data)
+
+		print data.shape
+
+		Y_csma = data[np.where(data[:, 0] == 0.0), 1]
+		Y_csma = Y_csma.reshape(np.size(Y_csma, 1))
+		Y_tdma = data[np.where(data[:, 0] == 1.0), 1]
+		Y_tdma = Y_tdma.reshape(np.size(Y_tdma, 1))
+
+		Y = {"csma": Y_csma, "tdma": Y_tdma}
+
+		del_cols = np.array([1, 2, 3, 4, 7])
+		data = np.delete(data, del_cols, axis=1)
+
+		X = {
+			"csma": data[np.where(data[:, 0] == 0.0), 1:][0],
+			"tdma": data[np.where(data[:, 0] == 1.0), 1:][0]
+		}
+
+		stats = {
+			"csma": {"num": np.mean(X["csma"], axis=0), "den": np.mean(X["csma"], axis=0)},
+			"tdma": {"num": np.mean(X["tdma"], axis=0), "den": np.mean(X["tdma"], axis=0)}
+		}
+
+		X["csma"] = self.feature_scaling(X["csma"], stats["csma"]["num"], stats["csma"]["den"])
+		X["tdma"] = self.feature_scaling(X["tdma"], stats["tdma"]["num"], stats["tdma"]["den"])
+
+		csma_reg = self.get_ml_model(self.ml_alg)
+		tdma_reg = self.get_ml_model(self.ml_alg)
+
+		print X["csma"].shape, Y["csma"].shape
+
+		csma_reg.fit(X["csma"], Y["csma"])
+		tdma_reg.fit(X["tdma"], Y["tdma"])
+
+		csma_reg.set_params(learning_rate_init=0.5)
+		tdma_reg.set_params(learning_rate_init=0.5)
+
+		return csma_reg, tdma_reg, stats
+	# }}} train()
+
+	def partial_fit(self, reg, batch, stats, prot): # {{{
+		batch["y"] = np.delete(batch["y"], 0, axis=0) # -1
+		batch["x"] = np.delete(batch["x"], 0, axis=0) # -1
+
+		batch["x"] = self.feature_scaling(batch["x"], stats[prot]["num"], stats[prot]["den"])
+
+		reg.partial_fit(batch["x"], batch["y"])
+
+		return reg
+	# }}} partial_fit()
 
 	# Coordinator selects the MAC protocol to use in the network
-	def coord_loop(self, name, id):
+	def coord_loop(self, name, id): # {{{
 		global portid
 		portid = 0
 
 		f = open(self.backlog_file, "w", 0)
+		f1 = open(self.backlog_file + "_parsed", "w", 0) # interpkt, snr, non and aggregations
 		print "Decision block as Coordinator"
 
-		# Selecting ML model and training it
-		#csma, tdma = self.get_ml_model(mod=self.ml_alg)
-		#X_csma, X_tdma, Y_csma, Y_tdma, u_csma, u_tdma = self.handle_data(self.train_file, parameter=target["thr"])
-		#csma.fit(X_csma, Y_csma)
-		#tdma.fit(X_tdma, Y_tdma)
-		data = np.loadtxt(self.train_file, delimiter=";")
-		X = data[:, 1:]
-		Y = data[:, 0]
+		csma_reg, tdma_reg, stats = self.train()
 
-		num = np.mean(X, 0)
-		den = np.mean(X, 0)
-		X = self.feature_scaling(X, num, den)
+		# TODO: Online vs Offline learning
+		# By now, I'm assuming only Online Regression
 
-		clf = self.get_ml_model()
-
-		# Training
-		if self.onoff_learn == 0:	# Offline learning
-			print clf.fit(X, Y)
-		elif self.onoff_learn == 1:	# Onine learning
-			print clf.partial_fit(X, Y, classes=[0, 1])
-			clf.set_params(max_iter=1)
-
-		_X_prev = np.ones((1, np.size(X, 1))) * -1 # Online labeling
 		time.sleep(3)
-		count = 0
-		while True:
+		sslc = 0 # Steps Since Last Change
+
+		csma_batch = {"y": np.array([-1]), "x": np.array([[-1, -1, -1]])}
+		tdma_batch = {"y": np.array([-1]), "x": np.array([[-1, -1, -1]])}
+
+		while True: # {{{
 			# Handling avg aggregation
+			self.met4_max = self.aggr(2, self.met4)
+			self.met4_min = self.aggr(3, self.met4)
+			self.met4_std = self.aggr(4, self.met4)
+
+			self.met5_max = self.aggr(2, self.met5)
+			self.met5_min = self.aggr(3, self.met5)
+			self.met5_std = self.aggr(4, self.met5)
+
 			self.met0 = self.aggr(self.aggr0, self.met0)
 			self.met1 = self.aggr(self.aggr1, self.met1)
 			self.met2 = self.aggr(self.aggr2, self.met2)
@@ -245,90 +300,92 @@ class decision(gr.basic_block):
 			self.met6 = self.aggr(self.aggr6, self.met6)
 			self.met7 = self.aggr(self.aggr7, self.met7)
 
-			##{{{
-			_X = np.array([portid, self.met0, self.met1, self.met2, self.met3,\
-				self.met4, self.met5, self.met6, self.met7])
-			_X = _X.reshape((1, np.size(_X)))
+			## {{{
+			data = np.array([portid, self.met0, self.met1, self.met2, self.met3,\
+					self.met4, self.met5, self.met6, self.met7])
+			data = data.reshape((1, np.size(data)))
 			
-			if True not in [x is None for x in _X[0]]:
-				# Write to backlog file
-				# prot;thr;lat;jit;rnp;interpkt;snr;cont;non
-				if count > 0:
-					f.write("{}{}{}{}{}{}{}{}{}\n".format(\
-						portid, self.met0, self.met1, self.met2, self.met3,\
-						self.met4, self.met5, self.met6, self.met7))
+			if True not in [d is None for d in data[0]]:
 
-				#y = X[:, target["thr"]]
-				#X = np.delete(X, [0, target["thr"]], axis=1) # remove prot and target metric
-				#x_csma = self.feature_scaling(X, u_csma, u_csma)
-				#x_tdma = self.feature_scaling(X, u_tdma, u_tdma)
+				pred_prot = -1
 
-				#pred_csma = float(csma.predict(x_csma))
-				#pred_tdma = float(tdma.predict(x_tdma))
+				if sslc > 0:
+					# prot;thr;lat;jit;rnp;interpkt;snr;cont;non
+					#f.write("{};{};{};{};{};{};{};{};{}\n".format(\
+					#	portid, self.met0, self.met1, self.met2, self.met3,\
+					#	self.met4, self.met5, self.met6, self.met7))
+					f.write("{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}\n".format( \
+						portid, self.met0, self.met1, self.met2, self.met3, \
+						self.met4, self.met4_min, self.met4_max, self.met4_std, \
+						self.met5, self.met5_min, self.met5_max, self.met5_std, \
+						self.met6, self.met7))
 
-				#print "act prot = {}, out = {}".format(portid, self.met0)
-				#print "pred_csma = {}, pred_tdma = {}".format(pred_csma, pred_tdma)
+					f1.write("{};{};{};{};{};{};{};{};{};{}\n".format(
+						portid,
+						self.met4, self.met4_min, self.met4_max, self.met4_std,
+						self.met5, self.met5_min, self.met5_max, self.met5_std,
+						self.met7
+					))
 
-				#global threshold
-				#if portid == 0: # current MAC protocol is CSMA
-				#	if pred_tdma > (1 + threshold) * pred_csma:
-				#		portid = 1
-				#elif portid == 1: # current MAC protocol is TDMA
-				#	if pred_csma > (1 + threshold) * pred_tdma:
-				#		portid = 0
+					_y = data[:, 0]
+					del_cols = np.array([0, 1, 2, 3, 4, 7]) # only usefull metrics remain
+					_x = np.delete(data, del_cols, axis=1)
 
-				# Online labeling {{{
-				# Conditions below mean that the network has not changed at all
-				# Compares non, snr and interpkt delay, respectively
-				print "X.shape = {}, X_prev.shape = {}".format(_X.shape, _X_prev.shape)
-				if (self.onoff_learn == 1 and count > 0 and 
-				    _X[0, 0] != _X_prev[0, 0] and _X_prev[0, 0] != -1):
+					if _y == 0.0:
+						csma_batch["y"] = np.r_[csma_batch["y"], _y]
 
-					# Otherwise I cannot lable because etheir network config is \
-					# diff. or medium has changed
-					if (_X[0, 8] == _X_prev[0, 8]		   		and 
-					   (0.8 * _X[0, 6] <= _X_prev[0, 6] <= 1.2 * _X[0, 6])	and 
-					   (0.8 * _X[0, 5] <= _X_prev[0, 5] <= 1.2 * _X[0, 5]) ):
+						print "csma_batch.shape = {}, _x.shape = {}".format(csma_batch["x"].shape, _x.shape)
 
-						if _X[0, 1] >= 1.2 * _X_prev[0, 1]: 	# Good move!
-							_Y = _X[:, 0]
-						else: 					# Previous prot was better...
-							_Y = _X_prev[:, 0]
+						csma_batch["x"] = np.r_[csma_batch["x"], _x]
 
-						print "New sample: {}:  {}".format(_Y, _X_prev)
-						print clf.partial_fit(_X_prev, _Y)
+						if np.size(csma_batch["y"]) >= 4:
+							print "Partial fit of CSMA regressor"
+							
+							csma_reg = self.partial_fit(csma_reg, csma_batch, stats, "csma")
 
-					_X_prev = cp.deepcopy(_X)
-				# }}}
+							csma_batch = {"y": np.array([-1]), "x": np.array([[-1, -1, -1]])}
 
-				# Upper case X means no feature scaling
-				# Lower case x means it is feature scaled
-				_x = self.feature_scaling(_X, num, den)
-				prot = float(clf.predict(_x))
+					elif _y == 1.0:
+						tdma_batch["y"] = np.r_[tdma_batch["y"], _y]
+						tdma_batch["x"] = np.r_[tdma_batch["x"], _x]
+						
+						if np.size(tdma_batch["y"]) >= 4:
+							print "Partial fit of TDMA regressor"
+							
+							tdma_reg = self.partial_fit(tdma_reg, tdma_batch, stats, "tdma")
 
-				if ((self.onoff_learn == 0 or self.onoff_learn == 1) and
-				     prot != portid and count > 0):
+							tdma_batch = {"y": np.array([-1]), "x": np.array([[-1, -1, -1]])}
 					
-					_X_prev = cp.deepcopy(_X) # For online labeling purposes
+					# Prediction {{{					
+					_x_csma = self.feature_scaling(_x, stats["csma"]["num"], stats["csma"]["den"])
+					_x_tdma = self.feature_scaling(_x, stats["tdma"]["num"], stats["tdma"]["den"])
 
-					print "MAC protocol changes from {} to {}".format(portid, prot)
-					portid = int(prot)
-					count = -1
-				elif count <= 0:
-					print "MAC protocol remains the same because of recent change"
+					pred_csma = csma_reg.predict(_x_csma)
+					pred_tdma = tdma_reg.predict(_x_tdma)
+
+					print "pred_csma = {}, pred_tdma = {}".format(
+						round(pred_csma, 2), round(pred_tdma, 2)
+					)
+
+					if pred_csma > pred_tdma:
+						pred_prot = 0
+					else:
+						pred_prot = 1
+					# }}} Prediction
+
 				else:
-					print "MAC protocol remains the same"
+					pred_prot = portid
 
-				count = count + 1
+				sslc = sslc + 1
 
-				# Making training set
-				if self.onoff_learn == 2:
-					if count == 3:
-						if portid == 0:
-							portid = 1
-						else:
-							portid = 0
-						count = 0
+				if pred_prot != portid:
+					print "Protocol change from {} to {}".format(portid, pred_prot)
+
+					portid = pred_prot
+					sslc = 0
+
+				else:
+					print "Protocol remains the same"
 			## }}}
 
 			if portid == 0:
@@ -336,11 +393,11 @@ class decision(gr.basic_block):
 			elif portid == 1:
 				print "Active protocol: TDMA"
 
-			## START: select MAC protocol according to portid
+			# Broadcast MAC prot {{{
 			self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol('portid' + str(portid)))
-			## END: select MAC protocol according to portid
+			# }}}
 
-			# Reseting metric counters
+			# Reseting metric counters {{{
 			self.met0 = []
 			self.met1 = []
 			self.met2 = []
@@ -349,11 +406,15 @@ class decision(gr.basic_block):
 			self.met5 = []
 			self.met6 = []
 			self.met7 = []
+			# }}}
 
 			time.sleep(self.dec_gran)
 
+		# }}} while
+	# }}} coord_loop()
+
 	# Coordinator broadcasts the MAC protocol in use
-	def broadcast_prot(self, name, id): 
+	def broadcast_prot(self, name, id): # {{{
 		global portid
 
 		print "Broadcasting thread"
@@ -361,9 +422,10 @@ class decision(gr.basic_block):
 			msg = "act_prot:" + str(portid)
 			self.message_port_pub(self.msg_port_broad_out, pmt.string_to_symbol(msg))
 			time.sleep(self.broad_gran)
+	# }}} broadcast_prot()
 
 	# Useful at the beginning, in order to inform normal node to use no MAC protocol (portid = 200, none)
-	def normal_loop(self, name, id):
+	def normal_loop(self, name, id): # {{{
 		global portid
 		portid = 200
 
@@ -375,3 +437,4 @@ class decision(gr.basic_block):
 			time.sleep(self.metrics_gran)
 			msg = "send_metrics"
 			self.message_port_pub(self.msg_port_metrics_out, pmt.string_to_symbol(msg))
+	# }}} normal_loop()

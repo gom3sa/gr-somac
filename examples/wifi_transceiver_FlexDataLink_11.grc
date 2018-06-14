@@ -547,7 +547,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>debug</key>
-      <value>True</value>
+      <value>False</value>
     </param>
     <param>
       <key>_enabled</key>

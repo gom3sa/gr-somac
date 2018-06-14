@@ -547,7 +547,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>debug</key>
-      <value>True</value>
+      <value>False</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -742,6 +742,10 @@ Coordinator: True/ False</value>
     <param>
       <key>train_file</key>
       <value>/tmp/training_data.txt</value>
+    </param>
+    <param>
+      <key>onoff_learn</key>
+      <value>0</value>
     </param>
   </block>
   <block>
