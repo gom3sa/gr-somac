@@ -125,6 +125,8 @@ class decision(gr.basic_block):
 
 		# Size of batch for partial fit
 		self.batch_size = 3
+
+		self.rmse_threshold = 5
 	# }}} __init__()
 
 	# Aggregator
@@ -254,7 +256,14 @@ class decision(gr.basic_block):
 		csma_reg.fit(X["csma"], Y["csma"])
 		tdma_reg.fit(X["tdma"], Y["tdma"])
 
-		return csma_reg, tdma_reg, stats
+		training_window = {
+			"csma": {"y": Y["csma"], "x": X["csma"]},
+			"tdma": {"y": Y["tdma"], "x": X["tdma"]}
+		}
+
+		reg = {"csma": csma_reg, "tdma": tdma_reg}
+
+		return reg, training_window, stats
 	# }}} train()
 
 	def partial_fit(self, reg, batch, stats, prot, rmse): # {{{
@@ -289,40 +298,26 @@ class decision(gr.basic_block):
 		return reg
 	# }}} partial_fit()
 
-	def r2_coefficient(self, reg, batch, stats, prot): # {{{
-		_y = cp.deepcopy(batch["y"])
-		_y = _y[1:]
-		_x = cp.deepcopy(batch["x"])
-		_x = _x[1:, :]
+	def retrain(self, reg, data, stats, prot): # {{{
+		tic = time.time()
+		reg[prot].fit(data[prot]["x"], data[prot]["y"])
+		toc = time.time()
 
-		_x = self.feature_scaling(_x, stats[prot]["num"], stats[prot]["den"])
-
-		pred = reg.predict(_x)
-
-		SStot_csma = np.sum(np.power(_y - np.mean(_y), 2))
-		SSres_csma = np.sum(np.power(_y - pred, 2))
-
-		r2 = 1 - SSres_csma/SStot_csma
-
-		return r2
-	# }}} r2_coefficient()
+		print "Retraining time = {} s".format(toc - tic)
+		return reg;
+	# }}} retrain()
 
 	def rmse_coefficient(self, reg, batch, stats, prot): # {{{
-		_y = cp.deepcopy(batch["y"])
+		_y = cp.deepcopy(batch[prot]["y"])
 		_y = _y[1:]
-		_x = cp.deepcopy(batch["x"])
+		_x = cp.deepcopy(batch[prot]["x"])
 		_x = _x[1:, :]
 
-		_x = self.feature_scaling(_x, stats[prot]["num"], stats[prot]["den"])
-
-		pred = reg.predict(_x)
+		pred = reg[prot].predict(_x)
 		m    = np.size(pred)
 
 		mse  = (np.sum(np.power(_y - pred, 2)) * 1.)/m
-		if np.mean(_y) > 0:
-			rmse = np.sqrt(mse) / np.mean(_y)
-		else:
-			rmse = np.sqrt(mse)
+		rmse = np.sqrt(mse)
 
 		print "Pred = {}".format(np.round_(pred, decimals=2))
 		print "Y    = {}".format(np.round_(_y, decimals=2))
@@ -333,13 +328,13 @@ class decision(gr.basic_block):
 	# Coordinator selects the MAC protocol to use in the network
 	def coord_loop(self, name, id): # {{{
 		global portid
-		portid = 0
+		portid = 1
 
 		f = open(self.backlog_file, "w", 0)
 		f1 = open(self.backlog_file + "_parsed", "w", 0) # interpkt, snr, non and aggregations
 		print "Decision block as Coordinator"
 
-		csma_reg, tdma_reg, stats = self.train()
+		reg, training_window, stats = self.train()
 
 		# TODO: Online vs Offline learning
 		# By now, I'm assuming only Online Regression
@@ -347,8 +342,10 @@ class decision(gr.basic_block):
 		time.sleep(3)
 		sslc = 0 # Steps Since Last Change
 
-		csma_batch = {"y": np.array([-1]), "x": np.ones((1, 9)) * -1}
-		tdma_batch = {"y": np.array([-1]), "x": np.ones((1, 9)) * -1}
+		batch = {
+			"csma": {"y": np.array([-1]), "x": np.ones((1, 9)) * -1},
+			"tdma": {"y": np.array([-1]), "x": np.ones((1, 9)) * -1}
+		}
 
 		count = 1
 
@@ -384,9 +381,9 @@ class decision(gr.basic_block):
 
 				if sslc > 0:
 					# prot;thr;lat;jit;rnp;interpkt;snr;cont;non
-					#f.write("{};{};{};{};{};{};{};{};{}\n".format(\
-					#	portid, self.met0, self.met1, self.met2, self.met3,\
-					#	self.met4, self.met5, self.met6, self.met7))
+					# f.write("{};{};{};{};{};{};{};{};{}\n".format(\
+					# portid, self.met0, self.met1, self.met2, self.met3,\
+					# self.met4, self.met5, self.met6, self.met7))
 					f.write("{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}\n".format( \
 						portid, self.met0, self.met1, self.met2, self.met3, \
 						self.met4, self.met4_min, self.met4_max, self.met4_var, \
@@ -400,53 +397,92 @@ class decision(gr.basic_block):
 						self.met7
 					))
 
-					_prot = data[:, 0]
-					_y    = data[:, 1]
-
-					data = np.delete(data, self.del_cols, axis=1)
-					# Averaging InterpktDelay and SNR by NoN
+					# Handling new sample {{{
+					curr_prot  = data[:, 0]
+					_y		   = data[:, 1]
+					data 	   = np.delete(data, self.del_cols, axis=1)
 					data[:, 1] = np.divide(data[:, 1], data[:, 9])
 					data[:, 5] = np.divide(data[:, 5], data[:, 9])
+					_x         = data[:, 1:]
 
-					_x = data[:, 1:]
+					_x_csma    = self.feature_scaling(_x, stats["csma"]["num"], stats["csma"]["den"])
+					_x_tdma    = self.feature_scaling(_x, stats["tdma"]["num"], stats["tdma"]["den"])
 					
-					if _prot == 0.0:
-						csma_batch["y"] = np.r_[csma_batch["y"], _y]
+					if curr_prot == 0.0:
+						batch["csma"]["y"] = np.r_[batch["csma"]["y"], _y]
+						batch["csma"]["x"] = np.r_[batch["csma"]["x"], _x_csma]
 
-						print "csma_batch.shape = {}, _x.shape = {}".format(csma_batch["x"].shape, _x.shape)
-
-						csma_batch["x"] = np.r_[csma_batch["x"], _x]
-
-						if np.size(csma_batch["y"]) >= self.batch_size + 1: # 1st row is garbage
-							print "Partial fit of CSMA regressor"
-
-							#r2  = self.r2_coefficient(csma_reg, csma_batch, stats, "csma")
-							rmse = self.rmse_coefficient(csma_reg, csma_batch, stats, "csma")
+						if np.size(batch["csma"]["y"]) >= self.batch_size + 1: # 1st row is garbage
 							
-							csma_reg = self.partial_fit(csma_reg, csma_batch, stats, "csma", rmse)
+							rmse = self.rmse_coefficient(reg, batch, stats, "csma")
 
-							csma_batch = {"y": np.array([-1]), "x": np.ones((1, 9)) * -1}
-
-					elif _prot == 1.0:
-						tdma_batch["y"] = np.r_[tdma_batch["y"], _y]
-						tdma_batch["x"] = np.r_[tdma_batch["x"], _x]
-						
-						if np.size(tdma_batch["y"]) >= self.batch_size + 1: # 1st row is garbage
-							print "Partial fit of TDMA regressor"
+							if rmse > self.rmse_threshold:
+								print "Model is bad! {} > {}".format(rmse, self.rmse_threshold)
 							
-							#r2 = self.r2_coefficient(tdma_reg, tdma_batch, stats, "tdma")
-							rmse = self.rmse_coefficient(tdma_reg, tdma_batch, stats, "tdma")
+								training_window["csma"] = {
+									"y": np.r_[training_window["csma"]["y"], batch["csma"]["y"][1:]],
+									"x": np.r_[training_window["csma"]["x"], batch["csma"]["x"][1:, :]]
+								}
 
-							tdma_reg = self.partial_fit(tdma_reg, tdma_batch, stats, "tdma", rmse)
+								reg  = self.retrain(reg, training_window, stats, "csma")
+								rmse = self.rmse_coefficient(reg, batch, stats, "csma")
 
-							tdma_batch = {"y": np.array([-1]), "x": np.ones((1, 9)) * -1}
+								print "RMSE = {}".format(rmse)
+
+								if rmse > self.rmse_threshold:
+									print "Concept drift! {} > {}".format(rmse, self.rmse_threshold)
+
+									training_window["csma"] = {
+										"y": batch["csma"]["y"][1:],
+										"x": batch["csma"]["x"][1:, :]
+									}
+									reg = self.retrain(reg, training_window, stats, "csma")
+							else:
+								print "Model is good! RMSE = {}".format(rmse)
+
+							batch["csma"] = {"y": np.array([-1]), "x": np.ones((1, 9)) * -1}
+
+					elif curr_prot == 1.0:
+						batch["tdma"]["y"] = np.r_[batch["tdma"]["y"], _y]
+						batch["tdma"]["x"] = np.r_[batch["tdma"]["x"], _x_tdma]
+
+						if np.size(batch["tdma"]["y"]) >= self.batch_size + 1: # 1st row is garbage
+							
+							rmse = self.rmse_coefficient(reg, batch, stats, "tdma")
+
+							if rmse > self.rmse_threshold:
+								print "Model is bad! {} > {}".format(rmse, self.rmse_threshold)
+							
+								training_window["tdma"] = {
+									"y": np.r_[training_window["tdma"]["y"], batch["tdma"]["y"][1:]],
+									"x": np.r_[training_window["tdma"]["x"], batch["tdma"]["x"][1:, :]]
+								}
+
+								reg  = self.retrain(reg, training_window, stats, "tdma")
+								rmse = self.rmse_coefficient(reg, batch, stats, "tdma")
+
+								print "RMSE = {}".format(rmse)
+
+								if rmse > self.rmse_threshold:
+									print "Concept drift! {} > {}".format(rmse, self.rmse_threshold)
+
+									training_window["tdma"] = {
+										"y": batch["tdma"]["y"][1:],
+										"x": batch["tdma"]["x"][1:, :]
+									}
+									reg = self.retrain(reg, training_window, stats, "tdma")
+							else:
+								print "Model is good! RMSE = {}".format(rmse)
+
+							batch["tdma"] = {"y": np.array([-1]), "x": np.ones((1, 9)) * -1}
+					else:
+						print "Invalid protocol!"
+						return;
+					# }}} Handling new sample
 					
 					# Prediction {{{					
-					_x_csma = self.feature_scaling(_x, stats["csma"]["num"], stats["csma"]["den"])
-					_x_tdma = self.feature_scaling(_x, stats["tdma"]["num"], stats["tdma"]["den"])
-
-					pred_csma = csma_reg.predict(_x_csma)
-					pred_tdma = tdma_reg.predict(_x_tdma)
+					pred_csma = reg["csma"].predict(_x_csma)
+					pred_tdma = reg["tdma"].predict(_x_tdma)
 
 					print "pred_csma = {}, pred_tdma = {}".format(
 						round(pred_csma, 2), round(pred_tdma, 2)
@@ -462,6 +498,8 @@ class decision(gr.basic_block):
 					pred_prot = portid
 
 				sslc = sslc + 1
+
+				portid = 1
 
 				#if pred_prot != portid:
 				#	print "Protocol change from {} to {}".format(portid, pred_prot)
@@ -503,7 +541,6 @@ class decision(gr.basic_block):
 			# }}}
 
 			time.sleep(self.dec_gran)
-
 		# }}} while
 	# }}} coord_loop()
 
