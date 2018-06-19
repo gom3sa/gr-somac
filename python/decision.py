@@ -328,10 +328,10 @@ class decision(gr.basic_block):
 	# Coordinator selects the MAC protocol to use in the network
 	def coord_loop(self, name, id): # {{{
 		global portid
-		portid = 1
+		portid = 0
 
 		f = open(self.backlog_file, "w", 0)
-		f1 = open(self.backlog_file + "_parsed", "w", 0) # interpkt, snr, non and aggregations
+		f1 = open(self.backlog_file + "_complete", "w", 0) # interpkt, snr, non and aggregations
 		print "Decision block as Coordinator"
 
 		reg, training_window, stats = self.train()
@@ -351,6 +351,22 @@ class decision(gr.basic_block):
 
 		while True: # {{{
 			# Handling avg aggregation
+			self.met0_max = self.aggr(2, self.met0)
+			self.met0_min = self.aggr(3, self.met0)
+			self.met0_var = self.aggr(4, self.met0)
+
+			self.met1_max = self.aggr(2, self.met1)
+			self.met1_min = self.aggr(3, self.met1)
+			self.met1_var = self.aggr(4, self.met1)
+
+			self.met2_max = self.aggr(2, self.met2)
+			self.met2_min = self.aggr(3, self.met2)
+			self.met2_var = self.aggr(4, self.met2)
+
+			self.met3_max = self.aggr(2, self.met3)
+			self.met3_min = self.aggr(3, self.met3)
+			self.met3_var = self.aggr(4, self.met3)
+
 			self.met4_max = self.aggr(2, self.met4)
 			self.met4_min = self.aggr(3, self.met4)
 			self.met4_var = self.aggr(4, self.met4)
@@ -391,9 +407,14 @@ class decision(gr.basic_block):
 						self.met6, self.met7))
 
 					f1.write("{};{};{};{};{};{};{};{};{};{};{}\n".format(
-						portid, self.met0,
+						portid,
+						self.met0, self.met0_min, self.met0_max, self.met0_var,
+						self.met1, self.met1_min, self.met1_max, self.met1_var,
+						self.met2, self.met2_min, self.met2_max, self.met2_var,
+						self.met3, self.met3_min, self.met3_max, self.met3_var,
 						self.met4, self.met4_min, self.met4_max, self.met4_var,
 						self.met5, self.met5_min, self.met5_max, self.met5_var,
+						self.met6,
 						self.met7
 					))
 
@@ -499,7 +520,7 @@ class decision(gr.basic_block):
 
 				sslc = sslc + 1
 
-				portid = 1
+				portid = 0
 
 				#if pred_prot != portid:
 				#	print "Protocol change from {} to {}".format(portid, pred_prot)

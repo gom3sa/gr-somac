@@ -1050,7 +1050,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>bw0</key>
-      <value>0</value>
+      <value>10e6</value>
     </param>
     <param>
       <key>center_freq0</key>
@@ -1710,7 +1710,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(760, 905)</value>
+      <value>(768, 898)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1869,7 +1869,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>bw0</key>
-      <value>0</value>
+      <value>10e6</value>
     </param>
     <param>
       <key>center_freq0</key>

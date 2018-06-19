@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Transceiver Flexdatalink 14
-# Generated: Thu Jun 14 19:22:17 2018
+# Generated: Mon Jun 18 21:04:52 2018
 ##################################################
 
 import os
@@ -66,6 +66,7 @@ class wifi_transceiver_FlexDataLink_14(gr.top_block):
         self.uhd_usrp_source_0.set_samp_rate(samp_rate)
         self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(freq, rf_freq = freq - lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
         self.uhd_usrp_source_0.set_normalized_gain(rx_gain, 0)
+        self.uhd_usrp_source_0.set_bandwidth(10e6, 0)
         self.uhd_usrp_sink_0_0 = uhd.usrp_sink(
         	",".join(("", "")),
         	uhd.stream_args(
@@ -78,6 +79,7 @@ class wifi_transceiver_FlexDataLink_14(gr.top_block):
         self.uhd_usrp_sink_0_0.set_samp_rate(samp_rate)
         self.uhd_usrp_sink_0_0.set_center_freq(uhd.tune_request(freq, rf_freq = freq - lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
         self.uhd_usrp_sink_0_0.set_normalized_gain(tx_gain, 0)
+        self.uhd_usrp_sink_0_0.set_bandwidth(10e6, 0)
         self.somac_sensor_0 = somac.sensor((mac_addr), False, False)
         self.somac_metrics_gen_0 = somac.metrics_gen(False)
         self.somac_decision_0 = somac.decision(False, 60, 5, 30, "/tmp/back_log.txt", "/tmp/training_data.txt", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
@@ -143,9 +145,9 @@ class wifi_transceiver_FlexDataLink_14(gr.top_block):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
+        self.wifi_phy_hier_0.set_bandwidth(self.samp_rate)
         self.uhd_usrp_sink_0_0.set_samp_rate(self.samp_rate)
         self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
-        self.wifi_phy_hier_0.set_bandwidth(self.samp_rate)
 
     def get_rx_gain(self):
         return self.rx_gain
@@ -201,9 +203,9 @@ class wifi_transceiver_FlexDataLink_14(gr.top_block):
 
     def set_freq(self, freq):
         self.freq = freq
+        self.wifi_phy_hier_0.set_frequency(self.freq)
         self.uhd_usrp_sink_0_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
         self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
-        self.wifi_phy_hier_0.set_frequency(self.freq)
 
     def get_encoding(self):
         return self.encoding
