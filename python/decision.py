@@ -124,9 +124,11 @@ class decision(gr.basic_block):
 		self.del_cols = np.array([1, 2, 3, 4, 13])
 
 		# Size of batch for partial fit
-		self.batch_size = 3
+		self.batch_size = 4
 
-		self.rmse_threshold = 5
+		self.rmse_threshold = 3
+
+		self.threshold = 0.1
 	# }}} __init__()
 
 	# Aggregator
@@ -197,9 +199,9 @@ class decision(gr.basic_block):
 	# }}} start_block()
 
 	# Machine Learning model
-	def get_ml_model(self, mod=0): # {{{
+	def get_ml_model(self, mod=0, n=10, a=1): # {{{
 		model = {
-			0: {"model": nnet(max_iter=int(100e3), hidden_layer_sizes=(20, ), solver="sgd", alpha=1, learning_rate_init=1e-4), "name": "Neural Networks"}
+			0: {"model": nnet(tol=0, max_iter=int(10e3), hidden_layer_sizes=(n, ), solver="lbfgs", alpha=a, learning_rate_init=1e-4), "name": "Neural Networks"}
 		}
 
 		print "ML algorithm = {}".format(model[mod]["name"])
@@ -217,6 +219,7 @@ class decision(gr.basic_block):
 
 	# Train model based on training set
 	def train(self): # {{{
+		tic = time.time()
 		data = np.loadtxt(self.train_file, delimiter=";") * 1.
 		np.random.shuffle(data)
 
@@ -248,8 +251,8 @@ class decision(gr.basic_block):
 		X["csma"] = self.feature_scaling(X["csma"], stats["csma"]["num"], stats["csma"]["den"])
 		X["tdma"] = self.feature_scaling(X["tdma"], stats["tdma"]["num"], stats["tdma"]["den"])
 
-		csma_reg = self.get_ml_model(self.ml_alg)
-		tdma_reg = self.get_ml_model(self.ml_alg)
+		csma_reg = self.get_ml_model(self.ml_alg, 20, 1)
+		tdma_reg = self.get_ml_model(self.ml_alg, 20, 1)
 
 		print X["csma"].shape, Y["csma"].shape
 
@@ -263,40 +266,11 @@ class decision(gr.basic_block):
 
 		reg = {"csma": csma_reg, "tdma": tdma_reg}
 
+		toc = time.time()
+		print "Training time = {} s".format(toc - tic)
+
 		return reg, training_window, stats
 	# }}} train()
-
-	def partial_fit(self, reg, batch, stats, prot, rmse): # {{{
-		learning_rate_init = 1e-3
-
-		if rmse > 0.3 and rmse <= 1:
-			learn_rate = learning_rate_init * rmse
-		elif rmse <= 0.3:
-			learn_rate = 0
-			print "RMSE = {}, Learning rate = {}".format(round(rmse, 5), round(learn_rate, 5))
-			return reg
-		elif rmse > 1 and rmse < np.inf:
-			learn_rate = rmse
-		else:
-			print "You should not be here!"
-			return reg;
-
-		print "RMSE = {}, Learning rate = {}".format(round(rmse, 5), round(learn_rate, 5))
-		reg.set_params(learning_rate_init=learn_rate)
-		reg.set_params(alpha=0.01)
-
-		batch["y"] = np.delete(batch["y"], 0, axis=0) # -1
-		batch["x"] = np.delete(batch["x"], 0, axis=0) # -1
-
-		batch["x"] = self.feature_scaling(batch["x"], stats[prot]["num"], stats[prot]["den"])
-
-		reg.partial_fit(batch["x"], batch["y"])
-
-		for i in range(int(np.power(rmse, 2))):
-			reg.partial_fit(batch["x"], batch["y"])
-
-		return reg
-	# }}} partial_fit()
 
 	def retrain(self, reg, data, stats, prot): # {{{
 		tic = time.time()
@@ -304,7 +278,8 @@ class decision(gr.basic_block):
 		toc = time.time()
 
 		print "Retraining time = {} s".format(toc - tic)
-		return reg;
+		print "Training set size = {}".format(np.size(data[prot]["x"][:, 0]))
+		return reg[prot];
 	# }}} retrain()
 
 	def rmse_coefficient(self, reg, batch, stats, prot): # {{{
@@ -346,8 +321,6 @@ class decision(gr.basic_block):
 			"csma": {"y": np.array([-1]), "x": np.ones((1, 9)) * -1},
 			"tdma": {"y": np.array([-1]), "x": np.ones((1, 9)) * -1}
 		}
-
-		count = 1
 
 		while True: # {{{
 			# Handling avg aggregation
@@ -406,7 +379,7 @@ class decision(gr.basic_block):
 						self.met5, self.met5_min, self.met5_max, self.met5_var, \
 						self.met6, self.met7))
 
-					f1.write("{};{};{};{};{};{};{};{};{};{};{}\n".format(
+					f1.write("{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}\n".format(
 						portid,
 						self.met0, self.met0_min, self.met0_max, self.met0_var,
 						self.met1, self.met1_min, self.met1_max, self.met1_var,
@@ -445,7 +418,7 @@ class decision(gr.basic_block):
 									"x": np.r_[training_window["csma"]["x"], batch["csma"]["x"][1:, :]]
 								}
 
-								reg  = self.retrain(reg, training_window, stats, "csma")
+								reg["csma"]  = self.retrain(reg, training_window, stats, "csma")
 								rmse = self.rmse_coefficient(reg, batch, stats, "csma")
 
 								print "RMSE = {}".format(rmse)
@@ -457,7 +430,7 @@ class decision(gr.basic_block):
 										"y": batch["csma"]["y"][1:],
 										"x": batch["csma"]["x"][1:, :]
 									}
-									reg = self.retrain(reg, training_window, stats, "csma")
+									reg["csma"] = self.retrain(reg, training_window, stats, "csma")
 							else:
 								print "Model is good! RMSE = {}".format(rmse)
 
@@ -479,7 +452,7 @@ class decision(gr.basic_block):
 									"x": np.r_[training_window["tdma"]["x"], batch["tdma"]["x"][1:, :]]
 								}
 
-								reg  = self.retrain(reg, training_window, stats, "tdma")
+								reg["tdma"]  = self.retrain(reg, training_window, stats, "tdma")
 								rmse = self.rmse_coefficient(reg, batch, stats, "tdma")
 
 								print "RMSE = {}".format(rmse)
@@ -491,7 +464,7 @@ class decision(gr.basic_block):
 										"y": batch["tdma"]["y"][1:],
 										"x": batch["tdma"]["x"][1:, :]
 									}
-									reg = self.retrain(reg, training_window, stats, "tdma")
+									reg["tdma"] = self.retrain(reg, training_window, stats, "tdma")
 							else:
 								print "Model is good! RMSE = {}".format(rmse)
 
@@ -509,10 +482,12 @@ class decision(gr.basic_block):
 						round(pred_csma, 2), round(pred_tdma, 2)
 					)
 
-					if pred_csma > pred_tdma:
+					if pred_csma > pred_tdma * (1 + self.threshold):
 						pred_prot = 0
-					else:
+					elif pred_tdma > pred_csma * (1 + self.threshold):
 						pred_prot = 1
+					else:
+						pred_prot = portid
 					# }}} Prediction
 
 				else:
@@ -520,26 +495,17 @@ class decision(gr.basic_block):
 
 				sslc = sslc + 1
 
-				portid = 0
+				if pred_prot != portid:
+					print "Protocol change from {} to {}".format(portid, pred_prot)
 
-				#if pred_prot != portid:
-				#	print "Protocol change from {} to {}".format(portid, pred_prot)
+					portid = pred_prot
+					sslc = 0
 
-				#	portid = int(pred_prot)
-				#	sslc = 0
-
-				#else:
-				#	print "Protocol remains the same"
-
-				#if count > 3:
-				#	if portid == 0.0:
-				#		portid = 1
-				#	else:
-				#		portid = 0
-
-				#	count = 0
-				#count = count + 1
+				else:
+					print "Protocol remains the same"
 			## }}}
+
+			#portid = 0
 
 			if portid == 0:
 				print "Active protocol: CSMA/CA"
