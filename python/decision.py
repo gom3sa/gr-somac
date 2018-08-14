@@ -206,8 +206,9 @@ class decision(gr.basic_block):
 			self.met6_list = [self.aggr(i, self.met6) for i in range(6)]
 			self.met7_list = [self.aggr(i, self.met7) for i in range(6)]
 
-			metrics = np.array([self.met0_list, self.met1_list, self.met2_list,	\
-					self.met3_list, self.met4_list, self.met5_list,		\
+			metrics = np.array([[portid], 					\
+					self.met0_list, self.met1_list, self.met2_list,	\
+					self.met3_list, self.met4_list, self.met5_list,	\
 					self.met6_list,self.met7_list])
 
 			if np.any(np.equal(metrics, None)) == False: # {{{
