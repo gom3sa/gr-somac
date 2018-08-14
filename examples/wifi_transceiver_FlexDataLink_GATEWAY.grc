@@ -877,7 +877,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>backlog_file</key>
-      <value>/tmp/backlog_file.txt</value>
+      <value>/tmp/backlog_file.npy</value>
     </param>
     <param>
       <key>alias</key>

@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Transceiver Flexdatalink Gateway
-# Generated: Mon Jun 18 20:47:31 2018
+# Generated: Mon Aug 13 18:01:04 2018
 ##################################################
 
 import os
@@ -82,7 +82,7 @@ class wifi_transceiver_FlexDataLink_GATEWAY(gr.top_block):
         self.uhd_usrp_sink_0_0.set_bandwidth(10e6, 0)
         self.somac_sensor_0 = somac.sensor((mac_addr), True, False)
         self.somac_metrics_gen_0 = somac.metrics_gen(False)
-        self.somac_decision_0 = somac.decision(True, 90, 5, 30, "/tmp/backlog_file.txt", "/home/sdr/gr-somac/training_data/training_data.txt", 0, 1, 1, 1, 1, 1, 1, 1, 1, 2)
+        self.somac_decision_0 = somac.decision(True, 90, 5, 30, "/tmp/backlog_file.npy", "/home/sdr/gr-somac/training_data/training_data.txt", 0, 1, 1, 1, 1, 1, 1, 1, 1, 2)
         self.foo_wireshark_connector_0_0 = foo.wireshark_connector(127, False)
         self.foo_wireshark_connector_0 = foo.wireshark_connector(127, False)
         self.foo_packet_pad2_0 = foo.packet_pad2(False, False, 0.001, 10000, 10000)
@@ -155,9 +155,9 @@ class wifi_transceiver_FlexDataLink_GATEWAY(gr.top_block):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.wifi_phy_hier_0.set_bandwidth(self.samp_rate)
-        self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
         self.uhd_usrp_sink_0_0.set_samp_rate(self.samp_rate)
+        self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
+        self.wifi_phy_hier_0.set_bandwidth(self.samp_rate)
 
     def get_rx_gain(self):
         return self.rx_gain
@@ -199,8 +199,8 @@ class wifi_transceiver_FlexDataLink_GATEWAY(gr.top_block):
 
     def set_lo_offset(self, lo_offset):
         self.lo_offset = lo_offset
-        self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
         self.uhd_usrp_sink_0_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
+        self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
 
     def get_interval(self):
         return self.interval
@@ -213,9 +213,9 @@ class wifi_transceiver_FlexDataLink_GATEWAY(gr.top_block):
 
     def set_freq(self, freq):
         self.freq = freq
-        self.wifi_phy_hier_0.set_frequency(self.freq)
-        self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
         self.uhd_usrp_sink_0_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
+        self.uhd_usrp_source_0.set_center_freq(uhd.tune_request(self.freq, rf_freq = self.freq - self.lo_offset, rf_freq_policy=uhd.tune_request.POLICY_MANUAL), 0)
+        self.wifi_phy_hier_0.set_frequency(self.freq)
 
     def get_encoding(self):
         return self.encoding

@@ -55,14 +55,8 @@ class decision(gr.basic_block):
 		self.ml_alg = ml_alg
 		self.onoff_learn = onoff_learn
 
-		self.met0 = []
-		self.met1 = []
-		self.met2 = []
-		self.met3 = []
-		self.met4 = []
-		self.met5 = []
-		self.met6 = []
-		self.met7 = []
+		self.met0, self.met1, self.met2, self.met3, self.met4, \
+			self.met5, self.met6, self.met7 = [[] for _ in range(8)]    
 
 		self.aggr0 = aggr0
 		self.aggr1 = aggr1
@@ -119,16 +113,6 @@ class decision(gr.basic_block):
 		self.message_port_register_out(self.msg_port_metrics_out)
 
 		self.start_block()
-
-		# Del input features that are not used for prediction
-		self.del_cols = np.array([1, 2, 3, 4, 13])
-
-		# Size of batch for partial fit
-		self.batch_size = 4
-
-		self.rmse_threshold = 3
-
-		self.threshold = 0.1
 	# }}} __init__()
 
 	# Aggregator
@@ -147,6 +131,8 @@ class decision(gr.basic_block):
 			met = array.min()
 		elif aggr == 4:
 			met = array.var()
+		elif aggr == 5:
+			met = array.shape[0]
 
 		return met
 	# }}} aggr()
@@ -198,333 +184,58 @@ class decision(gr.basic_block):
 		return
 	# }}} start_block()
 
-	# Machine Learning model
-	def get_ml_model(self, mod=0, n=10, a=1): # {{{
-		model = {
-			0: {"model": nnet(tol=0, max_iter=int(10e3), hidden_layer_sizes=(n, ), solver="lbfgs", alpha=a, learning_rate_init=1e-4), "name": "Neural Networks"}
-		}
-
-		print "ML algorithm = {}".format(model[mod]["name"])
-
-		return model[mod]["model"]
-	# }}} get_ml_model()
-
-	# Feature-scaling
-	def feature_scaling(self, X, num, den): # {{{
-		_X = cp.deepcopy(X)
-		for col in range(0, np.size(X, 1)):
-			_X[:, col] = (_X[:, col] - num[col])/den[col]
-		return _X
-	# }}} feature_scaling()
-
-	# Train model based on training set
-	def train(self): # {{{
-		tic = time.time()
-		data = np.loadtxt(self.train_file, delimiter=";") * 1.
-		np.random.shuffle(data)
-
-		print data.shape
-
-		Y_csma = data[np.where(data[:, 0] == 0.0), 1]
-		Y_csma = Y_csma.reshape(np.size(Y_csma, 1))
-		Y_tdma = data[np.where(data[:, 0] == 1.0), 1]
-		Y_tdma = Y_tdma.reshape(np.size(Y_tdma, 1))
-
-		Y = {"csma": Y_csma, "tdma": Y_tdma}
-
-		data = np.delete(data, self.del_cols, axis=1)
-		
-		# Averaging InterpktDelay and SNR by NoN
-		data[:, 1] = np.divide(data[:, 1], data[:, 9])
-		data[:, 5] = np.divide(data[:, 5], data[:, 9])
-
-		X = {
-			"csma": data[np.where(data[:, 0] == 0.0), 1:][0],
-			"tdma": data[np.where(data[:, 0] == 1.0), 1:][0]
-		} 
-
-		stats = {
-			"csma": {"num": np.mean(X["csma"], axis=0), "den": np.mean(X["csma"], axis=0)},
-			"tdma": {"num": np.mean(X["tdma"], axis=0), "den": np.mean(X["tdma"], axis=0)}
-		}
-
-		X["csma"] = self.feature_scaling(X["csma"], stats["csma"]["num"], stats["csma"]["den"])
-		X["tdma"] = self.feature_scaling(X["tdma"], stats["tdma"]["num"], stats["tdma"]["den"])
-
-		csma_reg = self.get_ml_model(self.ml_alg, 20, 1)
-		tdma_reg = self.get_ml_model(self.ml_alg, 20, 1)
-
-		print X["csma"].shape, Y["csma"].shape
-
-		csma_reg.fit(X["csma"], Y["csma"])
-		tdma_reg.fit(X["tdma"], Y["tdma"])
-
-		training_window = {
-			"csma": {"y": Y["csma"], "x": X["csma"]},
-			"tdma": {"y": Y["tdma"], "x": X["tdma"]}
-		}
-
-		reg = {"csma": csma_reg, "tdma": tdma_reg}
-
-		toc = time.time()
-		print "Training time = {} s".format(toc - tic)
-
-		return reg, training_window, stats
-	# }}} train()
-
-	def retrain(self, reg, data, stats, prot): # {{{
-		tic = time.time()
-		reg[prot].fit(data[prot]["x"], data[prot]["y"])
-		toc = time.time()
-
-		print "Retraining time = {} s".format(toc - tic)
-		print "Training set size = {}".format(np.size(data[prot]["x"][:, 0]))
-		return reg[prot];
-	# }}} retrain()
-
-	def rmse_coefficient(self, reg, batch, stats, prot): # {{{
-		_y = cp.deepcopy(batch[prot]["y"])
-		_y = _y[1:]
-		_x = cp.deepcopy(batch[prot]["x"])
-		_x = _x[1:, :]
-
-		pred = reg[prot].predict(_x)
-		m    = np.size(pred)
-
-		mse  = (np.sum(np.power(_y - pred, 2)) * 1.)/m
-		rmse = np.sqrt(mse)
-
-		print "Pred = {}".format(np.round_(pred, decimals=2))
-		print "Y    = {}".format(np.round_(_y, decimals=2))
-
-		return rmse
-	# }}} mse_coefficient()
-
 	# Coordinator selects the MAC protocol to use in the network
 	def coord_loop(self, name, id): # {{{
 		global portid
 		portid = 0
 
-		f = open(self.backlog_file, "w", 0)
-		f1 = open(self.backlog_file + "_complete", "w", 0) # interpkt, snr, non and aggregations
+		t = 0
+
 		print "Decision block as Coordinator"
-
-		reg, training_window, stats = self.train()
-
-		# TODO: Online vs Offline learning
-		# By now, I'm assuming only Online Regression
-
 		time.sleep(3)
-		sslc = 0 # Steps Since Last Change
-
-		batch = {
-			"csma": {"y": np.array([-1]), "x": np.ones((1, 9)) * -1},
-			"tdma": {"y": np.array([-1]), "x": np.ones((1, 9)) * -1}
-		}
 
 		while True: # {{{
 			# Handling avg aggregation
-			self.met0_max = self.aggr(2, self.met0)
-			self.met0_min = self.aggr(3, self.met0)
-			self.met0_var = self.aggr(4, self.met0)
+			# [sum, avg, max, min, var, count]
+			self.met0_list = [self.aggr(i, self.met0) for i in range(6)]
+			self.met1_list = [self.aggr(i, self.met1) for i in range(6)]
+			self.met2_list = [self.aggr(i, self.met2) for i in range(6)]
+			self.met3_list = [self.aggr(i, self.met3) for i in range(6)]
+			self.met4_list = [self.aggr(i, self.met4) for i in range(6)]
+			self.met5_list = [self.aggr(i, self.met5) for i in range(6)]
+			self.met6_list = [self.aggr(i, self.met6) for i in range(6)]
+			self.met7_list = [self.aggr(i, self.met7) for i in range(6)]
 
-			self.met1_max = self.aggr(2, self.met1)
-			self.met1_min = self.aggr(3, self.met1)
-			self.met1_var = self.aggr(4, self.met1)
+			metrics = np.array([self.met0_list, self.met1_list, self.met2_list,	\
+					self.met3_list, self.met4_list, self.met5_list,		\
+					self.met6_list,self.met7_list])
 
-			self.met2_max = self.aggr(2, self.met2)
-			self.met2_min = self.aggr(3, self.met2)
-			self.met2_var = self.aggr(4, self.met2)
+			if np.any(np.equal(metrics, None)) == False: # {{{
+				log_dict = {}
+				if t > 0:
+					log_dict = np.load(self.backlog_file).item()
 
-			self.met3_max = self.aggr(2, self.met3)
-			self.met3_min = self.aggr(3, self.met3)
-			self.met3_var = self.aggr(4, self.met3)
+				log_dict["t" + str(t)] = metrics
+				np.save(self.backlog_file, log_dict)
 
-			self.met4_max = self.aggr(2, self.met4)
-			self.met4_min = self.aggr(3, self.met4)
-			self.met4_var = self.aggr(4, self.met4)
+				if t % 3 == 0:
+					portid = int(1 if portid == 0 else 0)
+					print "t = {}, portid = {}".format(t, portid)
 
-			self.met5_max = self.aggr(2, self.met5)
-			self.met5_min = self.aggr(3, self.met5)
-			self.met5_var = self.aggr(4, self.met5)
-
-			self.met0 = self.aggr(self.aggr0, self.met0)
-			self.met1 = self.aggr(self.aggr1, self.met1)
-			self.met2 = self.aggr(self.aggr2, self.met2)
-			self.met3 = self.aggr(self.aggr3, self.met3)
-			self.met4 = self.aggr(self.aggr4, self.met4)
-			self.met5 = self.aggr(self.aggr5, self.met5)
-			self.met6 = self.aggr(self.aggr6, self.met6)
-			self.met7 = self.aggr(self.aggr7, self.met7)
-
-			## {{{
-			data = np.array([portid, self.met0, self.met1, self.met2, self.met3, \
-						self.met4, self.met4_min, self.met4_max, self.met4_var,  \
-						self.met5, self.met5_min, self.met5_max, self.met5_var,  \
-						self.met6, self.met7])
-			data = data.reshape((1, np.size(data)))
-			
-			if True not in [d is None for d in data[0]]:
-
-				pred_prot = -1
-
-				if sslc > 0:
-					# prot;thr;lat;jit;rnp;interpkt;snr;cont;non
-					# f.write("{};{};{};{};{};{};{};{};{}\n".format(\
-					# portid, self.met0, self.met1, self.met2, self.met3,\
-					# self.met4, self.met5, self.met6, self.met7))
-					f.write("{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}\n".format( \
-						portid, self.met0, self.met1, self.met2, self.met3, \
-						self.met4, self.met4_min, self.met4_max, self.met4_var, \
-						self.met5, self.met5_min, self.met5_max, self.met5_var, \
-						self.met6, self.met7))
-
-					f1.write("{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}\n".format(
-						portid,
-						self.met0, self.met0_min, self.met0_max, self.met0_var,
-						self.met1, self.met1_min, self.met1_max, self.met1_var,
-						self.met2, self.met2_min, self.met2_max, self.met2_var,
-						self.met3, self.met3_min, self.met3_max, self.met3_var,
-						self.met4, self.met4_min, self.met4_max, self.met4_var,
-						self.met5, self.met5_min, self.met5_max, self.met5_var,
-						self.met6,
-						self.met7
-					))
-
-					# Handling new sample {{{
-					curr_prot  = data[:, 0]
-					_y		   = data[:, 1]
-					data 	   = np.delete(data, self.del_cols, axis=1)
-					data[:, 1] = np.divide(data[:, 1], data[:, 9])
-					data[:, 5] = np.divide(data[:, 5], data[:, 9])
-					_x         = data[:, 1:]
-
-					_x_csma    = self.feature_scaling(_x, stats["csma"]["num"], stats["csma"]["den"])
-					_x_tdma    = self.feature_scaling(_x, stats["tdma"]["num"], stats["tdma"]["den"])
-					
-					if curr_prot == 0.0:
-						batch["csma"]["y"] = np.r_[batch["csma"]["y"], _y]
-						batch["csma"]["x"] = np.r_[batch["csma"]["x"], _x_csma]
-
-						if np.size(batch["csma"]["y"]) >= self.batch_size + 1: # 1st row is garbage
-							
-							rmse = self.rmse_coefficient(reg, batch, stats, "csma")
-
-							if rmse > self.rmse_threshold:
-								print "Model is bad! {} > {}".format(rmse, self.rmse_threshold)
-							
-								training_window["csma"] = {
-									"y": np.r_[training_window["csma"]["y"], batch["csma"]["y"][1:]],
-									"x": np.r_[training_window["csma"]["x"], batch["csma"]["x"][1:, :]]
-								}
-
-								reg["csma"]  = self.retrain(reg, training_window, stats, "csma")
-								rmse = self.rmse_coefficient(reg, batch, stats, "csma")
-
-								print "RMSE = {}".format(rmse)
-
-								if rmse > self.rmse_threshold:
-									print "Concept drift! {} > {}".format(rmse, self.rmse_threshold)
-
-									training_window["csma"] = {
-										"y": batch["csma"]["y"][1:],
-										"x": batch["csma"]["x"][1:, :]
-									}
-									reg["csma"] = self.retrain(reg, training_window, stats, "csma")
-							else:
-								print "Model is good! RMSE = {}".format(rmse)
-
-							batch["csma"] = {"y": np.array([-1]), "x": np.ones((1, 9)) * -1}
-
-					elif curr_prot == 1.0:
-						batch["tdma"]["y"] = np.r_[batch["tdma"]["y"], _y]
-						batch["tdma"]["x"] = np.r_[batch["tdma"]["x"], _x_tdma]
-
-						if np.size(batch["tdma"]["y"]) >= self.batch_size + 1: # 1st row is garbage
-							
-							rmse = self.rmse_coefficient(reg, batch, stats, "tdma")
-
-							if rmse > self.rmse_threshold:
-								print "Model is bad! {} > {}".format(rmse, self.rmse_threshold)
-							
-								training_window["tdma"] = {
-									"y": np.r_[training_window["tdma"]["y"], batch["tdma"]["y"][1:]],
-									"x": np.r_[training_window["tdma"]["x"], batch["tdma"]["x"][1:, :]]
-								}
-
-								reg["tdma"]  = self.retrain(reg, training_window, stats, "tdma")
-								rmse = self.rmse_coefficient(reg, batch, stats, "tdma")
-
-								print "RMSE = {}".format(rmse)
-
-								if rmse > self.rmse_threshold:
-									print "Concept drift! {} > {}".format(rmse, self.rmse_threshold)
-
-									training_window["tdma"] = {
-										"y": batch["tdma"]["y"][1:],
-										"x": batch["tdma"]["x"][1:, :]
-									}
-									reg["tdma"] = self.retrain(reg, training_window, stats, "tdma")
-							else:
-								print "Model is good! RMSE = {}".format(rmse)
-
-							batch["tdma"] = {"y": np.array([-1]), "x": np.ones((1, 9)) * -1}
-					else:
-						print "Invalid protocol!"
-						return;
-					# }}} Handling new sample
-					
-					# Prediction {{{					
-					pred_csma = reg["csma"].predict(_x_csma)
-					pred_tdma = reg["tdma"].predict(_x_tdma)
-
-					print "pred_csma = {}, pred_tdma = {}".format(
-						round(pred_csma, 2), round(pred_tdma, 2)
-					)
-
-					if pred_csma > pred_tdma * (1 + self.threshold):
-						pred_prot = 0
-					elif pred_tdma > pred_csma * (1 + self.threshold):
-						pred_prot = 1
-					else:
-						pred_prot = portid
-					# }}} Prediction
-
-				else:
-					pred_prot = portid
-
-				sslc = sslc + 1
-
-				if pred_prot != portid:
-					print "Protocol change from {} to {}".format(portid, pred_prot)
-
-					portid = pred_prot
-					sslc = 0
-
-				else:
-					print "Protocol remains the same"
+				t = t + 1
+			else:
+				print "Metrics contain None"
 			## }}}
 
-			#portid = 0
-
-			if portid == 0:
-				print "Active protocol: CSMA/CA"
-			elif portid == 1:
-				print "Active protocol: TDMA"
+			print "Active protocol: {}".format("CSMA" if portid == 0 else "TDMA")
 
 			# Broadcast MAC prot {{{
 			self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol('portid' + str(portid)))
 			# }}}
 
 			# Reseting metric counters {{{
-			self.met0 = []
-			self.met1 = []
-			self.met2 = []
-			self.met3 = []
-			self.met4 = []
-			self.met5 = []
-			self.met6 = []
-			self.met7 = []
+			self.met0, self.met1, self.met2, self.met3, self.met4, \
+				self.met5, self.met6, self.met7 = [[] for _ in range(8)]
 			# }}}
 
 			time.sleep(self.dec_gran)
