@@ -206,17 +206,17 @@ class decision(gr.basic_block):
 			self.met6_list = [self.aggr(i, self.met6) for i in range(6)]
 			self.met7_list = [self.aggr(i, self.met7) for i in range(6)]
 
-			metrics = np.array([[portid], 					\
-					self.met0_list, self.met1_list, self.met2_list,	\
-					self.met3_list, self.met4_list, self.met5_list,	\
-					self.met6_list,self.met7_list])
+			metrics = np.array([self.met0_list, self.met1_list, self.met2_list,	\
+						self.met3_list, self.met4_list, self.met5_list,	\
+						self.met6_list,self.met7_list])
 
 			if np.any(np.equal(metrics, None)) == False: # {{{
 				log_dict = {}
 				if t > 0:
 					log_dict = np.load(self.backlog_file).item()
 
-				log_dict["t" + str(t)] = metrics
+				log_dict[t] = {"prot": portid, "metrics": metrics}
+
 				np.save(self.backlog_file, log_dict)
 
 				if t % 3 == 0:
