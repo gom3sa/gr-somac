@@ -188,6 +188,11 @@ class decision(gr.basic_block):
 	def coord_loop(self, name, id): # {{{
 		global portid
 		portid = 0
+		prev_portid = portid
+
+		# Detects whether or not a prot switch has just occured
+		# _p: protocol, _pp: previous protocol
+		is_transition = lambda _p, _pp: True if _p != _pp else False
 
 		t = 0
 
@@ -215,14 +220,18 @@ class decision(gr.basic_block):
 				if t > 0:
 					log_dict = np.load(self.backlog_file).item()
 
-				log_dict[t] = {"prot": portid, "metrics": metrics}
+				log_dict[t] = {
+					"prot": portid, "metrics": metrics, "transition": is_transition(portid, prev_portid)
+				}
+				prev_portid = portid
 
 				np.save(self.backlog_file, log_dict)
 
+				# TODO: Decision {{{
 				if t % 3 == 0:
 					portid = int(1 if portid == 0 else 0)
 					print "t = {}, portid = {}".format(t, portid)
-
+				# }}}
 				t = t + 1
 			else:
 				print "Metrics contain None"
