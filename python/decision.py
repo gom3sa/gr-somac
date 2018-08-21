@@ -192,7 +192,7 @@ class decision(gr.basic_block):
 
 		# Detects whether or not a prot switch has just occured
 		# _p: protocol, _pp: previous protocol
-		is_transition = lambda _p, _pp: True if _p != _pp else False
+		is_transition = lambda _p, _pp: 1. if _p != _pp else 0.
 
 		t = 0
 
@@ -220,9 +220,8 @@ class decision(gr.basic_block):
 				if t > 0:
 					log_dict = np.load(self.backlog_file).item()
 
-				log_dict[t] = {
-					"prot": portid, "metrics": metrics, "transition": is_transition(portid, prev_portid)
-				}
+				log_dict[t] = {	"prot": portid, "metrics": metrics,
+						"transition": is_transition(portid, prev_portid) }
 				prev_portid = portid
 
 				np.save(self.backlog_file, log_dict)
