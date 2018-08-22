@@ -89,7 +89,12 @@ class metrics_gen_impl : public metrics_gen {
 
 			pr_interpkt_toc = clock::now();
 			float interpkt_delay = (float) std::chrono::duration_cast<std::chrono::milliseconds>(pr_interpkt_toc - pr_interpkt_tic).count();
-			pr_interpkt_list.push_back(interpkt_delay);
+			
+			// So it ignores long periods (5s) with no traffic being generated
+			if(interpkt_delay < 5000) {
+				pr_interpkt_list.push_back(interpkt_delay);
+			}
+
 			pr_interpkt_tic = clock::now();
 		}
 
