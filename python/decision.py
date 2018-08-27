@@ -105,7 +105,7 @@ class decision(gr.basic_block):
 		self.message_port_register_in(self.msg_port_met_in7)
 		self.set_msg_handler(self.msg_port_met_in7, self.met_in7)
 
-		self.msg_port_met_in7 = pmt.intern('met in8')
+		self.msg_port_met_in8 = pmt.intern('met in8')
 		self.message_port_register_in(self.msg_port_met_in8)
 		self.set_msg_handler(self.msg_port_met_in8, self.met_in8)
 

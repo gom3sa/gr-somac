@@ -531,7 +531,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(816, 1004)</value>
+      <value>(816, 1060)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -657,7 +657,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1016, 656)</value>
+      <value>(1016, 712)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -720,7 +720,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(592, 1100)</value>
+      <value>(592, 1156)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1714,7 +1714,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(744, 1068)</value>
+      <value>(744, 1124)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3049,7 +3049,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(952, 1076)</value>
+      <value>(952, 1132)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3224,7 +3224,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1016, 940)</value>
+      <value>(1016, 996)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3274,6 +3274,12 @@ Coordinator: True/ False</value>
     <sink_block_id>data_link_0</sink_block_id>
     <source_key>pdus</source_key>
     <sink_key>tap in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>data_link_0</source_block_id>
+    <sink_block_id>somac_metrics_gen_0</sink_block_id>
+    <source_key>buff size</source_key>
+    <sink_key>bsz in</sink_key>
   </connection>
   <connection>
     <source_block_id>data_link_0</source_block_id>

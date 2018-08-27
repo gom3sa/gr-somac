@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.9'?>
+<?grc format='1' created='3.7.11'?>
 <flow_graph>
   <timestamp>Fri Jan 26 12:36:49 2018</timestamp>
   <block>
@@ -1034,6 +1034,49 @@
     </param>
   </block>
   <block>
+    <key>pad_sink</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(912, 316)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>pad_sink_5</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>message</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>buff size</value>
+    </param>
+    <param>
+      <key>num_streams</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>optional</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
     <key>pad_source</key>
     <param>
       <key>comment</key>
@@ -1521,6 +1564,12 @@
     <sink_block_id>toolkit_cs_0</sink_block_id>
     <source_key>request to cs</source_key>
     <sink_key>in_msg</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>macprotocols_frame_buffer_0</source_block_id>
+    <sink_block_id>pad_sink_5</sink_block_id>
+    <source_key>bsz req out</source_key>
+    <sink_key>in</sink_key>
   </connection>
   <connection>
     <source_block_id>macprotocols_frame_buffer_0</source_block_id>

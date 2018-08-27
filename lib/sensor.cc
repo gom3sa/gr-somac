@@ -83,6 +83,7 @@ class sensor_impl : public sensor {
 			message_port_register_out(msg_port_met_out5);
 			message_port_register_out(msg_port_met_out6);
 			message_port_register_out(msg_port_met_out7);
+			message_port_register_out(msg_port_met_out8);
 
 			for(int i = 0; i < 6; i++) {
 				pr_mac[i] = mac[i];
@@ -299,9 +300,9 @@ class sensor_impl : public sensor {
 				} else if(aux == "cont=") {
 					pr_metrics[id].contention = std::stof(str.substr(s, e - s));
 					if(pr_debug) std::cout << "cont=" << std::stof(str.substr(s, e - s)) << std::endl;
-				} else if(aux == "buffsize=") {
+				} else if(aux == "bsz=") { // buffer size
 					pr_metrics[id].buff_size = std::stof(str.substr(s, e - s));
-					if(pr_debug) std::cout << "buffsize=" << std::stof(str.substr(s, e - s)) << std::endl;
+					if(pr_debug) std::cout << "bsz=" << std::stof(str.substr(s, e - s)) << std::endl;
 				}
 
 				str = str.substr(e + eos, len - e);

@@ -9,11 +9,11 @@
  * 
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with this software; see the file COPYING.	If not, write to
+ * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
  * Boston, MA 02110-1301, USA.
  */
@@ -38,277 +38,287 @@
 using namespace gr::somac;
 
 class metrics_gen_impl : public metrics_gen {
-	typedef std::chrono::high_resolution_clock clock;
+  typedef std::chrono::high_resolution_clock clock;
 
-	public:
-		metrics_gen_impl(bool debug)
-			: gr::block("metrics_gen",
-				gr::io_signature::make(0, 0, 0),
-				gr::io_signature::make(0, 0, 0)),
-				pr_debug(debug) {
+  public:
+    metrics_gen_impl(bool debug)
+      : gr::block("metrics_gen",
+        gr::io_signature::make(0, 0, 0),
+        gr::io_signature::make(0, 0, 0)),
+        pr_debug(debug) {
 
-			// Input msg ports
-			message_port_register_in(msg_port_new_frame_in);
-			set_msg_handler(msg_port_new_frame_in, boost::bind(&metrics_gen_impl::new_frame_in, this, _1));
+      // Input msg ports
+      message_port_register_in(msg_port_new_frame_in);
+      set_msg_handler(msg_port_new_frame_in, boost::bind(&metrics_gen_impl::new_frame_in, this, _1));
 
-			message_port_register_in(msg_port_mac_in);
-			set_msg_handler(msg_port_mac_in, boost::bind(&metrics_gen_impl::mac_in, this, _1));
+      message_port_register_in(msg_port_mac_in);
+      set_msg_handler(msg_port_mac_in, boost::bind(&metrics_gen_impl::mac_in, this, _1));
 
-			message_port_register_in(msg_port_phy_in);
-			set_msg_handler(msg_port_phy_in, boost::bind(&metrics_gen_impl::phy_in, this, _1));
+      message_port_register_in(msg_port_phy_in);
+      set_msg_handler(msg_port_phy_in, boost::bind(&metrics_gen_impl::phy_in, this, _1));
 
-			message_port_register_in(msg_port_buffer_in);
-			set_msg_handler(msg_port_buffer_in, boost::bind(&metrics_gen_impl::buffer_in, this, _1));
+      message_port_register_in(msg_port_buffer_in);
+      set_msg_handler(msg_port_buffer_in, boost::bind(&metrics_gen_impl::buffer_in, this, _1));
 
-			message_port_register_in(msg_port_snr_in);
-			set_msg_handler(msg_port_snr_in, boost::bind(&metrics_gen_impl::snr_in, this, _1));
+      message_port_register_in(msg_port_snr_in);
+      set_msg_handler(msg_port_snr_in, boost::bind(&metrics_gen_impl::snr_in, this, _1));
 
-			message_port_register_in(msg_port_ctrl_in);
-			set_msg_handler(msg_port_ctrl_in, boost::bind(&metrics_gen_impl::ctrl_in, this, _1));
+      message_port_register_in(msg_port_ctrl_in);
+      set_msg_handler(msg_port_ctrl_in, boost::bind(&metrics_gen_impl::ctrl_in, this, _1));
 
-			// Output msg ports
-			message_port_register_out(msg_port_broad_out);
+      message_port_register_in(msg_port_bsz_in);
+      set_msg_handler(msg_port_bsz_in, boost::bind(&metrics_gen_impl::bsz_in, this, _1));
 
-			// Init counters
-			pr_nfin_count 				= 0;
-			pr_tx_count 				= 0;
-			pr_retx_count 				= 0;
-			pr_ack_count 				= 0;
-			pr_last_seq_nr_from_buff 	= 0;
-			pr_interpkt_tic 			= clock::now();
-			pr_thr_tic 					= clock::now();
+      // Output msg ports
+      message_port_register_out(msg_port_broad_out);
 
-			pr_interpkt_list.rset_capacity(BUFFER_SIZE);
-			pr_lat_list.rset_capacity(BUFFER_SIZE);
-			pr_snr_list.rset_capacity(BUFFER_SIZE);
-			pr_contention_list.rset_capacity(BUFFER_SIZE);
-		}
+      // Init counters
+      pr_nfin_count   = 0;
+      pr_tx_count     = 0;
+      pr_retx_count   = 0;
+      pr_ack_count    = 0;
+      pr_interpkt_tic = clock::now();
+      pr_thr_tic      = clock::now();
 
-		void new_frame_in(pmt::pmt_t frame) { // Brand new frame, same that goes to Frame Buffer
-			// Buffer size
-			pmt::pmt_t cdr = pmt::cdr(frame);
-			mac_header *h = (mac_header*)pmt::blob_data(cdr);
-			pr_last_seq_nr_from_buff = h->seq_nr;
+      pr_interpkt_list.rset_capacity(BUFFER_SIZE);
+      pr_lat_list.rset_capacity(BUFFER_SIZE);
+      pr_snr_list.rset_capacity(BUFFER_SIZE);
+      pr_contention_list.rset_capacity(BUFFER_SIZE);
+      pr_bsz_list.rset_capacity(BUFFER_SIZE);
+    }
 
-			// Interpacket delay
-			pr_nfin_count++;
+    void new_frame_in(pmt::pmt_t frame) { // Brand new frame, same that goes to Frame Buffer
+      // Buffer size
+      pmt::pmt_t cdr = pmt::cdr(frame);
+      mac_header *h = (mac_header*)pmt::blob_data(cdr);
 
-			pr_interpkt_toc = clock::now();
-			float interpkt_delay = (float) std::chrono::duration_cast<std::chrono::milliseconds>(pr_interpkt_toc - pr_interpkt_tic).count();
-			
-			// So it ignores long periods (5s) with no traffic being generated
-			if(interpkt_delay < 5000) {
-				pr_interpkt_list.push_back(interpkt_delay);
-			}
+      // Interpacket delay
+      pr_nfin_count++;
 
-			pr_interpkt_tic = clock::now();
-		}
+      pr_interpkt_toc = clock::now();
+      float interpkt_delay = (float) std::chrono::duration_cast<std::chrono::milliseconds>(pr_interpkt_toc - pr_interpkt_tic).count();
+      
+      // So it ignores long periods (5s) with no traffic being generated
+      if(interpkt_delay < 5000) {
+        pr_interpkt_list.push_back(interpkt_delay);
+      }
 
-		void mac_in(pmt::pmt_t frame) { // Same frame that is given to PHY
-			pmt::pmt_t cdr = pmt::cdr(frame);
-			mac_header *h = (mac_header*)pmt::blob_data(cdr);
+      pr_interpkt_tic = clock::now();
+    }
 
-			if(h->frame_control == FC_DATA) { // Stats only over data frames
-				if(memcmp(h, &pr_curr_frame, 24) == 0) { // Same header, retransmission
-					pr_retx_count++;
-				} else { // A new transmission
-					pr_curr_frame.frame_control = h->frame_control;
-					pr_curr_frame.duration = h->duration;
-					memcpy(&pr_curr_frame.addr1, h->addr1, 18); // Copying addr1, addr2 and addr3 at once
-					pr_curr_frame.seq_nr = h->seq_nr;
+    void mac_in(pmt::pmt_t frame) { // Same frame that is given to PHY
+      pmt::pmt_t cdr = pmt::cdr(frame);
+      mac_header *h = (mac_header*)pmt::blob_data(cdr);
 
-					pr_tx_count++;
+      if(h->frame_control == FC_DATA) { // Stats only over data frames
+        if(memcmp(h, &pr_curr_frame, 24) == 0) { // Same header, retransmission
+          pr_retx_count++;
+        } else { // A new transmission
+          pr_curr_frame.frame_control = h->frame_control;
+          pr_curr_frame.duration = h->duration;
+          memcpy(&pr_curr_frame.addr1, h->addr1, 18); // Copying addr1, addr2 and addr3 at once
+          pr_curr_frame.seq_nr = h->seq_nr;
 
-					// Contention
-					auto toc = clock::now();
-					float dt = (float) std::chrono::duration_cast<std::chrono::milliseconds>(toc - pr_contention_tic[(int)h->seq_nr]).count();
-					pr_contention_list.push_back(dt);
-				}
-			}
-		}
+          pr_tx_count++;
 
-		void phy_in(pmt::pmt_t frame) {
-			pmt::pmt_t cdr = pmt::cdr(frame);
-			mac_header *h = (mac_header*)pmt::blob_data(cdr);
+          // Contention
+          auto toc = clock::now();
+          float dt = (float) std::chrono::duration_cast<std::chrono::milliseconds>(toc - pr_contention_tic[(int)h->seq_nr]).count();
+          pr_contention_list.push_back(dt);
+        }
+      }
+    }
 
-			if(h->frame_control == FC_ACK) { // Stats over ACK frames
-				if(memcmp(h->addr1, pr_curr_frame.addr2, 6) == 0 and memcmp(h->addr2, pr_curr_frame.addr1, 6) == 0
-						and h->seq_nr == pr_curr_frame.seq_nr) {
-					// ACK bellongs to last sent frame
-					pr_ack_count++;
-					pr_lat_toc = clock::now();
-					float latency = (float) std::chrono::duration_cast<std::chrono::milliseconds>(pr_lat_toc - pr_lat_tic[(int)h->seq_nr]).count();
-					pr_lat_list.push_back(latency);
-				}
-			}
-		}
+    void phy_in(pmt::pmt_t frame) {
+      pmt::pmt_t cdr = pmt::cdr(frame);
+      mac_header *h = (mac_header*)pmt::blob_data(cdr);
 
-		void buffer_in(pmt::pmt_t frame) {
-			// Frame from buffer
-			pmt::pmt_t cdr = pmt::cdr(frame);
-			mac_header *h = (mac_header*)pmt::blob_data(cdr);
-			pr_lat_tic[(int)h->seq_nr] = clock::now();
-			pr_contention_tic[(int)h->seq_nr] = clock::now();
-		}
+      if(h->frame_control == FC_ACK) { // Stats over ACK frames
+        if(memcmp(h->addr1, pr_curr_frame.addr2, 6) == 0 and memcmp(h->addr2, pr_curr_frame.addr1, 6) == 0
+            and h->seq_nr == pr_curr_frame.seq_nr) {
+          // ACK bellongs to last sent frame
+          pr_ack_count++;
+          pr_lat_toc = clock::now();
+          float latency = (float) std::chrono::duration_cast<std::chrono::milliseconds>(pr_lat_toc - pr_lat_tic[(int)h->seq_nr]).count();
+          pr_lat_list.push_back(latency);
+        }
+      }
+    }
 
-		void snr_in(pmt::pmt_t msg) {
-			pr_snr_list.push_back(pmt::to_float(msg));
-		}
+    void buffer_in(pmt::pmt_t frame) {
+      // Frame from buffer
+      pmt::pmt_t cdr = pmt::cdr(frame);
+      mac_header *h = (mac_header*)pmt::blob_data(cdr);
+      pr_lat_tic[(int)h->seq_nr] = clock::now();
+      pr_contention_tic[(int)h->seq_nr] = clock::now();
+    }
 
-		void ctrl_in(pmt::pmt_t msg) {
-			// TODO: all counters
-			if(pmt::symbol_to_string(msg) == "send_metrics") {
-				if(pr_debug) std::cout << "Metrics were requested. Calculation starts now." << std::endl << std::flush;
-				// Common variables
-				double sum;
-				int count, c;
-				float elapsed_time;
+    void snr_in(pmt::pmt_t msg) {
+      pr_snr_list.push_back(pmt::to_float(msg));
+    }
 
-				// START: calc avg jitter
-				sum = 0; 
-				count = 0;
-				c = pr_lat_list.size();
-				while(c-- >= 2) {
-					sum += std::abs(pr_lat_list[c-1] - pr_lat_list[c-2]);
-					count++;
-				}
-				if(count == 0) {
-					count = 1;
-				}
-				float avg_jitter = sum/count;
-				if(pr_debug) std::cout << "Jitter = " << avg_jitter << std::endl << std::flush;
-				// END: calc avg jitter
+    void bsz_in(pmt::pmt_t msg) {
+      pr_bsz_list.push_back(pmt::to_float(msg));
+    }
 
-				// START: calc avg latency (ms)
-				sum = 0;
-				count = 0;
-				c = pr_lat_list.size();
-				while(c-- > 0) {
-					sum += pr_lat_list[0];
-					count++;
-					pr_lat_list.pop_front();
-				}
-				if(count == 0) {
-					count = 1; // No division by zero
-				}
-				float avg_lat = sum/count;
-				if(pr_debug) std::cout << "Latency (ms) = " << avg_lat << std::endl << std::flush;
-				// END: calc avg latency
+    void ctrl_in(pmt::pmt_t msg) {
+      // TODO: all counters
+      if(pmt::symbol_to_string(msg) == "send_metrics") {
+        if(pr_debug) std::cout << "Metrics were requested. Calculation starts now." << std::endl << std::flush;
+        // Common variables
+        double sum;
+        int count, c;
+        float elapsed_time;
 
-				// START: calc avg interpacket dealy (ms)
-				sum = 0;
-				count = 0;
-				c = pr_interpkt_list.size();
-				while(c-- > 0) {
-					sum += pr_interpkt_list[0];
-					count++;
-					pr_interpkt_list.pop_front();
-				}
-				if(count == 0) {
-					count = 1;
-				}
-				float avg_interpkt = sum/count;
-				if(pr_debug) std::cout << "Interpacket delay (ms) = " << avg_interpkt << std::endl << std::flush;
-				// END: calc avg interpacket dealy (ms)
+        // START: calc avg jitter
+        sum = 0; 
+        count = 0;
+        c = pr_lat_list.size();
+        while(c-- >= 2) {
+          sum += std::abs(pr_lat_list[c-1] - pr_lat_list[c-2]);
+          count++;
+        }
+        if(count == 0) {
+          count = 1;
+        }
+        float avg_jitter = sum/count;
+        if(pr_debug) std::cout << "Jitter = " << avg_jitter << std::endl << std::flush;
+        // END: calc avg jitter
 
-				// START: calc RNP (required number of packet transmissions)
-				float rnp = 0;
-				if(pr_tx_count + pr_retx_count > 0 and pr_ack_count > 0) {
-					rnp = ((pr_tx_count + pr_retx_count)/pr_ack_count) - 1;
-				}
-				std::cout << "pr_tx_count = " << pr_tx_count << ", pr_retx_count = " << pr_retx_count << ", pr_ack_count = " << pr_ack_count << std::endl << std::flush;
-				if(pr_debug) std::cout << "RNP = " << rnp << std::endl << std::flush;
-				// END: calc RNP (required number of packet transmissions)
+        // START: calc avg latency (ms)
+        sum = 0;
+        count = 0;
+        c = pr_lat_list.size();
+        while(c-- > 0) {
+          sum += pr_lat_list[0];
+          count++;
+          pr_lat_list.pop_front();
+        }
+        if(count == 0) {
+          count = 1; // No division by zero
+        }
+        float avg_lat = sum/count;
+        if(pr_debug) std::cout << "Latency (ms) = " << avg_lat << std::endl << std::flush;
+        // END: calc avg latency
 
-				// START: calc throughput (frame/s)
-				pr_thr_toc = clock::now();
-				elapsed_time = (float) std::chrono::duration_cast<std::chrono::seconds>(pr_thr_toc - pr_thr_tic).count();
-				float thr = pr_ack_count/elapsed_time;
-				if(pr_debug) std::cout << "Throughput (frame/s) = " << thr << std::endl << std::flush;
-				// END: calc throughput (frame/s)
+        // START: calc avg interpacket dealy (ms)
+        sum = 0;
+        count = 0;
+        c = pr_interpkt_list.size();
+        while(c-- > 0) {
+          sum += pr_interpkt_list[0];
+          count++;
+          pr_interpkt_list.pop_front();
+        }
+        if(count == 0) {
+          count = 1;
+        }
+        float avg_interpkt = sum/count;
+        if(pr_debug) std::cout << "Interpacket delay (ms) = " << avg_interpkt << std::endl << std::flush;
+        // END: calc avg interpacket dealy (ms)
 
-				// START: calc avg SNR
-				sum = 0;
-				count = 0;
-				c = pr_snr_list.size();
-				while(c-- > 0) {
-					sum += pr_snr_list[0];
-					count++;
-					pr_snr_list.pop_front();
-				}
-				if(count == 0) count = 1; // No division by zero
-				float avg_snr = sum/count;
-				if(pr_debug) std::cout << "SNR (dB) = " << avg_snr << std::endl << std::flush;
-				// END: calc avg SNR
+        // START: calc RNP (required number of packet transmissions)
+        float rnp = 0;
+        if(pr_tx_count + pr_retx_count > 0 and pr_ack_count > 0) {
+          rnp = ((pr_tx_count + pr_retx_count)/pr_ack_count) - 1;
+        }
+        std::cout << "pr_tx_count = " << pr_tx_count << ", pr_retx_count = " << pr_retx_count << ", pr_ack_count = " << pr_ack_count << std::endl << std::flush;
+        if(pr_debug) std::cout << "RNP = " << rnp << std::endl << std::flush;
+        // END: calc RNP (required number of packet transmissions)
 
-				// START: calc avg contention
-				sum = 0;
-				count = 0;
-				c = pr_contention_list.size();
-				while(c-- > 0) {
-					sum += pr_contention_list[0];
-					count++;
-					pr_contention_list.pop_front();
-				}
-				if(count == 0) count = 1;
-				float avg_cont = sum/count;
-				if(pr_debug) std::cout << "Contention (ms) = " << avg_cont << std::endl << std::flush;
-				// END: calc avg contention
+        // START: calc throughput (frame/s)
+        pr_thr_toc = clock::now();
+        elapsed_time = (float) std::chrono::duration_cast<std::chrono::seconds>(pr_thr_toc - pr_thr_tic).count();
+        float thr = pr_ack_count/elapsed_time;
+        if(pr_debug) std::cout << "Throughput (frame/s) = " << thr << std::endl << std::flush;
+        // END: calc throughput (frame/s)
 
-				// START: estimates buffer size
-				float buff_size;
-				uint16_t curr_seq_nr = pr_curr_frame.seq_nr;
+        // START: calc avg SNR
+        sum = 0;
+        count = 0;
+        c = pr_snr_list.size();
+        while(c-- > 0) {
+          sum += pr_snr_list[0];
+          count++;
+          pr_snr_list.pop_front();
+        }
+        if(count == 0) count = 1; // No division by zero
+        float avg_snr = sum/count;
+        if(pr_debug) std::cout << "SNR (dB) = " << avg_snr << std::endl << std::flush;
+        // END: calc avg SNR
 
-				if(pr_last_seq_nr_from_buff >= curr_seq_nr) {
-					buff_size = pr_last_seq_nr_from_buff - curr_seq_nr;
-				} else {
-					buff_size = pr_last_seq_nr_from_buff + MAX_SEQ_NR - curr_seq_nr;
-				}
-				// END: estimates buffer size
+        // START: calc avg contention
+        sum = 0;
+        count = 0;
+        c = pr_contention_list.size();
+        while(c-- > 0) {
+          sum += pr_contention_list[0];
+          count++;
+          pr_contention_list.pop_front();
+        }
+        if(count == 0) count = 1;
+        float avg_cont = sum/count;
+        if(pr_debug) std::cout << "Contention (ms) = " << avg_cont << std::endl << std::flush;
+        // END: calc avg contention
 
-				// max(msdu) = max(psdu) - (24 (header) + 4 (fcs)) = 1500 bytes
-				std::string str = "lat=" + std::to_string(avg_lat) + ":jitter=" + std::to_string(avg_jitter) +
-					":interpkt=" + std::to_string(avg_interpkt) + ":rnp=" + std::to_string(rnp) +
-					":thr=" + std::to_string(thr) + ":snr=" + std::to_string(avg_snr) +
-					":cont=" + std::to_string(avg_cont) + ":buffsize=" + std::to_string(buff_size);
+        // START: buffer size
+        sum   = 0;
+        count = 0;
+        c     = pr_bsz_list.size();
+        while(c-- > 0) {
+          sum += pr_bsz_list[0];
+          count++;
+          pr_bsz_list.pop_front();
+        }
+        if(count == 0) count = 1;
+        float avg_bsz = sum/count;
+        if(pr_debug) std::cout << "Buffer size (no. frames) = " << avg_bsz << std::endl << std::flush;
+        // END: buffer size
 
-				pmt::pmt_t metrics = pmt::string_to_symbol(str);
+        // max(msdu) = max(psdu) - (24 (header) + 4 (fcs)) = 1500 bytes
+        std::string str = "lat=" + std::to_string(avg_lat) + ":jitter=" + std::to_string(avg_jitter) +
+          ":interpkt=" + std::to_string(avg_interpkt) + ":rnp=" + std::to_string(rnp) +
+          ":thr=" + std::to_string(thr) + ":snr=" + std::to_string(avg_snr) +
+          ":cont=" + std::to_string(avg_cont) + ":bsz=" + std::to_string(avg_bsz);
 
-				message_port_pub(msg_port_broad_out, metrics);
+        pmt::pmt_t metrics = pmt::string_to_symbol(str);
 
-				// Reseting counters
-				pr_nfin_count = 0;
-				pr_tx_count = 0;
-				pr_retx_count = 0;
-				pr_ack_count = 0;
-				pr_thr_tic = clock::now();
-			}
-		}
+        message_port_pub(msg_port_broad_out, metrics);
 
-	private:
-		bool pr_debug;
+        // Reseting counters
+        pr_nfin_count = 0;
+        pr_tx_count   = 0;
+        pr_retx_count = 0;
+        pr_ack_count  = 0;
+        pr_thr_tic    = clock::now();
+      }
+    }
 
-		// Input msg ports
-		pmt::pmt_t msg_port_new_frame_in = pmt::mp("new frame in");
-		pmt::pmt_t msg_port_mac_in = pmt::mp("mac in");
-		pmt::pmt_t msg_port_phy_in = pmt::mp("phy in");
-		pmt::pmt_t msg_port_buffer_in = pmt::mp("buffer in");
-		pmt::pmt_t msg_port_snr_in = pmt::mp("snr in");
-		pmt::pmt_t msg_port_ctrl_in = pmt::mp("ctrl in");
+  private:
+    bool pr_debug;
 
-		// Output msg ports
-		pmt::pmt_t msg_port_broad_out = pmt::mp("broad out");
+    // Input msg ports
+    pmt::pmt_t msg_port_new_frame_in  = pmt::mp("new frame in");
+    pmt::pmt_t msg_port_mac_in        = pmt::mp("mac in");
+    pmt::pmt_t msg_port_phy_in        = pmt::mp("phy in");
+    pmt::pmt_t msg_port_buffer_in     = pmt::mp("buffer in");
+    pmt::pmt_t msg_port_snr_in        = pmt::mp("snr in");
+    pmt::pmt_t msg_port_ctrl_in       = pmt::mp("ctrl in");
+    pmt::pmt_t msg_port_bsz_in        = pmt::mp("bsz in");
+     
 
-		// Variables
-		mac_header pr_curr_frame;
-		decltype(clock::now()) pr_lat_tic[MAX_SEQ_NR], pr_contention_tic[MAX_SEQ_NR];
-		int pr_nfin_count, pr_tx_count, pr_retx_count, pr_ack_count;
-		decltype(clock::now()) pr_lat_toc, pr_interpkt_tic, pr_interpkt_toc, pr_thr_tic, pr_thr_toc;
-		boost::circular_buffer<float> pr_lat_list, pr_interpkt_list, pr_snr_list, pr_contention_list;
-		uint16_t pr_last_seq_nr_from_buff;
+    // Output msg ports
+    pmt::pmt_t msg_port_broad_out = pmt::mp("broad out");
+
+    // Variables
+    mac_header pr_curr_frame;
+    decltype(clock::now()) pr_lat_tic[MAX_SEQ_NR], pr_contention_tic[MAX_SEQ_NR];
+    int pr_nfin_count, pr_tx_count, pr_retx_count, pr_ack_count;
+    decltype(clock::now()) pr_lat_toc, pr_interpkt_tic, pr_interpkt_toc, pr_thr_tic, pr_thr_toc;
+    boost::circular_buffer<float> pr_lat_list, pr_interpkt_list, pr_snr_list, pr_contention_list, pr_bsz_list;
 };
 
 metrics_gen::sptr
 metrics_gen::make(bool debug) {
-	return gnuradio::get_initial_sptr(new metrics_gen_impl(debug));
+  return gnuradio::get_initial_sptr(new metrics_gen_impl(debug));
 }
