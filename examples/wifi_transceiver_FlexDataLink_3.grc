@@ -555,7 +555,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1008, 616)</value>
+      <value>(1008, 648)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3078,6 +3078,12 @@ Coordinator: True/ False</value>
     <sink_block_id>data_link_0</sink_block_id>
     <source_key>pdus</source_key>
     <sink_key>tap in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>data_link_0</source_block_id>
+    <sink_block_id>somac_metrics_gen_0</sink_block_id>
+    <source_key>buff size</source_key>
+    <sink_key>bsz in</sink_key>
   </connection>
   <connection>
     <source_block_id>data_link_0</source_block_id>

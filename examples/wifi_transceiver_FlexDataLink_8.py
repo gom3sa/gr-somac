@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Transceiver Flexdatalink 8
-# Generated: Mon Aug 27 14:13:33 2018
+# Generated: Mon Aug 27 19:41:52 2018
 ##################################################
 
 
@@ -110,12 +110,14 @@ class wifi_transceiver_FlexDataLink_8(gr.top_block):
         self.msg_connect((self.data_link_0, 'new frame out'), (self.somac_metrics_gen_0, 'new frame in'))
         self.msg_connect((self.data_link_0, 'phy out'), (self.somac_metrics_gen_0, 'mac in'))
         self.msg_connect((self.data_link_0, 'snr out'), (self.somac_metrics_gen_0, 'snr in'))
+        self.msg_connect((self.data_link_0, 'buff size'), (self.somac_metrics_gen_0, 'bsz in'))
         self.msg_connect((self.data_link_0, 'phy out'), (self.wifi_phy_hier_0, 'mac_in'))
         self.msg_connect((self.somac_decision_0, 'broad out'), (self.data_link_0, 'broad in'))
         self.msg_connect((self.somac_decision_0, 'ctrl out'), (self.data_link_0, 'prot switch'))
         self.msg_connect((self.somac_decision_0, 'metrics out'), (self.somac_metrics_gen_0, 'ctrl in'))
         self.msg_connect((self.somac_metrics_gen_0, 'broad out'), (self.data_link_0, 'metrics in'))
         self.msg_connect((self.somac_sensor_0, 'act prot out'), (self.somac_decision_0, 'act prot in'))
+        self.msg_connect((self.somac_sensor_0, 'met buffsize'), (self.somac_decision_0, 'met in8'))
         self.msg_connect((self.somac_sensor_0, 'met contention'), (self.somac_decision_0, 'met in6'))
         self.msg_connect((self.somac_sensor_0, 'met interpkt'), (self.somac_decision_0, 'met in4'))
         self.msg_connect((self.somac_sensor_0, 'met jit'), (self.somac_decision_0, 'met in2'))
@@ -124,7 +126,6 @@ class wifi_transceiver_FlexDataLink_8(gr.top_block):
         self.msg_connect((self.somac_sensor_0, 'met rnp'), (self.somac_decision_0, 'met in3'))
         self.msg_connect((self.somac_sensor_0, 'met snr'), (self.somac_decision_0, 'met in5'))
         self.msg_connect((self.somac_sensor_0, 'met thr'), (self.somac_decision_0, 'met in0'))
-        self.msg_connect((self.somac_sensor_0, 'met buffsize'), (self.somac_decision_0, 'met in8'))
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.data_link_0, 'phy in'))
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.somac_metrics_gen_0, 'phy in'))
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.somac_sensor_0, 'phy in'))
