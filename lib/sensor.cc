@@ -56,6 +56,7 @@ struct metrics {
 	float interpkt;
 	float snr;
 	float contention;
+	float buff_size;
 
 	decltype(std::chrono::high_resolution_clock::now()) tstamp;
 };
@@ -130,6 +131,7 @@ class sensor_impl : public sensor {
 						message_port_pub(msg_port_met_out4, pmt::from_float(pr_metrics[id].snr));
 						message_port_pub(msg_port_met_out5, pmt::from_float(pr_metrics[id].contention));
 						message_port_pub(msg_port_met_out7, pmt::from_float(pr_metrics[id].jit));
+						message_port_pub(msg_port_met_out8, pmt::from_float(pr_metrics[id].buff_size));
 						non++;
 					} else {
 						if(pr_debug) std::cout << "Node " << id << " had a timeout" << std::endl << std::flush;
@@ -257,6 +259,7 @@ class sensor_impl : public sensor {
 		pmt::pmt_t msg_port_met_out5 = pmt::mp("met contention");
 		pmt::pmt_t msg_port_met_out6 = pmt::mp("met non");
 		pmt::pmt_t msg_port_met_out7 = pmt::mp("met jit");
+		pmt::pmt_t msg_port_met_out8 = pmt::mp("met buffsize");
 
 		void parse_metrics(std::string str, int id) {
 			size_t len, s, e;
@@ -296,6 +299,9 @@ class sensor_impl : public sensor {
 				} else if(aux == "cont=") {
 					pr_metrics[id].contention = std::stof(str.substr(s, e - s));
 					if(pr_debug) std::cout << "cont=" << std::stof(str.substr(s, e - s)) << std::endl;
+				} else if(aux == "buffsize=") {
+					pr_metrics[id].buff_size = std::stof(str.substr(s, e - s));
+					if(pr_debug) std::cout << "buffsize=" << std::stof(str.substr(s, e - s)) << std::endl;
 				}
 
 				str = str.substr(e + eos, len - e);

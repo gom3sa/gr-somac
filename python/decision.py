@@ -42,7 +42,7 @@ class decision(gr.basic_block):
 		TDMA:		portid = 1
 	"""
 	def __init__(self, coord, dec_gran, broad_gran, metrics_gran, backlog_file, train_file, ml_alg, onoff_learn, \
-			aggr0, aggr1, aggr2, aggr3, aggr4, aggr5, aggr6, aggr7): # {{{
+			aggr0, aggr1, aggr2, aggr3, aggr4, aggr5, aggr6, aggr7, aggr8): # {{{
 
 		gr.basic_block.__init__(self, name="decision", in_sig=None, out_sig=None)
 
@@ -56,7 +56,7 @@ class decision(gr.basic_block):
 		self.onoff_learn = onoff_learn
 
 		self.met0, self.met1, self.met2, self.met3, self.met4, \
-			self.met5, self.met6, self.met7 = [[] for _ in range(8)]    
+			self.met5, self.met6, self.met7, self.met8 = [[] for _ in range(9)]    
 
 		self.aggr0 = aggr0
 		self.aggr1 = aggr1
@@ -66,6 +66,7 @@ class decision(gr.basic_block):
 		self.aggr5 = aggr5
 		self.aggr6 = aggr6
 		self.aggr7 = aggr7
+		self.aggr8 = aggr8
 
 		# Input ports
 		self.msg_port_act_prot_in = pmt.intern('act prot in')
@@ -103,6 +104,10 @@ class decision(gr.basic_block):
 		self.msg_port_met_in7 = pmt.intern('met in7')
 		self.message_port_register_in(self.msg_port_met_in7)
 		self.set_msg_handler(self.msg_port_met_in7, self.met_in7)
+
+		self.msg_port_met_in7 = pmt.intern('met in8')
+		self.message_port_register_in(self.msg_port_met_in8)
+		self.set_msg_handler(self.msg_port_met_in8, self.met_in8)
 
 		# Output ports
 		self.msg_port_ctrl_out = pmt.intern('ctrl out')
@@ -174,6 +179,9 @@ class decision(gr.basic_block):
 	def met_in7(self, msg):
 		self.met7.append(pmt.to_float(msg))
 
+	def met_in8(self, msg):
+		self.met8.append(pmt.to_float(msg))
+
 	# Init threads according to operation mode (Coord | Normal)
 	def start_block(self): # {{{
 		if self.coord:
@@ -210,10 +218,11 @@ class decision(gr.basic_block):
 			self.met5_list = [self.aggr(i, self.met5) for i in range(6)]
 			self.met6_list = [self.aggr(i, self.met6) for i in range(6)]
 			self.met7_list = [self.aggr(i, self.met7) for i in range(6)]
+			self.met8_list = [self.aggr(i, self.met8) for i in range(6)]
 
 			metrics = np.array([self.met0_list, self.met1_list, self.met2_list,	\
 						self.met3_list, self.met4_list, self.met5_list,	\
-						self.met6_list,self.met7_list])
+						self.met6_list, self.met7_list, self.met8_list])
 
 			if np.any(np.equal(metrics, None)) == False: # {{{
 				log_dict = {}
@@ -227,7 +236,7 @@ class decision(gr.basic_block):
 				np.save(self.backlog_file, log_dict)
 
 				# TODO: Decision {{{
-				if t % 3 == 0:
+				if t % 4 == 0:
 					portid = int(1 if portid == 0 else 0)
 					print "t = {}, portid = {}".format(t, portid)
 				# }}}
@@ -244,7 +253,7 @@ class decision(gr.basic_block):
 
 			# Reseting metric counters {{{
 			self.met0, self.met1, self.met2, self.met3, self.met4, \
-				self.met5, self.met6, self.met7 = [[] for _ in range(8)]
+				self.met5, self.met6, self.met7, self.met8 = [[] for _ in range(9)]
 			# }}}
 
 			time.sleep(self.dec_gran)

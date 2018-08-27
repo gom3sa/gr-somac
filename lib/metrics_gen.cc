@@ -70,12 +70,13 @@ class metrics_gen_impl : public metrics_gen {
 			message_port_register_out(msg_port_broad_out);
 
 			// Init counters
-			pr_nfin_count = 0;
-			pr_tx_count = 0;
-			pr_retx_count = 0;
-			pr_ack_count = 0;
-			pr_interpkt_tic = clock::now();
-			pr_thr_tic = clock::now();
+			pr_nfin_count 				= 0;
+			pr_tx_count 				= 0;
+			pr_retx_count 				= 0;
+			pr_ack_count 				= 0;
+			pr_last_seq_nr_from_buff 	= 0;
+			pr_interpkt_tic 			= clock::now();
+			pr_thr_tic 					= clock::now();
 
 			pr_interpkt_list.rset_capacity(BUFFER_SIZE);
 			pr_lat_list.rset_capacity(BUFFER_SIZE);
@@ -83,7 +84,12 @@ class metrics_gen_impl : public metrics_gen {
 			pr_contention_list.rset_capacity(BUFFER_SIZE);
 		}
 
-		void new_frame_in(pmt::pmt_t frame) { // Brand new frame, same that goes to Frame Buffer	
+		void new_frame_in(pmt::pmt_t frame) { // Brand new frame, same that goes to Frame Buffer
+			// Buffer size
+			pmt::pmt_t cdr = pmt::cdr(frame);
+			mac_header *h = (mac_header*)pmt::blob_data(cdr);
+			pr_last_seq_nr_from_buff = h->seq_nr;
+
 			// Interpacket delay
 			pr_nfin_count++;
 
@@ -138,6 +144,7 @@ class metrics_gen_impl : public metrics_gen {
 		}
 
 		void buffer_in(pmt::pmt_t frame) {
+			// Frame from buffer
 			pmt::pmt_t cdr = pmt::cdr(frame);
 			mac_header *h = (mac_header*)pmt::blob_data(cdr);
 			pr_lat_tic[(int)h->seq_nr] = clock::now();
@@ -248,8 +255,23 @@ class metrics_gen_impl : public metrics_gen {
 				if(pr_debug) std::cout << "Contention (ms) = " << avg_cont << std::endl << std::flush;
 				// END: calc avg contention
 
+				// START: estimates buffer size
+				float buff_size;
+				uint16_t curr_seq_nr = pr_curr_frame.seq_nr;
+
+				if(pr_last_seq_nr_from_buff >= curr_seq_nr) {
+					buff_size = pr_last_seq_nr_from_buff - curr_seq_nr;
+				} else {
+					buff_size = pr_last_seq_nr_from_buff + MAX_SEQ_NR - curr_seq_nr;
+				}
+				// END: estimates buffer size
+
 				// max(msdu) = max(psdu) - (24 (header) + 4 (fcs)) = 1500 bytes
-				std::string str = "lat=" + std::to_string(avg_lat) + ":jitter=" + std::to_string(avg_jitter) + ":interpkt=" + std::to_string(avg_interpkt) + ":rnp=" + std::to_string(rnp) + ":thr=" + std::to_string(thr) + ":snr=" + std::to_string(avg_snr) + ":cont=" + std::to_string(avg_cont); 
+				std::string str = "lat=" + std::to_string(avg_lat) + ":jitter=" + std::to_string(avg_jitter) +
+					":interpkt=" + std::to_string(avg_interpkt) + ":rnp=" + std::to_string(rnp) +
+					":thr=" + std::to_string(thr) + ":snr=" + std::to_string(avg_snr) +
+					":cont=" + std::to_string(avg_cont) + ":buffsize=" + std::to_string(buff_size);
+
 				pmt::pmt_t metrics = pmt::string_to_symbol(str);
 
 				message_port_pub(msg_port_broad_out, metrics);
@@ -283,6 +305,7 @@ class metrics_gen_impl : public metrics_gen {
 		int pr_nfin_count, pr_tx_count, pr_retx_count, pr_ack_count;
 		decltype(clock::now()) pr_lat_toc, pr_interpkt_tic, pr_interpkt_toc, pr_thr_tic, pr_thr_toc;
 		boost::circular_buffer<float> pr_lat_list, pr_interpkt_list, pr_snr_list, pr_contention_list;
+		uint16_t pr_last_seq_nr_from_buff;
 };
 
 metrics_gen::sptr

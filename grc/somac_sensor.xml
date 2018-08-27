@@ -113,4 +113,10 @@
     <type>message</type>
     <optional>1</optional>
   </source>
+
+  <source>
+    <name>met buffsize</name>
+    <type>message</type>
+    <optional>1</optional>
+  </source>
 </block>
