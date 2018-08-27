@@ -202,7 +202,8 @@ class decision(gr.basic_block):
 		# _p: protocol, _pp: previous protocol
 		is_transition = lambda _p, _pp: 1. if _p != _pp else 0.
 
-		t = 0
+		dt = 0 # delta time since last protocol switch
+		t  = 0
 
 		print "Decision block as Coordinator"
 		time.sleep(3)
@@ -230,7 +231,10 @@ class decision(gr.basic_block):
 					log_dict = np.load(self.backlog_file).item()
 
 				log_dict[t] = {	"prot": portid, "metrics": metrics,
-						"transition": is_transition(portid, prev_portid) }
+						"transition": is_transition(portid, prev_portid),
+						"dt": dt}
+
+				dt = dt + 1
 				prev_portid = portid
 
 				np.save(self.backlog_file, log_dict)
@@ -239,6 +243,8 @@ class decision(gr.basic_block):
 				if t % 4 == 0:
 					portid = int(1 if portid == 0 else 0)
 					print "t = {}, portid = {}".format(t, portid)
+
+					dt = 0
 				# }}}
 				t = t + 1
 			else:
