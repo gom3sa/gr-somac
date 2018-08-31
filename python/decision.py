@@ -26,11 +26,7 @@ import time
 import thread
 import numpy as np
 import copy as cp
-from sklearn.model_selection import train_test_split
-from sklearn.neural_network import MLPRegressor as nnet
-from sklearn import tree as dt
-from sklearn import svm
-from sklearn.neural_network import MLPClassifier
+from RandomForest import RandomForestSOMAC
 
 portid = 200 # Initially no MAC protocol is used. The normal node waits for coordinator's message.
 threshold = 0.1 # Threshold for switching MAC protocol
@@ -198,7 +194,11 @@ class decision(gr.basic_block):
 		portid = 0
 		prev_portid = portid
 
-		# Detects whether or not a prot switch has just occured
+		# ML modules
+		rf = RandomForestSOMAC()
+		rf.train(self.backlog_file)
+
+    # Detects whether or not a prot switch has just occured
 		# _p: protocol, _pp: previous protocol
 		is_transition = lambda _p, _pp: 1. if _p != _pp else 0.
 
@@ -240,11 +240,18 @@ class decision(gr.basic_block):
 				np.save(self.backlog_file, log_dict)
 
 				# TODO: Decision {{{
-				if t % 4 == 0:
-					portid = int(1 if portid == 0 else 0)
-					print "t = {}, portid = {}".format(t, portid)
+				prot = rf.decision(log_dict[t])
+				print "Decision = {}, Current prot = {}".format(prot, portid)
 
+				if prot != portid:
 					dt = 0
+
+				portid = prot
+				#if t % 4 == 0:
+				#	portid = int(1 if portid == 0 else 0)
+				#	print "t = {}, portid = {}".format(t, portid)
+
+				#	dt = 0
 				# }}}
 				t = t + 1
 			else:
