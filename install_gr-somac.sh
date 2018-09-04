@@ -5,19 +5,19 @@ GNURADIO=`which gnuradio-companion`
 CMAKE=`which cmake`
 
 if [ -z $GNURADIO]; then
-  sudo apt install gnuradio
+  sudo apt -y install gnuradio
 fi
 if [ -z $CMAKE ]; then
-  sudo apt install cmake
+  sudo apt -y install cmake
 fi
 
 echo "Installing gr-ieee802-11"
 
-sudo apt-get install swig
+sudo apt -y install swig
 sudo port install swig
-sudo apt-get install liblog4cpp5-dev
+sudo apt -y install liblog4cpp5-dev
 sudo port install log4cpp
-sudo apt install python-pip
+sudo apt -y install python-pip
 export LC_ALL=C
 sudo pip install scikit-learn
 sudo pip install scipy
