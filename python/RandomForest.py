@@ -132,8 +132,6 @@ class RandomForestSOMAC:
     
     def __init__(self, n_post_prunning = 10):
 
-        print("hello there")
-
         # Variables:
         #   1. n_post_prunning: number of samples no 
         self.n_post_prunning = n_post_prunning
