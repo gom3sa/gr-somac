@@ -122,6 +122,7 @@ class RandomForest:
         _x = self.feature_scaling(x)
         
         if len(self.reg.estimators_) < self.reg.n_estimators:
+            print("No. of new estimators = {}".format(self.reg.n_estimators - len(self.reg.estimators_)))
             self.reg.fit(_x, y)
         else:
             print("No update. Forest is already full.")
