@@ -941,7 +941,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>train_file</key>
-      <value>/home/sdr/gr-somac/training_data/training_data.txt</value>
+      <value>/tmp/training_file.npy</value>
     </param>
     <param>
       <key>onoff_learn</key>

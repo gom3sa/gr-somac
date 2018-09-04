@@ -196,7 +196,7 @@ class decision(gr.basic_block):
 
 		# ML modules
 		rf = RandomForestSOMAC()
-		rf.train(self.backlog_file)
+		rf.train(self.train_file)
 
     # Detects whether or not a prot switch has just occured
 		# _p: protocol, _pp: previous protocol
