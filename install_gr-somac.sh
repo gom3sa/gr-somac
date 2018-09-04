@@ -1,5 +1,16 @@
 #!/bin/bash
 
+echo "Checking dependencies"
+GNURADIO=`which gnuradio-companion`
+CMAKE=`which cmake`
+
+if [ -z $GNURADIO]; then
+  sudo apt install gnuradio
+fi
+if [ -z $CMAKE ]; then
+  sudo apt install cmake
+fi
+
 echo "Installing gr-ieee802-11"
 
 sudo apt-get install swig
