@@ -240,13 +240,15 @@ class decision(gr.basic_block):
 				np.save(self.backlog_file, log_dict)
 
 				# TODO: Decision {{{
-				prot = rf.decision(log_dict[t])
-				print "Decision = {}, Current prot = {}".format(prot, portid)
+				prot, gain = rf.decision(log_dict[t])
+				print "Decision = {}, Current prot = {}, gain = {}%".format(prot, portid, gain * 100)
 
 				if prot != portid:
 					dt = 0
 
-				portid = prot
+				# if prediction is different to an extent greater than 20%, switch protocols
+				if portid != prot and gain >= 0.2:
+					portid = prot
 				#if t % 4 == 0:
 				#	portid = int(1 if portid == 0 else 0)
 				#	print "t = {}, portid = {}".format(t, portid)

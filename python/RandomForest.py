@@ -238,11 +238,17 @@ class RandomForestSOMAC:
         # UCB based decision
         # 1st: CSMA parameters, idx 0
         # 2nd: TDMA parameters, idx 1
-        prot = np.argmax([
-            y_hat_csma - self.rmse_csma + self.c * np.sqrt(np.log(self.t) / self.n_csma),
-            y_hat_tdma - self.rmse_tdma + self.c * np.sqrt(np.log(self.t) / self.n_tdma)
-        ])
+        v_csma = y_hat_csma - self.rmse_csma + self.c * np.sqrt(np.log(self.t) / self.n_csma) 
+        v_tdma = y_hat_tdma - self.rmse_tdma + self.c * np.sqrt(np.log(self.t) / self.n_tdma) 
         
+        prot  = np.argmax([v_csma, v_tdma])
+
+        ratio = 0
+        if v_csma >= v_tdma and v_tdma > 0:
+          ratio = v_csma / v_tdma
+        elif v_tdma >= v_csma and v_csma > 0:
+          ratio = v_tdma / v_csma
+
         # Update parameters of UCB
         self.t = self.t + 1
         if curr_prot == 0:   # CSMA
@@ -261,7 +267,7 @@ class RandomForestSOMAC:
         # If necessary, post-prunning and retraining is made
         self.eval_reg()
         
-        return prot
+        return prot, ratio - 1.
     
     def eval_reg(self):
         # Check if it is time for prunning
