@@ -19,7 +19,8 @@ class RandomForest:
         )
 
         self.n_new_estimators = n_new_estimators
-        
+        self.epsilon          = 0.01 # in order to compute weights
+
         return
     
     def feature_scaling_trainingset(self, x):
@@ -58,7 +59,11 @@ class RandomForest:
         _x = self.feature_scaling_trainingset(x)
         
         self.reg.fit(_x, y)
-        
+
+        err = np.array([self.nrmse(y, e.predict(_x)) for e in self.reg.estimators_])
+
+        self.w = err / np.sum(err)
+
         self.reg.set_params(warm_start = True)
         
         return
@@ -68,7 +73,10 @@ class RandomForest:
         
         _x = self.feature_scaling(x)
         
-        y_hat = self.reg.predict(_x)
+        #y_hat = self.reg.predict(_x)
+
+        y_hat = np.array([e.predict(_x) for e in self.reg.estimators_])
+        y_hat = np.dot(y_hat, self.w.T)
         
         return y_hat
     
