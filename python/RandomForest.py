@@ -18,6 +18,7 @@ class RandomForest:
             warm_start = False, bootstrap = True, max_features = max_features
         )
 
+        self.n_estimators     = n_estimators
         self.n_new_estimators = n_new_estimators
         self.epsilon          = 0.01 # in order to compute weights
 
@@ -60,7 +61,7 @@ class RandomForest:
         
         self.reg.fit(_x, y)
 
-        err = np.array([self.nrmse(y, e.predict(_x)) for e in self.reg.estimators_])
+        err = np.array([[self.nrmse(y, e.predict(_x)) for e in self.reg.estimators_]])
 
         self.w = err / np.sum(err)
 
@@ -75,7 +76,7 @@ class RandomForest:
         
         #y_hat = self.reg.predict(_x)
 
-        y_hat = np.array([e.predict(_x) for e in self.reg.estimators_])
+        y_hat = np.array([[e.predict(_x) for e in self.reg.estimators_]])
         y_hat = np.dot(y_hat, self.w.T)
         
         return y_hat
