@@ -103,7 +103,7 @@ class RandomForest:
     def post_prunning(self, x, y, threshold):
         # This method removes trees less accurate than a give threshold
         # The threshold should be based on NRMSE
-        # Max. no. of deleted estimators: self.n_new_estimators
+        # Max. no. of estimators to prune: self.n_new_estimators
         # This does NOT update the model with new trees
         
         _x = self.feature_scaling(x)
