@@ -80,8 +80,6 @@ class RandomForest:
         y_hat = np.array([e.predict(_x) for e in self.reg.estimators_])
         y_hat = np.dot(self.w, y_hat)
 
-        print("y_hat_sklearn = {}, y_hat_weight = {}".format(y_hat_0, y_hat))
-
         return float(y_hat)
     
     def nrmse(self, y, y_hat):
