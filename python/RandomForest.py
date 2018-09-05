@@ -76,7 +76,7 @@ class RandomForest:
         
         #y_hat = self.reg.predict(_x)
 
-        y_hat = np.array([[e.predict(_x) for e in self.reg.estimators_]])
+        y_hat = np.array([e.predict(_x) for e in self.reg.estimators_])
         y_hat = np.dot(y_hat, self.w.T)
         
         return y_hat
