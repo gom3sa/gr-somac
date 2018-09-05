@@ -11,12 +11,14 @@ class RandomForest:
     # Trees that are inaccurate by some extent are removed and brand new ones are added
     # There 2 regressors implemented withing this class, 1 for CSMA and another for TDMA
 
-    def __init__(self, n_estimators = 100, max_depth = 2, max_features = "log2"):
+    def __init__(self, n_estimators = 100, max_depth = 2, max_features = "log2", n_new_estimators = 20):
         
         self.reg = RandomForestRegressor(
             max_depth = max_depth, random_state = 0, n_estimators = n_estimators,
             warm_start = False, bootstrap = True, max_features = max_features
         )
+
+        self.n_new_estimators = n_new_estimators
         
         return
     
@@ -101,6 +103,7 @@ class RandomForest:
     def post_prunning(self, x, y, threshold):
         # This method removes trees less accurate than a give threshold
         # The threshold should be based on NRMSE
+        # Max. no. of deleted estimators: self.n_new_estimators
         # This does NOT update the model with new trees
         
         _x = self.feature_scaling(x)
@@ -108,9 +111,14 @@ class RandomForest:
         err = np.array([self.nrmse(y, e.predict(_x)) for e in self.reg.estimators_])
         
         n_estimators = len(self.reg.estimators_)
-        estimators_  = [
-            self.reg.estimators_[i] for i in range(n_estimators) if err[i] < threshold
-        ]
+
+        estimators_  = []
+        n = 0 # no. of estimatiors that will be removed
+        for i in range(n_estimators):
+          if err[i] < threshold or n > self.n_new_estimators:
+            estimators_.append(self.reg.estimators_[i])
+          else:
+            n = n + 1
         
         self.reg.estimators_ = estimators_
         
@@ -233,11 +241,9 @@ class RandomForestSOMAC:
         y_hat_tdma = self.tdma.predict(x)
         
         print("Prot: {}, y = {}".format(arr["prot"], y))
-        print("y_hat_CSMA = {}, y_hat_TDMA = {}".format(y_hat_csma, y_hat_tdma))
+        print("y_hat_CSMA = {}, y_hat_TDMA = {}".format(round(y_hat_csma, 2), round(y_hat_tdma, 2)))
         
         # UCB based decision
-        # 1st: CSMA parameters, idx 0
-        # 2nd: TDMA parameters, idx 1
         v_csma = float(y_hat_csma - self.rmse_csma + self.c * np.sqrt(np.log(self.t) / self.n_csma))
         v_tdma = float(y_hat_tdma - self.rmse_tdma + self.c * np.sqrt(np.log(self.t) / self.n_tdma))
         
