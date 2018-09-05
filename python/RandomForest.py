@@ -20,7 +20,8 @@ class RandomForest:
 
         self.n_estimators     = n_estimators
         self.n_new_estimators = n_new_estimators
-        self.epsilon          = 0.01 # in order to compute weights
+        self.epsilon          = 0.25 # in order to compute weights
+        self.w                = np.zeros((1, n_estimators))
 
         return
     
@@ -63,7 +64,7 @@ class RandomForest:
 
         err = np.array([[self.nrmse(y, e.predict(_x)) for e in self.reg.estimators_]])
 
-        self.w = err / np.sum(err)
+        self.w = err / np.sum(err) if np.sum(self.w) == 0 else self.w * self.epsilon + (1. - self.epsilon) * err / np.sum(err)
 
         self.reg.set_params(warm_start = True)
         
@@ -77,8 +78,10 @@ class RandomForest:
         #y_hat = self.reg.predict(_x)
 
         y_hat = np.array([e.predict(_x) for e in self.reg.estimators_])
-        y_hat = np.dot(y_hat, self.w)
-        
+        y_hat = np.dot(self.w, y_hat)
+
+        print("y_hat_sklearn = {}, y_hat_weight = {}".format(y_hat_0, y_hat))
+
         return float(y_hat)
     
     def nrmse(self, y, y_hat):
