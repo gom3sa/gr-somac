@@ -173,7 +173,7 @@ class RandomForestSOMAC:
         self.n_tdma    = 1
         self.t         = 1
         
-        self.c         = 0.25 # this value should be evaluated
+        self.c         = 5 # this value should be evaluated
         
         self.rmse_csma = 0
         self.rmse_tdma = 0
@@ -238,16 +238,18 @@ class RandomForestSOMAC:
         # UCB based decision
         # 1st: CSMA parameters, idx 0
         # 2nd: TDMA parameters, idx 1
-        v_csma = y_hat_csma - self.rmse_csma + self.c * np.sqrt(np.log(self.t) / self.n_csma) 
-        v_tdma = y_hat_tdma - self.rmse_tdma + self.c * np.sqrt(np.log(self.t) / self.n_tdma) 
+        v_csma = float(y_hat_csma - self.rmse_csma + self.c * np.sqrt(np.log(self.t) / self.n_csma))
+        v_tdma = float(y_hat_tdma - self.rmse_tdma + self.c * np.sqrt(np.log(self.t) / self.n_tdma))
         
         prot  = np.argmax([v_csma, v_tdma])
 
+        print("Evaluation: v_csma = {}, v_tdma = {}".format(round(v_csma, 2), round(v_tdma, 2)))
+
         ratio = 0
-        if v_csma >= v_tdma and v_tdma > 0:
-          ratio = v_csma / v_tdma
-        elif v_tdma >= v_csma and v_csma > 0:
-          ratio = v_tdma / v_csma
+        if v_csma > 0 and v_tdma > 0:
+          ratio = v_csma/v_tdma if v_csma > v_tdma else v_tdma/v_csma
+
+        gain = ratio - 1. if ratio > 1. else 0
 
         # Update parameters of UCB
         self.t = self.t + 1
