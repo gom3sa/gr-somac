@@ -79,7 +79,7 @@ class RandomForest:
         y_hat = np.array([e.predict(_x) for e in self.reg.estimators_])
         y_hat = np.dot(y_hat, self.w)
         
-        return y_hat
+        return float(y_hat)
     
     def nrmse(self, y, y_hat):
         # Computes the normalized root mean square error
