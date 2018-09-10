@@ -33,7 +33,7 @@ sudo make install
 sudo ldconfig
 
 cd ~
-git clone -b master https://github.com/andreviniciusgsg/gr-ieee802-11.git
+git clone -b master https://github.com/avgsg/gr-ieee802-11.git
 cd gr-ieee802-11
 mkdir build
 cd build
@@ -50,7 +50,7 @@ grcc ./gr-ieee802-11/examples/wifi_phy_hier.grc
 echo "Installing gr-toolkit"
 
 cd ~
-git clone https://github.com/andreviniciusgsg/gr-toolkit.git 
+git clone https://github.com/avgsg/gr-toolkit.git 
 cd gr-toolkit 
 mkdir build 
 cd build
@@ -61,7 +61,7 @@ sudo ldconfig
 echo "Installing gr-macprotocols"
 
 cd ~
-git clone https://github.com/andreviniciusgsg/gr-macprotocols.git 
+git clone https://github.com/avgsg/gr-macprotocols.git 
 cd gr-macprotocols 
 mkdir build 
 cd build 
@@ -72,7 +72,7 @@ sudo ldconfig
 
 echo "Installing Traffic Generator"
 cd ~
-git clone https://github.com/andreviniciusgsg/gr-trafficgen.git
+git clone https://github.com/avgsg/gr-trafficgen.git
 cd gr-trafficgen
 mkdir build
 cd build
@@ -82,7 +82,7 @@ sudo ldconfig
 
 echo "Installing SOMAC (Self-Organizing MAC sublayer)"
 cd ~
-git clone https://github.com/andreviniciusgsg/gr-somac.git
+git clone https://github.com/avgsg/gr-somac.git
 cd gr-somac
 cd examples
 cd ..
