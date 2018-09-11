@@ -304,7 +304,7 @@ class RandomForestSOMAC:
             x = np.array(self.tdma_dw_x)
             y = np.array(self.tdma_dw_y)
             
-            self.tdma.post_prunning(x, y, 0.6)
+            self.tdma.post_prunning(x, y, 0.3)
             self.tdma.update(x, y)
             
             self.tdma_dw_x, self.tdma_dw_y = [], []
