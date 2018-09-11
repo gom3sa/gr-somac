@@ -18,7 +18,7 @@ sleep(time_list[t_id_0])
 
 print("Running time = {} min".format(time_list[n - t_id_0] / 60))
 f = open("/dev/null", "w")
-call(["sudo", "timeout", str(time_list[n - t_id_0] + 1800), "ping", "-i 0.1", "192.168.123.1"], stdout = f)
+call(["sudo", "timeout", str(time_list[n - t_id_0]), "ping", "-i 0.1", "192.168.123.1"], stdout = f)
 
 ####################
 # Interval
@@ -33,7 +33,7 @@ print("Sleeping time = {} min".format(time_list[t_id_1] / 60))
 sleep(time_list[t_id_1])
 
 print("Running time = {} min".format(time_list[n - t_id_1] / 60))
-call(["sudo", "timeout", str(time_list[n - t_id_1] + 1800), "ping", "-i 0.1", "192.168.123.1"], stdout = f)
+call(["sudo", "timeout", str(time_list[n - t_id_1]), "ping", "-i 0.1", "192.168.123.1"], stdout = f)
 
 f.close()
 
