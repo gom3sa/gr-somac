@@ -27,6 +27,7 @@ import thread
 import numpy as np
 import copy as cp
 from RandomForest import RandomForestSOMAC
+from EnsembleNNet import EnsembleNNetSOMAC
 
 portid = 200 # Initially no MAC protocol is used. The normal node waits for coordinator's message.
 threshold = 0.1 # Threshold for switching MAC protocol
@@ -198,6 +199,9 @@ class decision(gr.basic_block):
 		rf = RandomForestSOMAC()
 		rf.train(self.train_file)
 
+                nnet = EnsembleNNetSOMAC()
+                nnet.train(self.train_file)
+
     # Detects whether or not a prot switch has just occured
 		# _p: protocol, _pp: previous protocol
 		is_transition = lambda _p, _pp: 1. if _p != _pp else 0.
@@ -240,8 +244,14 @@ class decision(gr.basic_block):
 				np.save(self.backlog_file, log_dict)
 
 				# TODO: Decision {{{
-				prot, gain = rf.decision(log_dict[t])
+				print "Ensemble Neural Network"
+                                prot, gain = nnet.decision(log_dict[t])
 				print "Decision = {}, Current prot = {}, gain = {}%".format(prot, portid, gain * 100)
+
+
+                                print "Random Forest"
+                                prot, gain = rf.decision(log_dict[t])
+                                print "Decision = {}, Current prot = {}, gain = {}%".format(prot, portid, gain * 100)
 
 				if prot != portid:
 					dt = 0

@@ -33,4 +33,5 @@ except ImportError:
 # import any pure python here
 from decision import decision
 from RandomForest import RandomForest
+from EsembleNNet import EsembleNNet
 #

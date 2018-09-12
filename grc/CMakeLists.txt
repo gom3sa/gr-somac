@@ -24,5 +24,6 @@ install(FILES
     somac_metrics_gen.xml
     somac_snr.xml
     somac_metrics_frame.xml
-    somac_RandomForest.xml DESTINATION share/gnuradio/grc/blocks
+    somac_RandomForest.xml
+    somac_EsembleNNet.xml DESTINATION share/gnuradio/grc/blocks
 )
