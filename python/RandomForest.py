@@ -11,7 +11,7 @@ class RandomForest:
     # Trees that are inaccurate by some extent are removed and brand new ones are added
     # There 2 regressors implemented withing this class, 1 for CSMA and another for TDMA
 
-    def __init__(self, n_estimators = 100, max_depth = 2, max_features = "log2", n_new_estimators = 20):
+    def __init__(self, n_estimators = 100, max_depth = 2, max_features = "log2", n_new_estimators = 10):
         
         self.reg = RandomForestRegressor(
             max_depth = max_depth, random_state = 0, n_estimators = n_estimators,
@@ -155,8 +155,8 @@ class RandomForestSOMAC:
         #   1. n_post_prunning: number of samples no 
         self.n_post_prunning = n_post_prunning
         
-        self.csma = RandomForest(n_estimators = 150, max_depth = 5)
-        self.tdma = RandomForest(n_estimators = 150, max_depth = 5)
+        self.csma = RandomForest(n_estimators = 100, max_depth = 5)
+        self.tdma = RandomForest(n_estimators = 100, max_depth = 5)
         
         # Mapping metrics names to ids
         self.map_metric = {

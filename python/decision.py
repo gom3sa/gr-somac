@@ -247,7 +247,7 @@ class decision(gr.basic_block):
 					dt = 0
 
 				# if prediction is different to an extent greater than 20%, switch protocols
-				if portid != prot and gain >= 0.2:
+				if portid != prot and gain >= 0.1:
 					portid = prot
 				#if t % 4 == 0:
 				#	portid = int(1 if portid == 0 else 0)
