@@ -20,7 +20,7 @@ class RandomForest:
 
         self.n_estimators     = n_estimators
         self.n_new_estimators = n_new_estimators
-        self.epsilon          = 0.25 # in order to compute weights
+        self.epsilon          = 0. # in order to compute weights
         self.w                = np.zeros((1, n_estimators))
 
         return
