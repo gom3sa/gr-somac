@@ -27,7 +27,7 @@ import thread
 import numpy as np
 import copy as cp
 from RandomForest import RandomForestSOMAC
-from EnsembleNNet import EnsembleNNetSOMAC
+from EsembleNNet import EnsembleNNetSOMAC
 
 portid = 200 # Initially no MAC protocol is used. The normal node waits for coordinator's message.
 threshold = 0.1 # Threshold for switching MAC protocol
@@ -279,7 +279,7 @@ class decision(gr.basic_block):
 			# Reseting metric counters {{{
 			self.met0, self.met1, self.met2, self.met3, self.met4, \
 				self.met5, self.met6, self.met7, self.met8 = [[] for _ in range(9)]
-			# }}}
+			# }}
 
 			time.sleep(self.dec_gran)
 		# }}} while

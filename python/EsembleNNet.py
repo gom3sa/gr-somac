@@ -92,8 +92,9 @@ class EsembleNNet:
             self.estimators_.append(e)
 
         err = np.array([[self.nrmse(y, e.predict(_x)) for e in self.estimators_]])
+        acc = 1. - err
 
-        self.w = err / np.sum(err) if np.sum(self.w) == 0 else self.w * self.epsilon + (1. - self.epsilon) * err / np.sum(err)
+        self.w = acc / np.sum(acc) if np.sum(self.w) == 0 else self.w * self.epsilon + (1. - self.epsilon) * acc / np.sum(acc)
 
         return
 
@@ -128,6 +129,11 @@ class EsembleNNet:
                 e.fit(batch_x, batch_y)
 
                 self.estimators_.append(e)
+
+                err = np.array([[self.nrmse(y, e.predict(_x)) for e in self.estimators_]])
+                acc = 1. - err
+
+                self.w = acc / np.sum(acc) if np.sum(self.w) == 0 else self.w * self.epsilon + (1. - self.epsilon) * acc / np.sum(acc)
 
         else:
             print("No update. Forest is already full.")

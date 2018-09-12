@@ -63,8 +63,9 @@ class RandomForest:
         self.reg.fit(_x, y)
 
         err = np.array([[self.nrmse(y, e.predict(_x)) for e in self.reg.estimators_]])
+        acc = 1. - err # accuracy
 
-        self.w = err / np.sum(err) if np.sum(self.w) == 0 else self.w * self.epsilon + (1. - self.epsilon) * err / np.sum(err)
+        self.w = acc / np.sum(acc) if np.sum(self.w) == 0 else self.w * self.epsilon + (1. - self.epsilon) * acc / np.sum(acc)
 
         self.reg.set_params(warm_start = True)
         
@@ -142,6 +143,12 @@ class RandomForest:
         if len(self.reg.estimators_) < self.reg.n_estimators:
             print("No. of new estimators = {}".format(self.reg.n_estimators - len(self.reg.estimators_)))
             self.reg.fit(_x, y)
+
+            err = np.array([[self.nrmse(y, e.predict(_x)) for e in self.reg.estimators_]])
+            acc = 1. - err # accuracy
+
+            self.w = acc / np.sum(acc) if np.sum(self.w) == 0 else self.w * self.epsilon + (1. - self.epsilon) * acc / np.sum(acc)
+
         else:
             print("No update. Forest is already full.")
             
