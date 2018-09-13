@@ -71,6 +71,9 @@ class RandomForest:
 
         if np.sum(acc) > 0:
           self.w = acc / np.sum(acc) if np.sum(self.w) == 0 else self.w * self.epsilon + (1. - self.epsilon) * acc / np.sum(acc)
+
+	# This kills the weighting
+	self.w = np.ones((1, self.n_estimators)) / self.n_estimators
  
         return
 
@@ -95,9 +98,12 @@ class RandomForest:
         #y_hat = self.reg.predict(_x)
 
         y_hat = np.array([e.predict(_x) for e in self.reg.estimators_])
-        y_hat = np.dot(self.w, y_hat)
 
-        return float(y_hat)
+	y_hat_ = y_hat
+
+	y_hat = np.dot(self.w, y_hat)
+
+        return float(y_hat), y_hat_
     
     def nrmse(self, y, y_hat):
         # Computes the normalized root mean square error
@@ -135,18 +141,20 @@ class RandomForest:
         
         _x = self.feature_scaling(x)
         
-        err = np.array([self.nrmse(y, e.predict(_x)) for e in self.reg.estimators_])
-        
+        err           = np.array([self.nrmse(y, e.predict(_x)) for e in self.reg.estimators_])
+	argerr        = np.argsort(err)
+        sorted_argerr = [argerr[i] for i in range(len(err) - 1, -1, -1)]
+
         n_estimators = len(self.reg.estimators_)
 
         estimators_  = []
         n = 0 # no. of estimatiors that will be removed
-        for i in range(n_estimators):
-          if err[i] < threshold or n > self.n_new_estimators:
-            estimators_.append(self.reg.estimators_[i])
-          else:
+	for idx in sorted_argerr:
+	  if err[idx] < threshold or n > self.n_new_estimators:
+            estimators_.append(self.reg.estimators_[idx])
+	  else:
             n = n + 1
-        
+  
         self.reg.estimators_ = estimators_
         
         return
@@ -266,8 +274,8 @@ class RandomForestSOMAC:
         ]])
         y = arr["metrics"][self.map_metric["thr"], self.map_aggr["avg"]]
         
-        y_hat_csma = self.csma.predict(x)
-        y_hat_tdma = self.tdma.predict(x)
+        y_hat_csma, y_hat_csma_ = self.csma.predict(x)
+        y_hat_tdma, y_hat_tdma_ = self.tdma.predict(x)
         
         print("Prot: {}, y = {}".format(arr["prot"], y))
         print("y_hat_CSMA = {}, y_hat_TDMA = {}".format(round(y_hat_csma, 2), round(y_hat_tdma, 2)))
@@ -285,6 +293,15 @@ class RandomForestSOMAC:
           ratio = v_csma/v_tdma if v_csma > v_tdma else v_tdma/v_csma
 
         gain = ratio - 1. if ratio > 1. else 0
+
+	# Voting
+	y_hat_csma_ = np.sort(y_hat_csma_)
+	y_hat_tdma_ = np.sort(y_hat_tdma_)
+
+	v_csma_ = np.sum(y_hat_csma_ > y_hat_tdma_)
+	v_tdma_ = np.sum(y_hat_tdma_ > y_hat_csma_)
+
+	prot_ = 0 if v_csma_ > v_tdma_ else 1
 
         # Update parameters of UCB
         self.t = self.t + 1
@@ -304,7 +321,7 @@ class RandomForestSOMAC:
         # If necessary, post-prunning and retraining is made
         self.eval_reg()
         
-        return prot, ratio - 1.
+        return prot, ratio - 1., prot_
     
     def eval_reg(self):
         # Check if it is time for prunning

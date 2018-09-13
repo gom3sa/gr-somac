@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.neural_network import MLPRegressor
 
 class EsembleNNet:
-    def __init__(self, n_estimators = 100, n_neurons = 5, n_new_estimators = 10, bag_size = 1):
+    def __init__(self, n_estimators = 100, n_neurons = 1, n_new_estimators = 10, bag_size = 1):
 
         self.estimators_      = []
 
@@ -80,7 +80,7 @@ class EsembleNNet:
         # Updates the weights according to the accuracy of each predictor
 
         acc = []
-        for e in self.reg.estimators_:
+        for e in self.estimators_:
           nrmse = self.nrmse(y, e.predict(x))
 
           if nrmse > 1:
@@ -92,6 +92,8 @@ class EsembleNNet:
 
         if np.sum(acc) > 0:
           self.w = acc / np.sum(acc) if np.sum(self.w) == 0 else self.w * self.epsilon + (1. - self.epsilon) * acc / np.sum(acc)
+
+	self.w = np.ones((1, self.n_estimators))
  
         return
 
