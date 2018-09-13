@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.neural_network import MLPRegressor
 
 class EsembleNNet:
-    def __init__(self, n_estimators = 100, n_neurons = 5, n_new_estimators = 10, bag_size = 0.5):
+    def __init__(self, n_estimators = 100, n_neurons = 5, n_new_estimators = 10, bag_size = 1):
 
         self.estimators_      = []
 
@@ -10,7 +10,7 @@ class EsembleNNet:
         self.n_neurons        = n_neurons
         self.n_new_estimators = n_new_estimators
         self.bag_size         = bag_size
-        self.epsilon          = 0.25
+        self.epsilon          = 0.0
         self.w                = np.zeros((1, n_estimators))
 
         return
@@ -66,9 +66,10 @@ class EsembleNNet:
         _x = []
         _y = []
         n  = len(y)
+        opts = np.arange(n) # options
 
         for _ in range(int(self.bag_size * n)):
-            idx = np.random.choice(np.arange(n))
+            idx = np.random.choice(opts)
 
             _x.append(x[idx, :])
             _y.append(y[idx])
