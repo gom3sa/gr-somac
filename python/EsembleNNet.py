@@ -76,6 +76,25 @@ class EsembleNNet:
 
         return np.array(_x), np.array(_y)
 
+    def update_weights(self, x, y):
+        # Updates the weights according to the accuracy of each predictor
+
+        acc = []
+        for e in self.reg.estimators_:
+          nrmse = self.nrmse(y, e.predict(_x))
+
+          if nrmse > 1:
+            acc.append(0)
+          else:
+            acc.append(1. - nrmse)
+
+        acc = np.array(acc)
+
+        if np.sum(acc) > 0:
+          self.w = acc / np.sum(acc) if np.sum(self.w) == 0 else self.w * self.epsilon + (1. - self.epsilon) * acc / np.sum(acc)
+ 
+        return
+
     def fit(self, x, y):
         # Fits the training set data and enables warm_start for following updates on the model
 
@@ -92,10 +111,7 @@ class EsembleNNet:
 
             self.estimators_.append(e)
 
-        err = np.array([[self.nrmse(y, e.predict(_x)) for e in self.estimators_]])
-        acc = 1. - err
-
-        self.w = acc / np.sum(acc) if np.sum(self.w) == 0 else self.w * self.epsilon + (1. - self.epsilon) * acc / np.sum(acc)
+        self.update_weights(_x, y)
 
         return
 
@@ -131,10 +147,7 @@ class EsembleNNet:
 
                 self.estimators_.append(e)
 
-            err = np.array([[self.nrmse(y, e.predict(_x)) for e in self.estimators_]])
-            acc = 1. - err
-
-            self.w = acc / np.sum(acc) if np.sum(self.w) == 0 else self.w * self.epsilon + (1. - self.epsilon) * acc / np.sum(acc)
+            self.update_weights(_x, y)
 
         else:
             print("No update. Forest is already full.")
