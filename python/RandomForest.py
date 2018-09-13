@@ -60,20 +60,20 @@ class RandomForest:
 
         acc = []
         for e in self.reg.estimators_:
-          nrmse = self.nrmse(y, e.predict(x))
+            nrmse = self.nrmse(y, e.predict(x))
 
-          if nrmse > 1:
-            acc.append(0)
-          else:
-            acc.append(1. - nrmse)
+            if nrmse > 1:
+                acc.append(0)
+            else:
+                acc.append(1. - nrmse)
 
         acc = np.array(acc)
 
         if np.sum(acc) > 0:
-          self.w = acc / np.sum(acc) if np.sum(self.w) == 0 else self.w * self.epsilon + (1. - self.epsilon) * acc / np.sum(acc)
+            self.w = acc / np.sum(acc) if np.sum(self.w) == 0 else self.w * self.epsilon + (1. - self.epsilon) * acc / np.sum(acc)
 
-	# This kills the weighting
-	self.w = np.ones((1, self.n_estimators)) / self.n_estimators
+            # This kills the weighting
+            self.w = np.ones((1, self.n_estimators)) / self.n_estimators
  
         return
 
@@ -83,6 +83,8 @@ class RandomForest:
         _x = self.feature_scaling_trainingset(x)
         
         self.reg.fit(_x, y)
+
+        self.nrmse = np.mean([self.nrmse(y, e.predict(_x)) for e in self.reg.estimators_])
 
         self.update_weights(_x, y)
 
@@ -99,9 +101,9 @@ class RandomForest:
 
         y_hat = np.array([e.predict(_x) for e in self.reg.estimators_])
 
-	y_hat_ = y_hat
+        y_hat_ = y_hat
 
-	y_hat = np.dot(self.w, y_hat)
+        y_hat = np.dot(self.w, y_hat)
 
         return float(y_hat), y_hat_
     
@@ -142,25 +144,25 @@ class RandomForest:
         _x = self.feature_scaling(x)
         
         err           = np.array([self.nrmse(y, e.predict(_x)) for e in self.reg.estimators_])
-	argerr        = np.argsort(err)
+        argerr        = np.argsort(err)
         sorted_argerr = [argerr[i] for i in range(len(err) - 1, -1, -1)]
 
         n_estimators = len(self.reg.estimators_)
 
         estimators_  = []
         n = 0 # no. of estimatiors that will be removed
-	for idx in sorted_argerr:
-	  if err[idx] < threshold or n > self.n_new_estimators:
-            estimators_.append(self.reg.estimators_[idx])
-	  else:
-            n = n + 1
+        for idx in sorted_argerr:
+            if err[idx] < threshold or n > self.n_new_estimators:
+                estimators_.append(self.reg.estimators_[idx])
+            else:
+                n = n + 1
   
         self.reg.estimators_ = estimators_
         
         return
     
     def update(self, x, y):
-        # Given a pruned forest, it inserts new trees based on new data
+      # Given a pruned forest, it inserts new trees based on new data
         
         _x = self.feature_scaling(x)
         
@@ -168,7 +170,12 @@ class RandomForest:
             print("No. of new estimators = {}".format(self.reg.n_estimators - len(self.reg.estimators_)))
             self.reg.fit(_x, y)
 
+            nrmse = np.mean([self.nrmse(y, e.predict(_x)) for e in self.reg.estimators_])
+
+            self.nrmse = self.nrmse * 0.25 + 0.75 * nrmse
+
             self.update_weights(_x, y)
+
         else:
             print("No update. Forest is already full.")
             
@@ -290,18 +297,19 @@ class RandomForestSOMAC:
 
         ratio = 0
         if v_csma > 0 and v_tdma > 0:
-          ratio = v_csma/v_tdma if v_csma > v_tdma else v_tdma/v_csma
+            ratio = v_csma/v_tdma if v_csma > v_tdma else v_tdma/v_csma
 
         gain = ratio - 1. if ratio > 1. else 0
 
-	# Voting
-	y_hat_csma_ = np.sort(y_hat_csma_)
-	y_hat_tdma_ = np.sort(y_hat_tdma_)
+	    # Voting
+        print("CSMA NRMSE = {}, TDMA NRMSE = {}".format(round(self.csma.nrmse, 2), round(self.tdma.nrmse, 2)))
+        y_hat_csma_ = np.sort(y_hat_csma_) * (1. - self.csma.nrmse)
+        y_hat_tdma_ = np.sort(y_hat_tdma_) * (1. - self.tdma.nrmse)
 
-	v_csma_ = np.sum(y_hat_csma_ > y_hat_tdma_)
-	v_tdma_ = np.sum(y_hat_tdma_ > y_hat_csma_)
+        v_csma_ = np.sum(y_hat_csma_ > y_hat_tdma_)
+        v_tdma_ = np.sum(y_hat_tdma_ > y_hat_csma_)
 
-	prot_ = 0 if v_csma_ > v_tdma_ else 1
+        prot_ = 0 if v_csma_ > v_tdma_ else 1
 
         # Update parameters of UCB
         self.t = self.t + 1
