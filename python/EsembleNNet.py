@@ -81,7 +81,7 @@ class EsembleNNet:
 
         acc = []
         for e in self.reg.estimators_:
-          nrmse = self.nrmse(y, e.predict(_x))
+          nrmse = self.nrmse(y, e.predict(x))
 
           if nrmse > 1:
             acc.append(0)
