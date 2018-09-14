@@ -72,8 +72,8 @@ class RandomForest:
 		if np.sum(acc) > 0:
 			self.w = acc / np.sum(acc) if np.sum(self.w) == 0 else self.w * self.epsilon + (1. - self.epsilon) * acc / np.sum(acc)
 
-			# This kills the weighting
-			self.w = np.ones((1, self.n_estimators)) / self.n_estimators
+		# This kills the weighting
+		self.w = np.ones((1, self.n_estimators)) / self.n_estimators
  
 		return
 
@@ -84,9 +84,10 @@ class RandomForest:
 		
 		self.reg.fit(_x, y)
 
-		self.nrmse = np.mean([self._nrmse(y, e.predict(_x)) for e in self.reg.estimators_])
+		#self.nrmse = np.mean([self._nrmse(y, e.predict(_x)) for e in self.reg.estimators_])
 
 		self.update_weights(_x, y)
+		#self.err = np.mean([np.mean(y - e.predict(_x)) for e in self.reg.estimators_])
 
 		self.reg.set_params(warm_start = True)
 		
@@ -143,8 +144,8 @@ class RandomForest:
 		
 		_x = self.feature_scaling(x)
 		
-		err 		  = np.array([self._nrmse(y, e.predict(_x)) for e in self.reg.estimators_])
-		argerr		  = np.argsort(err)
+		err           = np.array([self._nrmse(y, e.predict(_x)) for e in self.reg.estimators_])
+		argerr        = np.argsort(err)
 		sorted_argerr = [argerr[i] for i in range(len(err) - 1, -1, -1)]
 
 		n_estimators = len(self.reg.estimators_)
@@ -172,7 +173,8 @@ class RandomForest:
 
 			nrmse = np.mean([self._nrmse(y, e.predict(_x)) for e in self.reg.estimators_])
 
-			self.nrmse = self.nrmse * 0.25 + 0.75 * nrmse
+			#self.nrmse = self.nrmse * 0.75 + 0.25 * nrmse
+			#self.err = np.mean([np.mean(y - e.predict(_x)) for e in self.reg.estimators_])
 
 			self.update_weights(_x, y)
 
@@ -221,12 +223,10 @@ class RandomForestSOMAC:
 		
 		# UCB (Upper-Confidence-Bound) parameters
 		# This first set of parameters are argument of log() and denominators, so must be > 0
-		self.n_csma	= 1
-		self.n_tdma	= 1
-		self.t		 = 1
-		
-		self.c		 = 5 # this value should be evaluated
-		
+		self.n_csma    = 1
+		self.n_tdma    = 1
+		self.t	       = 1
+		self.c         = 5 # this value should be evaluated
 		self.rmse_csma = 0
 		self.rmse_tdma = 0
 		
@@ -302,12 +302,13 @@ class RandomForestSOMAC:
 		gain = ratio - 1. if ratio > 1. else 0
 
 		# Voting
-		print("CSMA NRMSE = {}, TDMA NRMSE = {}".format(round(self.csma.nrmse, 2), round(self.tdma.nrmse, 2)))
-		y_hat_csma_ = np.sort(y_hat_csma_) * (1. - self.csma.nrmse)
-		y_hat_tdma_ = np.sort(y_hat_tdma_) * (1. - self.tdma.nrmse)
+		y_hat_csma_ = np.sort(y_hat_csma_) # + self.csma.err + self.c * np.sqrt(np.log(self.t) / self.n_csma)
+		y_hat_tdma_ = np.sort(y_hat_tdma_) # + self.tdma.err + self.c * np.sqrt(np.log(self.t) / self.n_tdma)
 
 		v_csma_ = np.sum(y_hat_csma_ > y_hat_tdma_)
-		v_tdma_ = np.sum(y_hat_tdma_ > y_hat_csma_)
+		v_tdma_ = np.sum(y_hat_csma_ <= y_hat_tdma_)
+
+		print("v_csma_ = {}, v_tdma_ = {}".format(v_csma_, v_tdma_))
 
 		prot_ = 0 if v_csma_ > v_tdma_ else 1
 

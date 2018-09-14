@@ -199,10 +199,10 @@ class decision(gr.basic_block):
 		rf = RandomForestSOMAC()
 		rf.train(self.train_file)
 
-                nnet = EnsembleNNetSOMAC()
-                nnet.train(self.train_file)
+                #nnet = EnsembleNNetSOMAC()
+                #nnet.train(self.train_file)
 
-    # Detects whether or not a prot switch has just occured
+		# Detects whether or not a prot switch has just occured
 		# _p: protocol, _pp: previous protocol
 		is_transition = lambda _p, _pp: 1. if _p != _pp else 0.
 
@@ -244,14 +244,15 @@ class decision(gr.basic_block):
 				np.save(self.backlog_file, log_dict)
 
 				# TODO: Decision {{{
-				print "Ensemble Neural Network"
-                                prot, gain = nnet.decision(log_dict[t])
-				print "Decision = {}, Current prot = {}, gain = {}%".format(prot, portid, gain * 100)
+				#print "Ensemble Neural Network"
+                                #prot, gain = nnet.decision(log_dict[t])
+				#print "Decision = {}, Current prot = {}, gain = {}%".format(prot, portid, gain * 100)
 
 
                                 print "Random Forest"
                                 prot, gain, prot_ = rf.decision(log_dict[t])
                                 print "Decision = {}, Current prot = {}, gain = {}%\t|\tprot_ = {}".format(prot, portid, gain * 100, prot_)
+				prot = prot_
 
 				if prot != portid:
 					dt = 0
@@ -259,6 +260,9 @@ class decision(gr.basic_block):
 				# if prediction is different to an extent greater than 20%, switch protocols
 				if portid != prot and gain >= 0.1:
 					portid = prot
+				# following line bypasses threshold
+				portid = prot # comment if NOT using votting
+
 				#if t % 4 == 0:
 				#	portid = int(1 if portid == 0 else 0)
 				#	print "t = {}, portid = {}".format(t, portid)
