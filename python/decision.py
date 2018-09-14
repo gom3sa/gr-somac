@@ -248,7 +248,6 @@ class decision(gr.basic_block):
                                 #prot, gain = nnet.decision(log_dict[t])
 				#print "Decision = {}, Current prot = {}, gain = {}%".format(prot, portid, gain * 100)
 
-
                                 print "Random Forest"
                                 prot, gain, prot_ = rf.decision(log_dict[t])
                                 print "Decision = {}, Current prot = {}, gain = {}%\t|\tprot_ = {}".format(prot, portid, gain * 100, prot_)
