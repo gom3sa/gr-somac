@@ -2,6 +2,7 @@
 # The Federal University of Minas Gerais <ufmg.br>
 
 import numpy as np
+import scipy.stats as st
 from sklearn.ensemble import RandomForestRegressor
 
 class RandomForest:
@@ -11,11 +12,12 @@ class RandomForest:
 	# Trees that are inaccurate by some extent are removed and brand new ones are added
 	# There 2 regressors implemented withing this class, 1 for CSMA and another for TDMA
 
-	def __init__(self, n_estimators = 100, max_depth = 2, max_features = "log2", n_new_estimators = 10):
+	def __init__(self, n_estimators = 50, max_depth = 2, max_features = "log2", n_new_estimators = 5):
 		
 		self.reg = RandomForestRegressor(
 			max_depth = max_depth, random_state = 0, n_estimators = n_estimators,
-			warm_start = False, bootstrap = True, max_features = max_features
+			warm_start = False, bootstrap = True, max_features = max_features, 
+			min_samples_leaf = 3
 		)
 
 		self.n_estimators	 = n_estimators
@@ -102,6 +104,18 @@ class RandomForest:
 
 		y_hat = np.array([e.predict(_x) for e in self.reg.estimators_])
 
+		# Confidence Interval
+		lower, upper = st.t.interval(0.95, len(y_hat) - 1, loc = np.mean(y_hat), scale = st.sem(y_hat))
+		print("Confidence Interval = {}, {}".format(lower, upper))
+		#print("y_hat = {}".format(np.sort(y_hat[:, 0])))
+
+		n = len(y_hat)
+		lower_idx = int(0.1 * n)
+		upper_idx = int(0.9 * n)
+		y_hat_sorted = np.sort(y_hat)
+		y_hat_sorted = y_hat_sorted[lower_idx : upper_idx]
+		print("y_hat_sorted mean = {}".format(round(np.mean(y_hat_sorted), 2)))
+
 		y_hat_ = y_hat
 
 		y_hat = np.dot(self.w, y_hat)
@@ -153,7 +167,7 @@ class RandomForest:
 		estimators_  = []
 		n = 0 # no. of estimatiors that will be removed
 		for idx in sorted_argerr:
-			if err[idx] < threshold or n > self.n_new_estimators:
+			if err[idx] < threshold or n >= self.n_new_estimators:
 				estimators_.append(self.reg.estimators_[idx])
 			else:
 				n = n + 1
@@ -191,8 +205,8 @@ class RandomForestSOMAC:
 		#   1. n_post_prunning: number of samples no 
 		self.n_post_prunning = n_post_prunning
 		
-		self.csma = RandomForest(n_estimators = 100, max_depth = 5)
-		self.tdma = RandomForest(n_estimators = 100, max_depth = 5)
+		self.csma = RandomForest(n_estimators = 50, max_depth = 5)
+		self.tdma = RandomForest(n_estimators = 50, max_depth = 5)
 		
 		# Mapping metrics names to ids
 		self.map_metric = {
@@ -204,11 +218,11 @@ class RandomForestSOMAC:
 		
 		# Metrics that will be used by the ML algorithm
 		self.in_metric = [
-			"interpkt", "interpkt", "interpkt", "snr", "snr", "snr", "bsz", "bsz"
+			"interpkt", "interpkt", "bsz", "bsz", "snr"
 		]
 
 		self.in_aggr = [
-			"avg", "sum", "max", "min", "avg", "max", "avg", "sum"
+			"avg", "sum", "sum", "avg", "min"
 		]
 		
 		self.out_metric = "thr"
