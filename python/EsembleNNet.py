@@ -3,16 +3,16 @@ import scipy.stats as st
 from sklearn.neural_network import MLPRegressor
 
 class EsembleNNet:
-	def __init__(self, n_estimators = 100, n_neurons = 1, n_new_estimators = 10, bag_size = 1):
+	def __init__(self, n_estimators = 100, n_neurons = 5, n_new_estimators = 10, bag_size = 1):
 
-		self.estimators_		= []
+		self.estimators_	= []
 
-		self.n_estimators	 = n_estimators
+		self.n_estimators	= n_estimators
 		self.n_neurons		= n_neurons
-		self.n_new_estimators = n_new_estimators
-		self.bag_size		 = bag_size
-		self.epsilon			= 0.0
-		self.w				= np.zeros((1, n_estimators))
+		self.n_new_estimators 	= n_new_estimators
+		self.bag_size		= bag_size
+		self.epsilon		= 0.0
+		self.w			= np.zeros((1, n_estimators))
 
 		return
 
@@ -210,11 +210,11 @@ class EnsembleNNetSOMAC:
 
 		# Metrics that will be used by the ML algorithm
 		self.in_metric = [
-			"interpkt", "interpkt", "interpkt", "snr", "snr", "snr", "bsz", "bsz"
+			"interpkt", "interpkt", "snr", "bsz", "bsz"
 		]
 
 		self.in_aggr = [
-			"avg", "sum", "max", "min", "avg", "max", "avg", "sum"
+			"avg", "sum", "min", "avg", "sum"
 		]
 
 		self.out_metric = "thr"
