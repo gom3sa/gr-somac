@@ -2,7 +2,7 @@ import numpy as np
 import scipy.stats as st
 from sklearn.neural_network import MLPRegressor
 
-class EsembleNNet:
+class EnsembleNNet:
 	def __init__(self, n_estimators = 100, n_neurons = 5, n_new_estimators = 10, bag_size = 0.6):
 
 		self.estimators_	  = []

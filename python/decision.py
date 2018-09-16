@@ -27,7 +27,7 @@ import thread
 import numpy as np
 import copy as cp
 from RandomForest import RandomForest
-from EsembleNNet import EsembleNNet
+from EnsembleNNet import EnsembleNNet
 from SOMAC import SOMAC
 
 portid = 200 # Initially no MAC protocol is used. The normal node waits for coordinator's message.

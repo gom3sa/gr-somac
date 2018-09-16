@@ -33,7 +33,8 @@ GR_PYTHON_INSTALL(
     __init__.py
     decision.py
     RandomForest.py
-    EsembleNNet.py DESTINATION ${GR_PYTHON_DIR}/somac
+    SOMAC.py
+    EnsembleNNet.py DESTINATION ${GR_PYTHON_DIR}/somac
 )
 
 ########################################################################
