@@ -26,8 +26,9 @@ import time
 import thread
 import numpy as np
 import copy as cp
-from RandomForest import RandomForestSOMAC
-from EsembleNNet import EnsembleNNetSOMAC
+from RandomForest import RandomForest
+from EsembleNNet import EsembleNNet
+from SOMAC import SOMAC
 
 portid = 200 # Initially no MAC protocol is used. The normal node waits for coordinator's message.
 threshold = 0.1 # Threshold for switching MAC protocol
@@ -196,8 +197,9 @@ class decision(gr.basic_block):
 		prev_portid = portid
 
 		# ML modules
-		rf = RandomForestSOMAC()
-		rf.train(self.train_file)
+		somac = SOMAC(reg_csma = EsembleNNet(n_new_estimators = 10, n_neurons = 3, bag_size = 1),
+					  reg_tdma = EsembleNNet(n_new_estimators = 10, n_neurons = 3, bag_size = 1))
+		somac.train(self.train_file)
 
                 #nnet = EnsembleNNetSOMAC()
                 #nnet.train(self.train_file)
@@ -244,14 +246,8 @@ class decision(gr.basic_block):
 				np.save(self.backlog_file, log_dict)
 
 				# TODO: Decision {{{
-				#print "Ensemble Neural Network"
-                                #prot, gain = nnet.decision(log_dict[t])
-				#print "Decision = {}, Current prot = {}, gain = {}%".format(prot, portid, gain * 100)
-
 				print "Random Forest"
-				prot, gain, prot_ = rf.decision(log_dict[t])
-				print "Decision = {}, Current prot = {}, gain = {}%\t|\tprot_ = {}".format(prot, portid, gain * 100, prot_)
-				prot = prot_
+				prot = somac.decision(log_dict[t])
 
 				if prot != portid:
 					dt = 0
@@ -259,8 +255,6 @@ class decision(gr.basic_block):
 				# if prediction is different to an extent greater than 20%, switch protocols
 				if portid != prot and gain >= 0.1:
 					portid = prot
-				# following line bypasses threshold
-				portid = prot # comment if NOT using votting
 
 				#if t % 4 == 0:
 				#	portid = int(1 if portid == 0 else 0)
