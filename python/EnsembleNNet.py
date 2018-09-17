@@ -67,6 +67,13 @@ class EnsembleNNet:
 
 		return MAE
 
+	def _me(self, y = 0, y_hat = 0):
+		# Mean Error
+
+		ME = np.mean(y - y_hat) / len(y)
+
+		return ME
+
 	def bagging(self, x, y):
 
 		_x = []
@@ -117,6 +124,10 @@ class EnsembleNNet:
 
 		self.update_weights(_x, y)
 
+		y_hat = self.predict(x)
+
+		self.me = self._me(y, y_hat)
+
 		return
 
 	def predict(self, x):
@@ -126,16 +137,9 @@ class EnsembleNNet:
 
 		y_hat = np.array([e.predict(_x) for e in self.estimators_])
 
-		# Confidence Interval
-		#print("Confidence Interval = {}, {}".format(lower, upper))
-		#print("y_hat = {}".format(np.sort(y_hat[:, 0])))
-
-		#print("w = {}".format(self.w))
-		#print("y_hat = {}".format(y_hat))
-
 		y_hat = np.dot(self.w, y_hat)
 
-		return float(y_hat)
+		return y_hat
 
 	def update(self, x, y):
 		# Given a pruned forest, it inserts new trees based on new data
@@ -161,6 +165,13 @@ class EnsembleNNet:
 
 			self.update_weights(_x, y)
 
+			y_hat = self.predict(x)
+
+
+			# Update Mean Error
+			alpha = 0.75
+			self.me = self.me * alpha + (1. - alpha) * self._me(y, y_hat)
+
 		else:
 			print("No update. Forest is already full.")
 
@@ -182,7 +193,7 @@ class EnsembleNNet:
 
 		n_estimators = len(self.estimators_)
 
-		estimators_	= []
+		estimators_ = []
 		n = 0 # no. of estimatiors that will be removed
 		for i in sorted_argerr:
 			if err[i] < threshold or n >= self.n_new_estimators:

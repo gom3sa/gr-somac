@@ -73,6 +73,13 @@ class RandomForest:
  
 		return
 
+	def _me(self, y = 0, y_hat = 0):
+		# Mean Error
+
+		ME = np.mean(y - y_hat) / len(y)
+
+		return ME
+
 	def fit(self, x, y):
 		# Fits the training set data and enables warm_start for following updates on the model
 		
@@ -84,6 +91,9 @@ class RandomForest:
 
 		self.update_weights(_x, y)
 		#self.err = np.mean([np.mean(y - e.predict(_x)) for e in self.reg.estimators_])
+
+		y_hat = self.reg.predict(_x)
+		self.me = self._me(y, y_hat)
 
 		self.reg.set_params(warm_start = True)
 		
@@ -99,8 +109,8 @@ class RandomForest:
 		y_hat = np.array([e.predict(_x) for e in self.reg.estimators_])
 
 		# Confidence Interval
-		lower, upper = st.t.interval(0.95, len(y_hat) - 1, loc = np.mean(y_hat), scale = st.sem(y_hat))
-		print("Confidence Interval = {}, {}".format(lower, upper))
+		#lower, upper = st.t.interval(0.95, len(y_hat) - 1, loc = np.mean(y_hat), scale = st.sem(y_hat))
+		#print("Confidence Interval = {}, {}".format(lower, upper))
 		#print("y_hat = {}".format(np.sort(y_hat[:, 0])))
 
 		n = len(y_hat)
@@ -112,7 +122,7 @@ class RandomForest:
 
 		y_hat = np.dot(self.w, y_hat)
 
-		return float(y_hat)
+		return y_hat
 	
 	def _nrmse(self, y, y_hat):
 		# Computes the normalized root mean square error
@@ -162,7 +172,7 @@ class RandomForest:
 
 		n_estimators = len(self.reg.estimators_)
 
-		estimators_  = []
+		estimators_ = []
 		n = 0 # no. of estimatiors that will be removed
 		for idx in sorted_argerr:
 			if err[idx] < threshold or n >= self.n_new_estimators:
@@ -189,6 +199,11 @@ class RandomForest:
 			#self.err = np.mean([np.mean(y - e.predict(_x)) for e in self.reg.estimators_])
 
 			self.update_weights(_x, y)
+
+			# Update Mean Error
+			y_hat = self.predict(x)
+			alpha = 0.75
+			self.me = self.me * alpha + (1. - alpha) * self._me(y, y_hat)
 
 		else:
 			print("No update. Forest is already full.")

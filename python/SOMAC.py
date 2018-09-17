@@ -30,11 +30,11 @@ class SOMAC:
 		#	"avg", "sum", "sum", "avg"
 		#]
 		self.in_metric = [
-			"interpkt", "interpkt", "snr", "bsz", "bsz", "contention", "contention"
+			"interpkt", "interpkt", "snr", "bsz", "bsz"
 		]
 
 		self.in_aggr = [
-			"avg", "sum", "min", "avg", "sum", "avg", "sum"
+			"avg", "sum", "min", "avg", "sum"
 		]
 		
 		self.out_metric = "thr"
@@ -109,19 +109,22 @@ class SOMAC:
 		
 		y_hat_csma = self.csma.predict(x)
 		y_hat_tdma = self.tdma.predict(x)
+
+		# Update Mean Error
+		alpha = 0.95
+		self.csma.me = self.csma.me * alpha + (1. - alpha) * self.csma._me(y - y_hat_csma)
+		self.tdma.me = self.tdma.me * alpha + (1. - alpha) * self.tdma._me(y - y_hat_tdma)
 		
 		print("Prot: {}, y = {}".format(arr["prot"], y))
 		print("y_hat_CSMA = {}, y_hat_TDMA = {}".format(round(y_hat_csma, 2), round(y_hat_tdma, 2)))
 		
 		# UCB based decision
-		v_csma = float(y_hat_csma)# - self.rmse_csma + self.c * np.sqrt(np.log(self.t) / self.n_csma))
-		v_tdma = float(y_hat_tdma)# - self.rmse_tdma + self.c * np.sqrt(np.log(self.t) / self.n_tdma))
+		v_csma = float(y_hat_csma) + self.csma.me # - self.rmse_csma + self.c * np.sqrt(np.log(self.t) / self.n_csma))
+		v_tdma = float(y_hat_tdma) + self.tdma.me # - self.rmse_tdma + self.c * np.sqrt(np.log(self.t) / self.n_tdma))
 		
 		prot  = np.argmax([v_csma, v_tdma])
 
 		print("Evaluation: v_csma = {}, v_tdma = {}".format(round(v_csma, 2), round(v_tdma, 2)))
-		err = np.abs(y - y_hat_csma) if curr_prot == 0 else np.abs(y - y_hat_tdma)
-		print("Error = {}".format(err))
 
 		# Update parameters of UCB
 		self.t = self.t + 1
@@ -140,8 +143,15 @@ class SOMAC:
 		# Evaluate regressors
 		# If necessary, post-prunning and retraining is made
 		self.eval_reg()
+
+		gain = 0.
+		if v_csma > 0 and v_tdma > 0:
+			gain = np.abs((v_csma - v_tdma) / v_csma) if v_csma > v_tdma \
+				else np.abs((v_tdma - v_csma) / v_tdma)
+
+		print("Gain = {}".format(gain))
 		
-		return prot
+		return prot, gain
 	
 	def eval_reg(self):
 		# Check if it is time for prunning

@@ -44,14 +44,14 @@ class decision(gr.basic_block):
 
 		gr.basic_block.__init__(self, name="decision", in_sig=None, out_sig=None)
 
-		self.coord = coord # Is coordinator? 
-		self.dec_gran = dec_gran # Granularity of decision
-		self.broad_gran = broad_gran
+		self.coord        = coord # Is coordinator? 
+		self.dec_gran     = dec_gran # Granularity of decision
+		self.broad_gran   = broad_gran
 		self.metrics_gran = metrics_gran
 		self.backlog_file = backlog_file
-		self.train_file = train_file
-		self.ml_alg = ml_alg
-		self.onoff_learn = onoff_learn
+		self.train_file   = train_file
+		self.ml_alg       = ml_alg
+		self.onoff_learn  = onoff_learn
 
 		self.met0, self.met1, self.met2, self.met3, self.met4, \
 			self.met5, self.met6, self.met7, self.met8 = [[] for _ in range(9)]    
@@ -108,9 +108,9 @@ class decision(gr.basic_block):
 		self.set_msg_handler(self.msg_port_met_in8, self.met_in8)
 
 		# Output ports
-		self.msg_port_ctrl_out = pmt.intern('ctrl out')
+		self.msg_port_ctrl_out    = pmt.intern('ctrl out')
 		self.message_port_register_out(self.msg_port_ctrl_out)
-		self.msg_port_broad_out = pmt.intern('broad out')
+		self.msg_port_broad_out   = pmt.intern('broad out')
 		self.message_port_register_out(self.msg_port_broad_out)
 		self.msg_port_metrics_out = pmt.intern('metrics out')
 		self.message_port_register_out(self.msg_port_metrics_out)
@@ -197,13 +197,13 @@ class decision(gr.basic_block):
 		prev_portid = portid
 
 		# ML modules
+		#somac = SOMAC(
+		#	reg_csma = EnsembleNNet(n_new_estimators = 10, n_neurons = 3, bag_size = 1),
+		#	reg_tdma = EnsembleNNet(n_new_estimators = 10, n_neurons = 3, bag_size = 1))
 		somac = SOMAC(
-			reg_csma = EnsembleNNet(n_new_estimators = 10, n_neurons = 3, bag_size = 1),
-			reg_tdma = EnsembleNNet(n_new_estimators = 10, n_neurons = 3, bag_size = 1))
+			reg_csma = RandomForest(n_estimators = 100, max_depth = 5, max_features = "log2", n_new_estimators = 10),
+			reg_tdma = RandomForest(n_estimators = 100, max_depth = 5, max_features = "log2", n_new_estimators = 10))
 		somac.train(self.train_file)
-
-                #nnet = EnsembleNNetSOMAC()
-                #nnet.train(self.train_file)
 
 		# Detects whether or not a prot switch has just occured
 		# _p: protocol, _pp: previous protocol
@@ -247,14 +247,14 @@ class decision(gr.basic_block):
 				np.save(self.backlog_file, log_dict)
 
 				# TODO: Decision {{{
-				prot = somac.decision(log_dict[t])
+				prot, gain = somac.decision(log_dict[t])
 
 				if prot != portid:
 					dt = 0
 
 				# if prediction is different to an extent greater than 20%, switch protocols
-				#if portid != prot and gain >= 0.1:
-				portid = prot
+				if portid != prot and gain >= 0.1:
+					portid = prot
 
 				#if t % 4 == 0:
 				#	portid = int(1 if portid == 0 else 0)
