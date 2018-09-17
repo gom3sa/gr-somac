@@ -197,8 +197,9 @@ class decision(gr.basic_block):
 		prev_portid = portid
 
 		# ML modules
-		somac = SOMAC(reg_csma = EsembleNNet(n_new_estimators = 10, n_neurons = 3, bag_size = 1),
-					  reg_tdma = EsembleNNet(n_new_estimators = 10, n_neurons = 3, bag_size = 1))
+		somac = SOMAC(
+			reg_csma = EnsembleNNet(n_new_estimators = 10, n_neurons = 3, bag_size = 1),
+			reg_tdma = EnsembleNNet(n_new_estimators = 10, n_neurons = 3, bag_size = 1))
 		somac.train(self.train_file)
 
                 #nnet = EnsembleNNetSOMAC()
@@ -246,15 +247,14 @@ class decision(gr.basic_block):
 				np.save(self.backlog_file, log_dict)
 
 				# TODO: Decision {{{
-				print "Random Forest"
 				prot = somac.decision(log_dict[t])
 
 				if prot != portid:
 					dt = 0
 
 				# if prediction is different to an extent greater than 20%, switch protocols
-				if portid != prot and gain >= 0.1:
-					portid = prot
+				#if portid != prot and gain >= 0.1:
+				portid = prot
 
 				#if t % 4 == 0:
 				#	portid = int(1 if portid == 0 else 0)

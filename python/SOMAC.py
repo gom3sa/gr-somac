@@ -30,11 +30,11 @@ class SOMAC:
 		#	"avg", "sum", "sum", "avg"
 		#]
 		self.in_metric = [
-			"interpkt", "interpkt", "snr", "bsz", "bsz"
+			"interpkt", "interpkt", "snr", "bsz", "bsz", "contention", "contention"
 		]
 
 		self.in_aggr = [
-			"avg", "sum", "min", "avg", "sum"
+			"avg", "sum", "min", "avg", "sum", "avg", "sum"
 		]
 		
 		self.out_metric = "thr"
