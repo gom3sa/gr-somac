@@ -20,9 +20,9 @@ class RandomForest:
 			min_samples_leaf = 3
 		)
 
-		self.n_estimators	 = n_estimators
+		self.n_estimators     = n_estimators
 		self.n_new_estimators = n_new_estimators
-		self.w				= np.zeros((1, n_estimators))
+		self.w                = np.zeros((1, n_estimators))
 
 		return
 	
@@ -56,7 +56,7 @@ class RandomForest:
 				
 		return _x	  
 
-	def update_weights(self, x, y):
+	def calc_weights(self, x, y):
 		# Updates the weights according to the accuracy of each predictor
 
 		err = []
@@ -70,7 +70,29 @@ class RandomForest:
 		den = np.sum(num)
 
 		self.w = num / den
+
+		self.w = np.ones(self.w.shape)
  
+		return
+
+	def update_weights(self, x, y, update_rate = 0.1):
+		# Updates the weights in a Gradient Descent fashion
+
+		_x = self.feature_scaling(x)
+
+		loss = lambda y, h: float((y - h)**2)
+		hypo = lambda w, e: np.dot(w, e.T) / (e.shape[1] * 1.)
+
+		y_estimators = np.array([[float(e.predict(_x)) for e in self.reg.estimators_]])
+
+		h = hypo(self.w, y_estimators)
+
+		J = loss(y, h)
+
+		dJ = (h - y) * y_estimators
+
+		self.w = self.w - update_rate * dJ
+
 		return
 
 	def _me(self, y = 0, y_hat = 0):
@@ -89,7 +111,7 @@ class RandomForest:
 
 		#self.nrmse = np.mean([self._nrmse(y, e.predict(_x)) for e in self.reg.estimators_])
 
-		self.update_weights(_x, y)
+		self.calc_weights(_x, y)
 		#self.err = np.mean([np.mean(y - e.predict(_x)) for e in self.reg.estimators_])
 
 		y_hat = self.reg.predict(_x)
@@ -106,21 +128,11 @@ class RandomForest:
 		
 		#y_hat = self.reg.predict(_x)
 
-		y_hat = np.array([e.predict(_x) for e in self.reg.estimators_])
+		y_hat = np.array([[e.predict(_x) for e in self.reg.estimators_]])
 
-		# Confidence Interval
-		#lower, upper = st.t.interval(0.95, len(y_hat) - 1, loc = np.mean(y_hat), scale = st.sem(y_hat))
-		#print("Confidence Interval = {}, {}".format(lower, upper))
-		#print("y_hat = {}".format(np.sort(y_hat[:, 0])))
+		print("y_hat.shape = {}".format(y_hat.shape))
 
-		n = len(y_hat)
-		lower_idx = int(0.1 * n)
-		upper_idx = int(0.9 * n)
-		y_hat_sorted = np.sort(y_hat)
-		y_hat_sorted = y_hat_sorted[lower_idx : upper_idx]
-		print("y_hat_sorted mean = {}".format(round(np.mean(y_hat_sorted), 2)))
-
-		y_hat = np.dot(self.w, y_hat)
+		y_hat = np.dot(self.w, y_hat.T) / (y_hat.shape[1] * 1.)
 
 		return y_hat
 	
@@ -129,7 +141,7 @@ class RandomForest:
 		
 		nrmse = 0
 		y_avg = np.mean(y)
-		n	 = len(y)
+		n     = len(y)
 		
 		assert(n > 0), "len(y) must be greater than 0"
 		
@@ -198,7 +210,7 @@ class RandomForest:
 			#self.nrmse = self.nrmse * 0.75 + 0.25 * nrmse
 			#self.err = np.mean([np.mean(y - e.predict(_x)) for e in self.reg.estimators_])
 
-			self.update_weights(_x, y)
+			#self.calc_weights(_x, y)
 
 			# Update Mean Error
 			y_hat = self.predict(x)

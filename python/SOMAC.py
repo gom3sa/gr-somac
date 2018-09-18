@@ -106,14 +106,24 @@ class SOMAC:
 			 for (met, aggr) in (zip(self.in_metric, self.in_aggr))
 		]])
 		y = arr["metrics"][self.map_metric["thr"], self.map_aggr["avg"]]
-		
+	
+		# Update weights
+		if curr_prot == 0: # CSMA
+			self.csma.update_weights(x, y, update_rate = 0.01)
+		elif curr_prot == 1: # TDMA
+			self.tdma.update_weights(x, y, update_rate = 0.01)
+	
 		y_hat_csma = self.csma.predict(x)
 		y_hat_tdma = self.tdma.predict(x)
 
 		# Update Mean Error
 		alpha = 0.95
-		self.csma.me = self.csma.me * alpha + (1. - alpha) * self.csma._me(y - y_hat_csma)
-		self.tdma.me = self.tdma.me * alpha + (1. - alpha) * self.tdma._me(y - y_hat_tdma)
+		# WARNING!
+		# A atualização dos erros deveria acontecer somente para o protocolo atual!!!
+		if curr_prot == 0:
+			self.csma.me = self.csma.me * alpha + (1. - alpha) * self.csma._me(y - y_hat_csma)
+		elif curr_prot == 1:
+			self.tdma.me = self.tdma.me * alpha + (1. - alpha) * self.tdma._me(y - y_hat_tdma)
 		
 		print("Prot: {}, y = {}".format(arr["prot"], y))
 		print("y_hat_CSMA = {}, y_hat_TDMA = {}".format(round(y_hat_csma, 2), round(y_hat_tdma, 2)))
@@ -145,7 +155,7 @@ class SOMAC:
 		self.eval_reg()
 
 		gain = 0.
-		if v_csma > 0 and v_tdma > 0:
+		if v_csma != 0 and v_tdma != 0:
 			gain = np.abs((v_csma - v_tdma) / v_csma) if v_csma > v_tdma \
 				else np.abs((v_tdma - v_csma) / v_tdma)
 

@@ -246,22 +246,20 @@ class decision(gr.basic_block):
 
 				np.save(self.backlog_file, log_dict)
 
-				# TODO: Decision {{{
-				prot, gain = somac.decision(log_dict[t])
+				# Guarantees no decision is taken straight after a protocol switch
+				if dt > 1:
+					# TODO: Decision {{{
+					prot, gain = somac.decision(log_dict[t])
 
-				if prot != portid:
-					dt = 0
+					# if prediction is different to an extent greater than 20%, switch protocols
+					if portid != prot and gain >= 0.1 and dt > 1:
+						portid = prot
+						dt = 0
 
-				# if prediction is different to an extent greater than 20%, switch protocols
-				if portid != prot and gain >= 0.1:
-					portid = prot
+					# }}}
+				else:
+					print("No decision is take now")
 
-				#if t % 4 == 0:
-				#	portid = int(1 if portid == 0 else 0)
-				#	print "t = {}, portid = {}".format(t, portid)
-
-				#	dt = 0
-				# }}}
 				t = t + 1
 			else:
 				print "Metrics contain None"
