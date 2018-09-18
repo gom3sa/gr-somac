@@ -3,7 +3,7 @@ import numpy as np
 from time import sleep
 import sys
 
-time_list = [t for t in range(0, 3240, 360)]
+time_list = [t for t in range(0, 3600, 360)]
 n = len(time_list) - 1
 
 t_id_0 = int(sys.argv[1]) - 1
