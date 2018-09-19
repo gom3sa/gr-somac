@@ -261,10 +261,10 @@ class decision(gr.basic_block):
 					if mode == 2: # This is the mode code for SOMAC
 						prot, gain, _, _ = somac.decision(log_dict[t])
 
-					# if prediction is different to an extent greater than 20%, switch protocols
-					if portid != prot and gain >= 0.1 and dt > 1:
-						portid = prot
-						dt = 0
+						# if prediction is different to an extent greater than 20%, switch protocols
+						if portid != prot and gain >= 0.1 and dt > 1:
+							portid = prot
+							dt = 0
 
 					# }}}
 				else:
