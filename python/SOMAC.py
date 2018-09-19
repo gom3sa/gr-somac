@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import numpy as np
 
 class SOMAC:
@@ -22,20 +25,20 @@ class SOMAC:
 		}
 		
 		# Metrics that will be used by the ML algorithm
-		#self.in_metric = [
-		#	"interpkt", "bsz", "interpkt", "bsz"
-		#]
-
-		#self.in_aggr = [
-		#	"avg", "sum", "sum", "avg"
-		#]
 		self.in_metric = [
-			"interpkt", "interpkt", "snr", "bsz", "bsz"
+			"interpkt", "interpkt", "bsz", "interpkt", "snr", "bsz", "snr"
 		]
 
 		self.in_aggr = [
-			"avg", "sum", "min", "avg", "sum"
+			"avg", "sum", "sum", "max", "min", "avg", "var"
 		]
+		#self.in_metric = [
+		#	"interpkt", "interpkt", "snr", "bsz", "bsz"
+		#]
+
+		#self.in_aggr = [
+		#	"avg", "sum", "min", "avg", "sum"
+		#]
 		
 		self.out_metric = "thr"
 		self.out_aggr   = "avg"
@@ -53,8 +56,6 @@ class SOMAC:
 		self.n_tdma    = 1
 		self.t	       = 1
 		self.c         = 5 # this value should be evaluated
-		self.rmse_csma = 0
-		self.rmse_tdma = 0
 		
 		return
 	
@@ -108,29 +109,27 @@ class SOMAC:
 		y = arr["metrics"][self.map_metric["thr"], self.map_aggr["avg"]]
 	
 		# Update weights
-		if curr_prot == 0: # CSMA
-			self.csma.update_weights(x, y, update_rate = 0.01)
-		elif curr_prot == 1: # TDMA
-			self.tdma.update_weights(x, y, update_rate = 0.01)
-	
+		#if curr_prot == 0: # CSMA
+		#	self.csma.update_weights(x, y, update_rate = 0.01)
+		#elif curr_prot == 1: # TDMA
+		#	self.tdma.update_weights(x, y, update_rate = 0.01)
+
 		y_hat_csma = self.csma.predict(x)
 		y_hat_tdma = self.tdma.predict(x)
 
 		# Update Mean Error
 		alpha = 0.95
-		# WARNING!
-		# A atualização dos erros deveria acontecer somente para o protocolo atual!!!
 		if curr_prot == 0:
 			self.csma.me = self.csma.me * alpha + (1. - alpha) * self.csma._me(y - y_hat_csma)
 		elif curr_prot == 1:
 			self.tdma.me = self.tdma.me * alpha + (1. - alpha) * self.tdma._me(y - y_hat_tdma)
-		
+
 		print("Prot: {}, y = {}".format(arr["prot"], y))
-		print("y_hat_CSMA = {}, y_hat_TDMA = {}".format(round(y_hat_csma, 2), round(y_hat_tdma, 2)))
+		print("y_hat_CSMA = {}, y_hat_TDMA = {}".format(y_hat_csma, y_hat_tdma, 2))
 		
-		# UCB based decision
-		v_csma = float(y_hat_csma) + self.csma.me # - self.rmse_csma + self.c * np.sqrt(np.log(self.t) / self.n_csma))
-		v_tdma = float(y_hat_tdma) + self.tdma.me # - self.rmse_tdma + self.c * np.sqrt(np.log(self.t) / self.n_tdma))
+		# Decision
+		v_csma = float(y_hat_csma) + self.csma.me
+		v_tdma = float(y_hat_tdma) + self.tdma.me
 		
 		prot  = np.argmax([v_csma, v_tdma])
 
@@ -161,7 +160,7 @@ class SOMAC:
 
 		print("Gain = {}".format(gain))
 		
-		return prot, gain
+		return prot, gain, v_csma, v_tdma#y_hat_csma, y_hat_tdma
 	
 	def eval_reg(self):
 		# Check if it is time for prunning

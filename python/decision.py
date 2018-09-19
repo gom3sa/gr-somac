@@ -192,6 +192,15 @@ class decision(gr.basic_block):
 
 	# Coordinator selects the MAC protocol to use in the network
 	def coord_loop(self, name, id): # {{{
+
+		##### MODE #####
+		f_mode = open("/tmp/prot.txt", "r")
+		mode = int(f_mode.readline().strip("\n"))
+
+		if mode == 0 or mode == 1:
+			portid = mode
+		################
+
 		global portid
 		portid = 0
 		prev_portid = portid
@@ -249,7 +258,8 @@ class decision(gr.basic_block):
 				# Guarantees no decision is taken straight after a protocol switch
 				if dt > 1:
 					# TODO: Decision {{{
-					prot, gain = somac.decision(log_dict[t])
+					if mode == 2: # This is the mode code for SOMAC
+						prot, gain, _, _ = somac.decision(log_dict[t])
 
 					# if prediction is different to an extent greater than 20%, switch protocols
 					if portid != prot and gain >= 0.1 and dt > 1:

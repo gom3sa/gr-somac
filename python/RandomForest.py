@@ -64,7 +64,7 @@ class RandomForest:
 		for e in self.reg.estimators_:
 			err.append(self.mae(y, e.predict(x)))
 
-		err = np.array(err)
+		err = np.array([err])
 
 		num = 1 / (err + epsilon)
 		den = np.sum(num)
@@ -89,7 +89,7 @@ class RandomForest:
 
 		if nloss(y, h) > 0.2:
 			dJ = (h - y) * y_estimators
-			#self.w = self.w - update_rate * dJ
+			self.w = self.w - update_rate * dJ
 
 		return
 
@@ -124,11 +124,11 @@ class RandomForest:
 		
 		_x = self.feature_scaling(x)
 		
-		#y_hat = self.reg.predict(_x)
+		rows, cols = x.shape[0], len(self.reg.estimators_)
 
-		y_hat = np.array([[e.predict(_x) for e in self.reg.estimators_]])
+		y_hat = np.array([e.predict(_x) for e in self.reg.estimators_]).reshape(rows, cols)
 
-		print("y_hat.shape = {}".format(y_hat.shape))
+		#print("y_hat.shape = {}, self.w.shape = {}".format(y_hat.shape, self.w.shape))
 
 		y_hat = np.dot(self.w, y_hat.T) / (y_hat.shape[1] * 1.)
 
@@ -149,18 +149,6 @@ class RandomForest:
 			nrmse = np.sqrt(np.sum((y - y_hat)**2) / n)
 			
 		return nrmse
-	
-	def rmse(self, y, y_hat):
-		# Computes the root mean square error
-		
-		rmse = 0
-		n	= len(y)
-		
-		assert(n > 0), "len(y) must be greater than 0"
-		
-		rmse = np.sqrt(np.sum((y - y_hat)**2) / n)
-		
-		return rmse
 
 	def mae(self, y, y_hat):
 		# Mean Absolute Error
