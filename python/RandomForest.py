@@ -80,18 +80,16 @@ class RandomForest:
 
 		_x = self.feature_scaling(x)
 
-		loss = lambda y, h: float((y - h)**2)
+		nloss = lambda y, h: float(((y - h)**2) / y) if y > 0 else float((y - h)**2)
 		hypo = lambda w, e: np.dot(w, e.T) / (e.shape[1] * 1.)
 
 		y_estimators = np.array([[float(e.predict(_x)) for e in self.reg.estimators_]])
 
 		h = hypo(self.w, y_estimators)
 
-		J = loss(y, h)
-
-		dJ = (h - y) * y_estimators
-
-		self.w = self.w - update_rate * dJ
+		if nloss(y, h) > 0.2:
+			dJ = (h - y) * y_estimators
+			#self.w = self.w - update_rate * dJ
 
 		return
 
@@ -210,7 +208,7 @@ class RandomForest:
 			#self.nrmse = self.nrmse * 0.75 + 0.25 * nrmse
 			#self.err = np.mean([np.mean(y - e.predict(_x)) for e in self.reg.estimators_])
 
-			#self.calc_weights(_x, y)
+			self.calc_weights(_x, y)
 
 			# Update Mean Error
 			y_hat = self.predict(x)
