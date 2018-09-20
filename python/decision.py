@@ -154,9 +154,9 @@ class decision(gr.basic_block):
 			msg = "portid" + str(portid)
 			self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol(msg))
 			if portid == 0:
-				sefl.log.write("Active protocol: CSMA/CA\n")
+				logging.info("Active protocol: CSMA/CA")
 			elif portid == 1:
-				sefl.log.write("Active protocol: TDMA\n")
+				logging.info("Active protocol: TDMA")
 	# }}} act_prot_in()
 
 	def met_in0(self, msg):
