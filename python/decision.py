@@ -281,7 +281,7 @@ class decision(gr.basic_block):
 				logging.info("Metrics contain None")
 			## }}}
 
-			logging.info("Active protocol: {}")
+			logging.info("Active protocol: {}".format("CSMA" if portid == 0 else "TDMA"))
 
 			# Broadcast MAC prot {{{
 			self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol('portid' + str(portid)))
