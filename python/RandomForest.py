@@ -2,6 +2,7 @@
 # The Federal University of Minas Gerais <ufmg.br>
 
 import numpy as np
+import logging
 import scipy.stats as st
 from sklearn.ensemble import RandomForestRegressor
 
@@ -128,8 +129,6 @@ class RandomForest:
 
 		y_hat = np.array([e.predict(_x) for e in self.reg.estimators_]).reshape(rows, cols)
 
-		#print("y_hat.shape = {}, self.w.shape = {}".format(y_hat.shape, self.w.shape))
-
 		y_hat = np.dot(self.w, y_hat.T) / (y_hat.shape[1] * 1.)
 
 		return y_hat
@@ -188,7 +187,7 @@ class RandomForest:
 		_x = self.feature_scaling(x)
 		
 		if len(self.reg.estimators_) < self.reg.n_estimators:
-			print("No. of new estimators = {}".format(self.reg.n_estimators - len(self.reg.estimators_)))
+			logging.info("No. of new estimators = {}".format(self.reg.n_estimators - len(self.reg.estimators_)))
 			self.reg.fit(_x, y)
 
 			nrmse = np.mean([self._nrmse(y, e.predict(_x)) for e in self.reg.estimators_])
@@ -204,6 +203,6 @@ class RandomForest:
 			self.me = self.me * alpha + (1. - alpha) * self._me(y, y_hat)
 
 		else:
-			print("No update. Forest is already full.")
+			logging.info("No update. Forest is already full.")
 			
 		return

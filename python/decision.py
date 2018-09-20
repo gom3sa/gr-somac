@@ -25,6 +25,7 @@ import pmt
 import time
 import thread
 import numpy as np
+import logging
 import copy as cp
 from RandomForest import RandomForest
 from EnsembleNNet import EnsembleNNet
@@ -115,6 +116,11 @@ class decision(gr.basic_block):
 		self.msg_port_metrics_out = pmt.intern('metrics out')
 		self.message_port_register_out(self.msg_port_metrics_out)
 
+		logging.basicConfig(filename="/tmp/out.log", level = logging.INFO)
+		##### Log #####
+		self.log = open("/tmp/out.log", "w", 0)
+		###############
+
 		self.start_block()
 	# }}} __init__()
 
@@ -148,9 +154,9 @@ class decision(gr.basic_block):
 			msg = "portid" + str(portid)
 			self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol(msg))
 			if portid == 0:
-				print "Active protocol: CSMA/CA"
+				sefl.log.write("Active protocol: CSMA/CA\n")
 			elif portid == 1:
-				print "Active protocol: TDMA"
+				sefl.log.write("Active protocol: TDMA\n")
 	# }}} act_prot_in()
 
 	def met_in0(self, msg):
@@ -192,6 +198,7 @@ class decision(gr.basic_block):
 
 	# Coordinator selects the MAC protocol to use in the network
 	def coord_loop(self, name, id): # {{{
+		global portid
 
 		##### MODE #####
 		f_mode = open("/tmp/prot.txt", "r")
@@ -201,7 +208,6 @@ class decision(gr.basic_block):
 			portid = mode
 		################
 
-		global portid
 		portid = 0
 		prev_portid = portid
 
@@ -221,7 +227,7 @@ class decision(gr.basic_block):
 		dt = 0 # delta time since last protocol switch
 		t  = 0
 
-		print "Decision block as Coordinator"
+		logging.info("Decision block as Coordinator")
 		time.sleep(3)
 
 		while True: # {{{
@@ -268,14 +274,14 @@ class decision(gr.basic_block):
 
 					# }}}
 				else:
-					print("No decision is take now")
+					logging.info("No decision is take now")
 
 				t = t + 1
 			else:
-				print "Metrics contain None"
+				logging.info("Metrics contain None")
 			## }}}
 
-			print "Active protocol: {}".format("CSMA" if portid == 0 else "TDMA")
+			logging.info("Active protocol: {}")
 
 			# Broadcast MAC prot {{{
 			self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol('portid' + str(portid)))
@@ -294,7 +300,6 @@ class decision(gr.basic_block):
 	def broadcast_prot(self, name, id): # {{{
 		global portid
 
-		print "Broadcasting thread"
 		while True:
 			msg = "act_prot:" + str(portid)
 			self.message_port_pub(self.msg_port_broad_out, pmt.string_to_symbol(msg))
@@ -306,7 +311,8 @@ class decision(gr.basic_block):
 		global portid
 		portid = 200
 
-		print "Decision block as Normal node"
+		logging.info("Decision block as Normal node")
+
 		# Sets no MAC protocol at the beginning (portid = 200, none)
 		self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol('portid' + str(portid)))
 

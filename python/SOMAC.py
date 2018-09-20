@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import logging
 
 class SOMAC:
 
@@ -124,8 +125,8 @@ class SOMAC:
 		elif curr_prot == 1:
 			self.tdma.me = self.tdma.me * alpha + (1. - alpha) * self.tdma._me(y - y_hat_tdma)
 
-		print("Prot: {}, y = {}".format(arr["prot"], y))
-		print("y_hat_CSMA = {}, y_hat_TDMA = {}".format(y_hat_csma, y_hat_tdma, 2))
+		logging.info("Prot: {}, y = {}".format(arr["prot"], y))
+		logging.info("y_hat_CSMA = {}, y_hat_TDMA = {}".format(y_hat_csma, y_hat_tdma, 2))
 		
 		# Decision
 		v_csma = float(y_hat_csma) + self.csma.me
@@ -133,7 +134,7 @@ class SOMAC:
 		
 		prot  = np.argmax([v_csma, v_tdma])
 
-		print("Evaluation: v_csma = {}, v_tdma = {}".format(round(v_csma, 2), round(v_tdma, 2)))
+		logging.info("Evaluation: v_csma = {}, v_tdma = {}".format(round(v_csma, 2), round(v_tdma, 2)))
 
 		# Update parameters of UCB
 		self.t = self.t + 1
@@ -158,7 +159,7 @@ class SOMAC:
 			gain = np.abs((v_csma - v_tdma) / v_csma) if v_csma > v_tdma \
 				else np.abs((v_tdma - v_csma) / v_tdma)
 
-		print("Gain = {}".format(gain))
+		logging.info("Gain = {}".format(gain))
 		
 		return prot, gain, v_csma, v_tdma#y_hat_csma, y_hat_tdma
 	

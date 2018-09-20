@@ -25,13 +25,14 @@ if [[ $ARG_ID -eq 9 ]]; then
 	echo "COORDINATOR"
 	echo $MODE > "/tmp/prot.txt"
 	sudo rm -rf "/tmp/backlog_file.npy"
-	((sleep $RUN_TIME; sudo pkill python) & stdbuf -i0 -o0 -e0 sudo gr-somac/examples/wifi_transceiver_FlexDataLink_"${IDS_CONFIG[$ARG_ID]}".py | tee $DIR/out.log);
+	((sleep $RUN_TIME; sudo pkill python) & sudo gr-somac/examples/wifi_transceiver_FlexDataLink_"${IDS_CONFIG[$ARG_ID]}".py);
 else
 	echo "NORMAL NODE"
-	((sleep $RUN_TIME; sudo pkill python) & sudo gr-somac/examples/wifi_transceiver_FlexDataLink_"${IDS_CONFIG[$ARG_ID]}".py > $DIR/out.log & python $HOME/gr-somac/apps/ping.py "${IDS_1[$ARG_ID]}" "${IDS_2[$ARG_ID]}");
+	((sleep $RUN_TIME; sudo pkill python) & sudo gr-somac/examples/wifi_transceiver_FlexDataLink_"${IDS_CONFIG[$ARG_ID]}".py & python $HOME/gr-somac/apps/ping.py "${IDS_1[$ARG_ID]}" "${IDS_2[$ARG_ID]}");
 fi
 # }}}
 
 # Copy logs {{{
 cp /tmp/*npy $DIR;
+cp /tmp/*log $DIR;
 # }}}
