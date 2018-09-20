@@ -274,7 +274,7 @@ class decision(gr.basic_block):
 
 					# }}}
 				else:
-					logging.info("No decision is take now")
+					logging.info("No decision: protocol was switched last time")
 
 				t = t + 1
 			else:
