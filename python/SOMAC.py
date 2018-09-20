@@ -119,7 +119,7 @@ class SOMAC:
 		y_hat_tdma = self.tdma.predict(x)
 
 		# Update Mean Error
-		alpha = 0.95
+		alpha = 0.9
 		if curr_prot == 0:
 			self.csma.me = self.csma.me * alpha + (1. - alpha) * self.csma._me(y - y_hat_csma)
 		elif curr_prot == 1:
