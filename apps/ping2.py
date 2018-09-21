@@ -27,7 +27,7 @@ sleep(slots[arg_id, 0])
 
 print("Running time = {} min".format(slots[arg_id, 1] / 60))
 f = open("/dev/null", "w")
-call(["sudo", "timeout", str(slots[arg_id, 1]), "ping", "-i 0.01", "192.168.123.1"], stdout = f)
+call(["sudo", "timeout", str(slots[arg_id, 1]), "ping", "-i 0.1", "192.168.123.1"], stdout = f)
 
 f.close()
 
