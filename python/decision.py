@@ -200,6 +200,8 @@ class decision(gr.basic_block):
 	def coord_loop(self, name, id): # {{{
 		global portid
 
+		portid = 0
+
 		##### MODE #####
 		f_mode = open("/tmp/prot.txt", "r")
 		mode = int(f_mode.readline().strip("\n"))
@@ -208,7 +210,6 @@ class decision(gr.basic_block):
 			portid = mode
 		################
 
-		portid = 0
 		prev_portid = portid
 
 		# ML modules
