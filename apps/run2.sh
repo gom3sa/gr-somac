@@ -16,7 +16,7 @@ mkdir $DIR;
 # Run {{{
 sudo gr-somac/apps/config_interface_tuntap_"${IDS_CONFIG[$ARG_ID]}".sh;
 
-RUN_TIME=7000
+RUN_TIME=3800
 if [[ $ARG_ID -eq 9 ]]; then
 	echo "COORDINATOR"
 	echo $MODE > "/tmp/prot.txt"
