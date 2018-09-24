@@ -21,6 +21,7 @@ if [[ $ARG_ID -eq 9 ]]; then
 	echo "COORDINATOR"
 	echo $MODE > "/tmp/prot.txt"
 	sudo rm -rf "/tmp/backlog_file.npy"
+	sudo rm -rf "/tmp/out.log"
 	((sleep $RUN_TIME; sudo pkill python) & sudo gr-somac/examples/wifi_transceiver_FlexDataLink_"${IDS_CONFIG[$ARG_ID]}".py);
 else
 	echo "NORMAL NODE"
