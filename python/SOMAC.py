@@ -26,20 +26,26 @@ class SOMAC:
 		}
 		
 		# Metrics that will be used by the ML algorithm
-		self.in_metric = [
-			"interpkt", "interpkt", "bsz", "interpkt", "snr", "bsz", "snr"
-		]
-
-		self.in_aggr = [
-			"avg", "sum", "sum", "max", "min", "avg", "var"
-		]
 		#self.in_metric = [
-		#	"interpkt", "interpkt", "snr", "bsz", "bsz"
+		#	"interpkt", "interpkt", "interpkt", "interpkt", "interpkt", "interpkt",
+		#	"snr", "snr", "snr", "snr", "snr", "snr", 
+		#	"non", "non", "non", "non", "non", "non",
+		#	"bsz", "bsz", "bsz", "bsz", "bsz", "bsz"
 		#]
 
 		#self.in_aggr = [
-		#	"avg", "sum", "min", "avg", "sum"
+		#	"sum", "avg", "max", "min", "var", "count",
+		#	"sum", "avg", "max", "min", "var", "count",
+		#	"sum", "avg", "max", "min", "var", "count",
+		#	"sum", "avg", "max", "min", "var", "count"
 		#]
+		self.in_metric = [
+			"interpkt", "snr", "non", "bsz"
+		]
+
+		self.in_aggr = [
+			"sum", "sum", "max", "sum"
+		]
 		
 		self.out_metric = "thr"
 		self.out_aggr   = "avg"
@@ -57,6 +63,8 @@ class SOMAC:
 		self.n_tdma    = 1
 		self.t	       = 1
 		self.c         = 5 # this value should be evaluated
+
+		logging.basicConfig(filename="/tmp/out.log", level = logging.INFO)
 		
 		return
 	
@@ -119,7 +127,7 @@ class SOMAC:
 		y_hat_tdma = self.tdma.predict(x)
 
 		# Update Mean Error
-		alpha = 0.9
+		alpha = 0.85
 		if curr_prot == 0:
 			self.csma.me = self.csma.me * alpha + (1. - alpha) * self.csma._me(y - y_hat_csma)
 		elif curr_prot == 1:

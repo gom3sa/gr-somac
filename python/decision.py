@@ -30,6 +30,7 @@ import copy as cp
 from RandomForest import RandomForest
 from EnsembleNNet import EnsembleNNet
 from SOMAC import SOMAC
+from QLearning import QLearning
 
 portid = 200 # Initially no MAC protocol is used. The normal node waits for coordinator's message.
 threshold = 0.1 # Threshold for switching MAC protocol
@@ -117,9 +118,6 @@ class decision(gr.basic_block):
 		self.message_port_register_out(self.msg_port_metrics_out)
 
 		logging.basicConfig(filename="/tmp/out.log", level = logging.INFO)
-		##### Log #####
-		self.log = open("/tmp/out.log", "w", 0)
-		###############
 
 		self.start_block()
 	# }}} __init__()
@@ -210,16 +208,18 @@ class decision(gr.basic_block):
 			portid = mode
 		################
 
+		reward = 0.
 		prev_portid = portid
 
 		# ML modules
 		#somac = SOMAC(
 		#	reg_csma = EnsembleNNet(n_new_estimators = 10, n_neurons = 3, bag_size = 1),
 		#	reg_tdma = EnsembleNNet(n_new_estimators = 10, n_neurons = 3, bag_size = 1))
-		somac = SOMAC(
-			reg_csma = RandomForest(n_estimators = 100, max_depth = 5, max_features = "log2", n_new_estimators = 10),
-			reg_tdma = RandomForest(n_estimators = 100, max_depth = 5, max_features = "log2", n_new_estimators = 10))
-		somac.train(self.train_file)
+		#somac = SOMAC(
+		#	reg_csma = RandomForest(n_estimators = 100, max_depth = 5, max_features = "log2", n_new_estimators = 10),
+		#	reg_tdma = RandomForest(n_estimators = 100, max_depth = 5, max_features = "log2", n_new_estimators = 10))
+		#somac.train(self.train_file)
+		somac = QLearning()
 
 		# Detects whether or not a prot switch has just occured
 		# _p: protocol, _pp: previous protocol
@@ -266,12 +266,19 @@ class decision(gr.basic_block):
 				if dt > 1:
 					# TODO: Decision {{{
 					if mode == 2: # This is the mode code for SOMAC
-						prot, gain, _, _ = somac.decision(log_dict[t])
+						#prot, gain, _, _ = somac.decision(log_dict[t])
+						decision = somac.decision(portid)
+						logging.info("Decision: {}".format(decision))
 
-						# if prediction is different to an extent greater than 20%, switch protocols
-						if portid != prot and gain >= 0.1 and dt > 1:
-							portid = prot
+						if portid == decision:
+							reward = 1. * (log_dict[t]["metrics"][0, 0] / (1. + log_dict[t]["metrics"][4, 0]) - reward)
+						else:
+							reward = 2. * (log_dict[t]["metrics"][0, 0] / (1. + log_dict[t]["metrics"][4, 0]) - reward)
 							dt = 0
+						# if prediction is different to an extent greater than 20%, switch protocols
+						#if portid != prot and gain >= 0.1 and dt > 1:
+						#	portid = prot
+						#	dt = 0
 
 					# }}}
 				else:

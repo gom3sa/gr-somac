@@ -31,7 +31,7 @@ class RandomForest:
 		# Feature scaling based on (x - x_avg) / x_avg
 		# This is related to the training set, so it returns x_avg
 		
-		_x		 = np.zeros(x.shape)
+		_x		   = np.zeros(x.shape)
 		self.x_avg = np.zeros(x.shape[1])
 		
 		for col in range(x.shape[1]):
