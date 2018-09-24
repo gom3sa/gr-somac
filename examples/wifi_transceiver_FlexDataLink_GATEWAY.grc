@@ -3278,12 +3278,6 @@ Coordinator: True/ False</value>
   <connection>
     <source_block_id>data_link_0</source_block_id>
     <sink_block_id>somac_metrics_gen_0</sink_block_id>
-    <source_key>buff size</source_key>
-    <sink_key>bsz in</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>data_link_0</source_block_id>
-    <sink_block_id>somac_metrics_gen_0</sink_block_id>
     <source_key>buffer out</source_key>
     <sink_key>buffer in</sink_key>
   </connection>
@@ -3410,7 +3404,7 @@ Coordinator: True/ False</value>
   <connection>
     <source_block_id>somac_sensor_0</source_block_id>
     <sink_block_id>somac_decision_0</sink_block_id>
-    <source_key>met pktthr</source_key>
+    <source_key>met pkt_thr</source_key>
     <sink_key>met in9</sink_key>
   </connection>
   <connection>

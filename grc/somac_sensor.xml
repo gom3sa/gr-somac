@@ -121,7 +121,7 @@
   </source>
 
   <source>
-    <name>met pktthr</name>
+    <name>met pkt_thr</name>
     <type>message</type>
     <optional>1</optional>
   </source>
