@@ -309,7 +309,7 @@ class sensor_impl : public sensor {
 				} else if(aux == "bsz=") { // buffer size
 					pr_metrics[id].buff_size = std::stof(str.substr(s, e - s));
 					if(pr_debug) std::cout << "bsz=" << std::stof(str.substr(s, e - s)) << std::endl;
-				} else if(aux == "pkt_thr=") {
+				} else if(aux == "pktthr=") {
 					pr_metrics[id].pkt_thr = std::stof(str.substr(s, e - s));
 					if(pr_debug) std::cout << "pktthr=" << std::stof(str.substr(s, e - s)) << std::endl;
 				}
