@@ -205,7 +205,7 @@ class decision(gr.basic_block):
 	def coord_loop(self, name, id): # {{{
 		global portid
 
-		portid = 0
+		portid = 1
 
 		##### MODE #####
 		f_mode = open("/tmp/prot.txt", "r")
