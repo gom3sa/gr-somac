@@ -289,7 +289,9 @@ class decision(gr.basic_block):
 						decision = somac.decision(portid)
 						logging.info("Decision: {}".format(decision))
 
-						portid = decision
+						if portid != decision:
+							portid = decision
+							dt = 0
 						# if prediction is different to an extent greater than 20%, switch protocols
 						#if portid != prot and gain >= 0.1 and dt > 1:
 						#	portid = prot
