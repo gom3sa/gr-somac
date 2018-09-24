@@ -56,7 +56,7 @@ class decision(gr.basic_block):
 		self.onoff_learn  = onoff_learn
 
 		self.met0, self.met1, self.met2, self.met3, self.met4, \
-			self.met5, self.met6, self.met7, self.met8 = [[] for _ in range(9)]    
+			self.met5, self.met6, self.met7, self.met8, self.met9 = [[] for _ in range(10)]    
 
 		self.aggr0 = aggr0
 		self.aggr1 = aggr1
