@@ -311,7 +311,7 @@ class sensor_impl : public sensor {
 					if(pr_debug) std::cout << "bsz=" << std::stof(str.substr(s, e - s)) << std::endl;
 				} else if(aux == "pkt_thr=") {
 					pr_metrics[id].pkt_thr = std::stof(str.substr(s, e - s));
-					if(pr_debug) std::cout << "pkt_thr=" << std::stof(str.substr(s, e - s)) << std::endl;
+					if(pr_debug) std::cout << "pktthr=" << std::stof(str.substr(s, e - s)) << std::endl;
 				}
 
 				str = str.substr(e + eos, len - e);
