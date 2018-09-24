@@ -275,6 +275,9 @@ class decision(gr.basic_block):
 						else:
 							reward = 2. * (log_dict[t]["metrics"][0, 0] / (1. + log_dict[t]["metrics"][4, 0]) - reward)
 							dt = 0
+
+						somac.update_qtable(reward)
+						logging.info("QTable = {}".format(somac.q_table))
 						# if prediction is different to an extent greater than 20%, switch protocols
 						#if portid != prot and gain >= 0.1 and dt > 1:
 						#	portid = prot
