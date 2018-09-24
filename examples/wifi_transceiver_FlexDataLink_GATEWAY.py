@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Transceiver Flexdatalink Gateway
-# Generated: Thu Sep  6 12:30:28 2018
+# Generated: Mon Sep 24 18:20:50 2018
 ##################################################
 
 
@@ -130,6 +130,7 @@ class wifi_transceiver_FlexDataLink_GATEWAY(gr.top_block):
         self.msg_connect((self.somac_sensor_0, 'met jit'), (self.somac_decision_0, 'met in2'))
         self.msg_connect((self.somac_sensor_0, 'met lat'), (self.somac_decision_0, 'met in1'))
         self.msg_connect((self.somac_sensor_0, 'met non'), (self.somac_decision_0, 'met in7'))
+        self.msg_connect((self.somac_sensor_0, 'met pktthr'), (self.somac_decision_0, 'met in9'))
         self.msg_connect((self.somac_sensor_0, 'met rnp'), (self.somac_decision_0, 'met in3'))
         self.msg_connect((self.somac_sensor_0, 'met snr'), (self.somac_decision_0, 'met in5'))
         self.msg_connect((self.somac_sensor_0, 'met thr'), (self.somac_decision_0, 'met in0'))

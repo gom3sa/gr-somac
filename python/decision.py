@@ -109,6 +109,10 @@ class decision(gr.basic_block):
 		self.message_port_register_in(self.msg_port_met_in8)
 		self.set_msg_handler(self.msg_port_met_in8, self.met_in8)
 
+		self.msg_port_met_in9 = pmt.intern('met in9')
+		self.message_port_register_in(self.msg_port_met_in9)
+		self.set_msg_handler(self.msg_port_met_in9, self.met_in9)
+
 		# Output ports
 		self.msg_port_ctrl_out    = pmt.intern('ctrl out')
 		self.message_port_register_out(self.msg_port_ctrl_out)
@@ -184,6 +188,9 @@ class decision(gr.basic_block):
 	def met_in8(self, msg):
 		self.met8.append(pmt.to_float(msg))
 
+	def met_in9(self, msg):
+		self.met9.append(pmt.to_float(msg))
+
 	# Init threads according to operation mode (Coord | Normal)
 	def start_block(self): # {{{
 		if self.coord:
@@ -220,6 +227,7 @@ class decision(gr.basic_block):
 		#	reg_tdma = RandomForest(n_estimators = 100, max_depth = 5, max_features = "log2", n_new_estimators = 10))
 		#somac.train(self.train_file)
 		somac = QLearning()
+		somac.decision(portid) # in order to init update variables
 
 		# Detects whether or not a prot switch has just occured
 		# _p: protocol, _pp: previous protocol
@@ -243,10 +251,12 @@ class decision(gr.basic_block):
 			self.met6_list = [self.aggr(i, self.met6) for i in range(6)]
 			self.met7_list = [self.aggr(i, self.met7) for i in range(6)]
 			self.met8_list = [self.aggr(i, self.met8) for i in range(6)]
+			self.met9_list = [self.aggr(i, self.met9) for i in range(6)]
 
 			metrics = np.array([self.met0_list, self.met1_list, self.met2_list,	\
 						self.met3_list, self.met4_list, self.met5_list,	\
-						self.met6_list, self.met7_list, self.met8_list])
+						self.met6_list, self.met7_list, self.met8_list, \
+						self.met9_list])
 
 			if np.any(np.equal(metrics, None)) == False: # {{{
 				log_dict = {}
@@ -267,17 +277,19 @@ class decision(gr.basic_block):
 					# TODO: Decision {{{
 					if mode == 2: # This is the mode code for SOMAC
 						#prot, gain, _, _ = somac.decision(log_dict[t])
+						fs = log_dict[t]["metrics"][0, 1]
+						ps = log_dict[t]["metrics"][9, 1]
+						logging.info("Frames/s = {}, Packets/s = {}".format(fs, ps))
+
+						reward = (fs - ps)
+						logging.info("Reward = {}".format(reward))
+						somac.update_qtable(reward)
+						logging.info("QTable = {}".format(somac.q_table))
+
 						decision = somac.decision(portid)
 						logging.info("Decision: {}".format(decision))
 
-						if portid == decision:
-							reward = 1. * (log_dict[t]["metrics"][0, 0] / (1. + log_dict[t]["metrics"][4, 0]) - reward)
-						else:
-							reward = 2. * (log_dict[t]["metrics"][0, 0] / (1. + log_dict[t]["metrics"][4, 0]) - reward)
-							dt = 0
-
-						somac.update_qtable(reward)
-						logging.info("QTable = {}".format(somac.q_table))
+						portid = decision
 						# if prediction is different to an extent greater than 20%, switch protocols
 						#if portid != prot and gain >= 0.1 and dt > 1:
 						#	portid = prot

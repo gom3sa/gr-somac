@@ -480,7 +480,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1008, 36)</value>
+      <value>(1008, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -717,7 +717,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1008, 120)</value>
+      <value>(1008, 88)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -823,7 +823,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(688, 120)</value>
+      <value>(688, 88)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3192,6 +3192,12 @@ Coordinator: True/ False</value>
     <sink_block_id>somac_decision_0</sink_block_id>
     <source_key>met non</source_key>
     <sink_key>met in7</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met pktthr</source_key>
+    <sink_key>met in9</sink_key>
   </connection>
   <connection>
     <source_block_id>somac_sensor_0</source_block_id>

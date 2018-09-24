@@ -429,7 +429,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(816, 964)</value>
+      <value>(816, 980)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -555,7 +555,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1008, 648)</value>
+      <value>(1008, 680)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -717,7 +717,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1008, 88)</value>
+      <value>(1008, 80)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -776,7 +776,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1008, 416)</value>
+      <value>(1008, 448)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -823,7 +823,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(728, 88)</value>
+      <value>(728, 80)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1518,7 +1518,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(752, 1020)</value>
+      <value>(752, 1028)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3028,7 +3028,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1008, 900)</value>
+      <value>(1008, 916)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3192,6 +3192,12 @@ Coordinator: True/ False</value>
     <sink_block_id>somac_decision_0</sink_block_id>
     <source_key>met non</source_key>
     <sink_key>met in7</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>somac_sensor_0</source_block_id>
+    <sink_block_id>somac_decision_0</sink_block_id>
+    <source_key>met pktthr</source_key>
+    <sink_key>met in9</sink_key>
   </connection>
   <connection>
     <source_block_id>somac_sensor_0</source_block_id>

@@ -32,7 +32,7 @@
 #define FC_ACK 0x2B00
 #define FC_DATA 0x0008
 #define FC_METRICS 0x2100
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 10240
 #define MAX_SEQ_NR 65536
 
 using namespace gr::somac;
@@ -233,6 +233,11 @@ class metrics_gen_impl : public metrics_gen {
         if(pr_debug) std::cout << "Throughput (frame/s) = " << thr << std::endl << std::flush;
         // END: calc throughput (frame/s)
 
+        // START: calc network layer throughtput (pkt/s)
+        float pkt_thr = pr_nfin_count / elapsed_time;
+        if(pr_debug) std::cout << "Pkt throughtput (pkt/s) = " << pkt_thr << std::endl << std::flush;
+        // END: calc network layer throughtput (pkt/s)
+
         // START: calc avg SNR
         sum = 0;
         count = 0;
@@ -279,18 +284,18 @@ class metrics_gen_impl : public metrics_gen {
         std::string str = "lat=" + std::to_string(avg_lat) + ":jitter=" + std::to_string(avg_jitter) +
           ":interpkt=" + std::to_string(avg_interpkt) + ":rnp=" + std::to_string(rnp) +
           ":thr=" + std::to_string(thr) + ":snr=" + std::to_string(avg_snr) +
-          ":cont=" + std::to_string(avg_cont) + ":bsz=" + std::to_string(avg_bsz);
+          ":cont=" + std::to_string(avg_cont) + ":bsz=" + std::to_string(avg_bsz) + ":pktthr=" + std::to_string(pkt_thr);
 
         pmt::pmt_t metrics = pmt::string_to_symbol(str);
 
         message_port_pub(msg_port_broad_out, metrics);
 
         // Reseting counters
-        pr_nfin_count = 0;
-        pr_tx_count   = 0;
-        pr_retx_count = 0;
-        pr_ack_count  = 0;
-        pr_thr_tic    = clock::now();
+        pr_nfin_count  = 0;
+        pr_tx_count    = 0;
+        pr_retx_count  = 0;
+        pr_ack_count   = 0;
+        pr_thr_tic     = clock::now();
       }
     }
 
@@ -313,7 +318,7 @@ class metrics_gen_impl : public metrics_gen {
     // Variables
     mac_header pr_curr_frame;
     decltype(clock::now()) pr_lat_tic[MAX_SEQ_NR], pr_contention_tic[MAX_SEQ_NR];
-    int pr_nfin_count, pr_tx_count, pr_retx_count, pr_ack_count;
+    int pr_nfin_count, pr_tx_count, pr_retx_count, pr_ack_count, pr_thr_pkt_count;
     decltype(clock::now()) pr_lat_toc, pr_interpkt_tic, pr_interpkt_toc, pr_thr_tic, pr_thr_toc;
     boost::circular_buffer<float> pr_lat_list, pr_interpkt_list, pr_snr_list, pr_contention_list, pr_bsz_list;
 };

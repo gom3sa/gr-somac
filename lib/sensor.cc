@@ -57,6 +57,7 @@ struct metrics {
 	float snr;
 	float contention;
 	float buff_size;
+	float pkt_thr;
 
 	decltype(std::chrono::high_resolution_clock::now()) tstamp;
 };
@@ -84,6 +85,7 @@ class sensor_impl : public sensor {
 			message_port_register_out(msg_port_met_out6);
 			message_port_register_out(msg_port_met_out7);
 			message_port_register_out(msg_port_met_out8);
+			message_port_register_out(msg_port_met_out9);
 
 			for(int i = 0; i < 6; i++) {
 				pr_mac[i] = mac[i];
@@ -91,14 +93,16 @@ class sensor_impl : public sensor {
 			}
 
 			for(int id = 0; id < 256; id++) { // id is related to the last byte of mac addr
-				pr_metrics[id].thr = 0;
-				pr_metrics[id].lat = 0;
-				pr_metrics[id].jit = 0;
-				pr_metrics[id].rnp = 0;
-				pr_metrics[id].interpkt = 0;
-				pr_metrics[id].snr = 0;
+				pr_metrics[id].thr        = 0;
+				pr_metrics[id].lat        = 0;
+				pr_metrics[id].jit        = 0;
+				pr_metrics[id].rnp        = 0;
+				pr_metrics[id].interpkt   = 0;
+				pr_metrics[id].snr        = 0;
 				pr_metrics[id].contention = 0;
-				pr_metrics[id].tstamp = clock::now();
+				pr_metrics[id].buff_size  = 0;
+				pr_metrics[id].pkt_thr    = 0;
+				pr_metrics[id].tstamp     = clock::now();
 			}
 
 			pr_non = 0;
@@ -133,6 +137,7 @@ class sensor_impl : public sensor {
 						message_port_pub(msg_port_met_out5, pmt::from_float(pr_metrics[id].contention));
 						message_port_pub(msg_port_met_out7, pmt::from_float(pr_metrics[id].jit));
 						message_port_pub(msg_port_met_out8, pmt::from_float(pr_metrics[id].buff_size));
+						message_port_pub(msg_port_met_out9, pmt::from_float(pr_metrics[id].pkt_thr));
 						non++;
 					} else {
 						if(pr_debug) std::cout << "Node " << id << " had a timeout" << std::endl << std::flush;
@@ -261,6 +266,7 @@ class sensor_impl : public sensor {
 		pmt::pmt_t msg_port_met_out6 = pmt::mp("met non");
 		pmt::pmt_t msg_port_met_out7 = pmt::mp("met jit");
 		pmt::pmt_t msg_port_met_out8 = pmt::mp("met buffsize");
+		pmt::pmt_t msg_port_met_out9 = pmt::mp("met pkt_thr");
 
 		void parse_metrics(std::string str, int id) {
 			size_t len, s, e;
@@ -303,6 +309,9 @@ class sensor_impl : public sensor {
 				} else if(aux == "bsz=") { // buffer size
 					pr_metrics[id].buff_size = std::stof(str.substr(s, e - s));
 					if(pr_debug) std::cout << "bsz=" << std::stof(str.substr(s, e - s)) << std::endl;
+				} else if(aux == "pkt_thr=") {
+					pr_metrics[id].pkt_thr = std::stof(str.substr(s, e - s));
+					if(pr_debug) std::cout << "pkt_thr=" << std::stof(str.substr(s, e - s)) << std::endl;
 				}
 
 				str = str.substr(e + eos, len - e);

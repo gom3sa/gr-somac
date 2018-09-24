@@ -27,5 +27,6 @@ install(FILES
     somac_RandomForest.xml
     somac_EsembleNNet.xml
     somac_SOMAC.xml
-    somac_EnsembleNNet.xml DESTINATION share/gnuradio/grc/blocks
+    somac_EnsembleNNet.xml
+    somac_QLearning.xml DESTINATION share/gnuradio/grc/blocks
 )
