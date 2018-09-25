@@ -279,12 +279,16 @@ class decision(gr.basic_block):
 					
 					logging.info("Frames/s = {}, Packets/s = {}".format(frame_sec, packet_sec))
 
-					reward = (frame_sec - packet_sec) / (packet_sec + 1.) - reward
+					reward_new = (frame_sec - packet_sec) / (packet_sec + 1.) if packet_sec >= frame_sec else 0. 
+
 					if dt == 1:
-						if reward > 0:
-							reward = 2. * reward
+						if reward_new > reward:
+							reward = 1.
 						else:
-							reward = 4. * reward
+							reward = -2.
+					else:
+						reward = reward_new
+
 					logging.info("Reward = {}".format(reward))
 
 					somac.update_qtable(reward)
