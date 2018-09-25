@@ -226,14 +226,13 @@ class decision(gr.basic_block):
 		#	reg_csma = RandomForest(n_estimators = 100, max_depth = 5, max_features = "log2", n_new_estimators = 10),
 		#	reg_tdma = RandomForest(n_estimators = 100, max_depth = 5, max_features = "log2", n_new_estimators = 10))
 		#somac.train(self.train_file)
-		somac = QLearning()
-		somac.decision(portid) # in order to init update variables
-
+		somac = QLearning(portid)
+		
 		# Detects whether or not a prot switch has just occured
 		# _p: protocol, _pp: previous protocol
 		is_transition = lambda _p, _pp: 1. if _p != _pp else 0.
 
-		dt = 0 # delta time since last protocol switch
+		dt = 1 # delta time since last protocol switch
 		t  = 0
 
 		logging.info("Decision block as Coordinator")
@@ -272,32 +271,34 @@ class decision(gr.basic_block):
 
 				np.save(self.backlog_file, log_dict)
 
-				# Guarantees no decision is taken straight after a protocol switch
-				if dt > 1:
-					# TODO: Decision {{{
-					if mode == 2: # This is the mode code for SOMAC
-						#prot, gain, _, _ = somac.decision(log_dict[t])
-						fs = log_dict[t]["metrics"][0, 1]
-						ps = log_dict[t]["metrics"][9, 1]
-						logging.info("Frames/s = {}, Packets/s = {}".format(fs, ps))
+				# TODO: Decision {{{
+				if mode == 2: # This is the mode code for SOMAC
+					#prot, gain, _, _ = somac.decision(log_dict[t])
+					frame_sec, packet_sec = \
+						log_dict[t]["metrics"][0, 1], log_dict[t]["metrics"][9, 1]
+					
+					logging.info("Frames/s = {}, Packets/s = {}".format(frame_sec, packet_sec))
 
-						reward = (fs - ps)
-						logging.info("Reward = {}".format(reward))
-						somac.update_qtable(reward)
-						logging.info("QTable = {}".format(somac.q_table))
+					reward = (frame_sec / (packet_sec + 1.)) - reward
+					if dt == 1:
+						reward = 2. * reward
+					logging.info("Reward = {}".format(reward))
 
-						decision = somac.decision(portid)
-						logging.info("Decision: {}".format(decision))
+					somac.update_qtable(reward)
+					logging.info("QTable = {}".format(somac.q_table))
 
-						if portid != decision:
-							portid = decision
-							dt = 0
-						# if prediction is different to an extent greater than 20%, switch protocols
-						#if portid != prot and gain >= 0.1 and dt > 1:
-						#	portid = prot
-						#	dt = 0
+					decision = somac.decision(portid)
+					logging.info("Decision: {}".format(decision))
 
-					# }}}
+					if portid != decision and dt > 1: # Guarantees two decision are not done in a row
+						portid = decision
+						dt = 0
+					# if prediction is different to an extent greater than 20%, switch protocols
+					#if portid != prot and gain >= 0.1 and dt > 1:
+					#	portid = prot
+					#	dt = 0
+
+				# }}}
 				else:
 					logging.info("No decision: protocol was switched last time")
 
@@ -314,9 +315,10 @@ class decision(gr.basic_block):
 
 			# Reseting metric counters {{{
 			self.met0, self.met1, self.met2, self.met3, self.met4, \
-				self.met5, self.met6, self.met7, self.met8 = [[] for _ in range(9)]
+				self.met5, self.met6, self.met7, self.met8, self.met9 = [[] for _ in range(10)]
 			# }}
 
+			logging.info("-----")
 			time.sleep(self.dec_gran)
 		# }}} while
 	# }}} coord_loop()

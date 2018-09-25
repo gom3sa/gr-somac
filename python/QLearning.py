@@ -6,11 +6,15 @@ import logging
 
 class QLearning:
 
-	def __init__(self):
+	def __init__(self, prot):
 		self.q_table	= np.zeros((2, 2))
 		self.discount   = 0.8
 		self.learn_rate = 0.2
 		self.reward     = 0.
+
+		_ = self.decision(prot)
+
+		return
 		
 	def decision(self, prot):
 		self.state = prot
