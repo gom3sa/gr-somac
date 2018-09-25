@@ -29,7 +29,7 @@ if [[ $ARG_ID -eq 9 ]]; then
 	((sleep $RUN_TIME; sudo pkill python) & sudo gr-somac/examples/wifi_transceiver_FlexDataLink_"${IDS_CONFIG[$ARG_ID]}".py);
 else
 	echo "NORMAL NODE"
-	((sleep $RUN_TIME; sudo pkill python) & sudo gr-somac/examples/wifi_transceiver_FlexDataLink_"${IDS_CONFIG[$ARG_ID]}".py & python $HOME/gr-somac/apps/ping.py "${IDS_1[$ARG_ID]}" "${IDS_2[$ARG_ID]}");
+	((sleep $RUN_TIME; sudo pkill python) & sudo gr-somac/examples/wifi_transceiver_FlexDataLink_"${IDS_CONFIG[$ARG_ID]}".py >/dev/null 2>&1 & python $HOME/gr-somac/apps/ping.py "${IDS_1[$ARG_ID]}" "${IDS_2[$ARG_ID]}");
 fi
 # }}}
 
