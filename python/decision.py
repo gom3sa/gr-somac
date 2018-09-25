@@ -279,7 +279,7 @@ class decision(gr.basic_block):
 					
 					logging.info("Frames/s = {}, Packets/s = {}".format(frame_sec, packet_sec))
 
-					reward = (frame_sec / (packet_sec + 1.)) - reward
+					reward = (frame_sec - packet_sec) / (packet_sec + 1.) - reward
 					if dt == 1:
 						if reward > 0:
 							reward = 2. * reward
