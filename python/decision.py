@@ -238,6 +238,8 @@ class decision(gr.basic_block):
 		logging.info("Decision block as Coordinator")
 		time.sleep(3)
 
+		prev = -1
+
 		while True: # {{{
 			# Handling avg aggregation
 			# [sum, avg, max, min, var, count]
@@ -257,6 +259,8 @@ class decision(gr.basic_block):
 						self.met6_list, self.met7_list, self.met8_list, \
 						self.met9_list])
 
+			logging.info("Active protocol: {}".format("CSMA" if portid == 0 else "TDMA"))
+
 			if np.any(np.equal(metrics, None)) == False: # {{{
 				log_dict = {}
 				if t > 0:
@@ -272,39 +276,38 @@ class decision(gr.basic_block):
 				np.save(self.backlog_file, log_dict)
 
 				# TODO: Decision {{{
-				if mode == 2: # This is the mode code for SOMAC
+				# Guarantees two decision are not done in a row
+				# This is the mode code for SOMAC
+				if mode == 2 and dt > 1: 
 					#prot, gain, _, _ = somac.decision(log_dict[t])
 					frame_sec, packet_sec = \
 						log_dict[t]["metrics"][0, 1], log_dict[t]["metrics"][9, 1]
 					
 					logging.info("Frames/s = {}, Packets/s = {}".format(frame_sec, packet_sec))
 
-					reward_new = (frame_sec - packet_sec) / (packet_sec + 1.) if packet_sec >= frame_sec else 0. 
+					curr = frame_sec
 
-					if dt == 1:
-						if reward_new > reward:
-							reward = 1.
-						else:
-							reward = -2.
+					if prev == -1:
+						reward = 0.
+					elif dt == 2 and curr > 1.1 * prev:
+						reward = 1.
+					elif dt == 2 and prev > curr:
+						reward = -2.
 					else:
-						reward = reward_new
+						reward = 0.
 
-					logging.info("Reward = {}".format(reward))
+					prev = curr
 
 					somac.update_qtable(reward)
-					logging.info("QTable = {}".format(somac.q_table))
+					logging.info("Reward = {}".format(reward))
+					logging.info("QTable = \n{}".format(somac.q_table))
 
 					decision = somac.decision(portid)
 					logging.info("Decision: {}".format(decision))
 
-					if portid != decision and dt > 1: # Guarantees two decision are not done in a row
+					if portid != decision: 
 						portid = decision
 						dt = 0
-					# if prediction is different to an extent greater than 20%, switch protocols
-					#if portid != prot and gain >= 0.1 and dt > 1:
-					#	portid = prot
-					#	dt = 0
-
 				# }}}
 				else:
 					logging.info("No decision: protocol was switched last time")
@@ -313,8 +316,6 @@ class decision(gr.basic_block):
 			else:
 				logging.info("Metrics contain None")
 			## }}}
-
-			logging.info("Active protocol: {}".format("CSMA" if portid == 0 else "TDMA"))
 
 			# Broadcast MAC prot {{{
 			self.message_port_pub(self.msg_port_ctrl_out, pmt.string_to_symbol('portid' + str(portid)))
@@ -355,3 +356,4 @@ class decision(gr.basic_block):
 			msg = "send_metrics"
 			self.message_port_pub(self.msg_port_metrics_out, pmt.string_to_symbol(msg))
 	# }}} normal_loop()
+

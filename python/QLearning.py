@@ -2,15 +2,22 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import time
 import logging
 
 class QLearning:
 
 	def __init__(self, prot):
-		self.q_table	= np.zeros((2, 2))
+		#self.q_table	= np.zeros((2, 2))
+		self.q_table    = np.random.rand(2, 2) - 0.5
 		self.discount   = 0.8
 		self.learn_rate = 0.2
 		self.reward     = 0.
+
+		self.epsilon    = 0.05
+
+		seed = int(time.time())
+		np.random.seed(seed)
 
 		_ = self.decision(prot)
 
@@ -19,8 +26,10 @@ class QLearning:
 	def decision(self, prot):
 		self.state = prot
 		
-		if self.q_table[self.state, 0] == self.q_table[self.state, 1]:
+		if self.q_table[self.state, 0] == self.q_table[self.state, 1] or \
+				np.random.rand() < self.epsilon:
 			action = np.random.randint(2)
+			logging.info("Random choice = {}".format(action))
 		else:
 			action = np.argmax(self.q_table[self.state, :])
 		
@@ -33,4 +42,9 @@ class QLearning:
 		self.q_table[self.state, self.action] = (1. - self.learn_rate) * self.q_table[self.state, self.action] + \
 						self.learn_rate * (reward + self.discount * np.max(self.q_table[self.state_new, :]))
 		
+		return
+
+	def reset_qtable(self):
+		self.q_table = np.random.rand(2, 2) - 0.5
+
 		return
