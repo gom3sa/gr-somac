@@ -287,14 +287,21 @@ class decision(gr.basic_block):
 
 					curr = frame_sec
 
+					#if prev == -1:
+					#	reward = 0.
+					#elif dt == 2 and curr > 1.1 * prev:
+					#	reward = 1.
+					#elif dt == 2 and prev > curr:
+					#	reward = -2.
+					#else:
+					#	reward = 0.
+
 					if prev == -1:
-						reward = 0.
-					elif dt == 2 and curr > 1.1 * prev:
-						reward = 1.
-					elif dt == 2 and prev > curr:
-						reward = -2.
+						reward = curr
+					elif dt == 2:
+						reward = 2. * (curr - prev)
 					else:
-						reward = 0.
+						reward = (curr - prev)
 
 					prev = curr
 

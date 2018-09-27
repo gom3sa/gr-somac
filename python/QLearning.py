@@ -11,10 +11,10 @@ class QLearning:
 		#self.q_table	= np.zeros((2, 2))
 		self.q_table    = np.random.rand(2, 2) - 0.5
 		self.discount   = 0.8
-		self.learn_rate = 0.2
+		self.learn_rate = 0.3
 		self.reward     = 0.
 
-		self.epsilon    = 0.05
+		self.epsilon    = 0.1
 
 		seed = int(time.time())
 		np.random.seed(seed)
