@@ -14,7 +14,8 @@ class QLearning:
 		self.learn_rate = 0.3
 		self.reward     = 0.
 
-		self.epsilon    = 0.1
+		#self.epsilon    = 0.2
+		self.t          = 1
 
 		seed = int(time.time())
 		np.random.seed(seed)
@@ -25,9 +26,12 @@ class QLearning:
 		
 	def decision(self, prot):
 		self.state = prot
+
+		epsilon = 1. / (np.log(self.t + 1.))
+		self.t = self.t + 1
 		
 		if self.q_table[self.state, 0] == self.q_table[self.state, 1] or \
-				np.random.rand() < self.epsilon:
+				np.random.rand() < epsilon:
 			action = np.random.randint(2)
 			logging.info("Random choice = {}".format(action))
 		else:

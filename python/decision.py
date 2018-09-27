@@ -297,7 +297,7 @@ class decision(gr.basic_block):
 					#	reward = 0.
 
 					if prev == -1:
-						reward = curr
+						reward = 0.
 					elif dt == 2:
 						reward = 2. * (curr - prev)
 					else:
