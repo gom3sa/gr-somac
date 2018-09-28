@@ -8,7 +8,7 @@ import logging
 class QLearningBoltzmann:
 
 	def __init__(self, prot):
-		logging.info("QLearngin with Boltzmann equation")
+		logging.info("QLearnging Boltzmann")
 		#self.q_table   = np.zeros((2, 2))
 		
 		self.q_table	= np.random.rand(2, 2) - 0.5

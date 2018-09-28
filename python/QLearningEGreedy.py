@@ -8,7 +8,7 @@ import logging
 class QLearningEGreedy:
 
 	def __init__(self, prot):
-		logging.info("QLearngin e-greedy")
+		logging.info("QLearnging e-greedy")
 
 		self.q_table	= np.zeros((2, 2))
 		#self.q_table	= np.random.rand(2, 2) - 0.5
