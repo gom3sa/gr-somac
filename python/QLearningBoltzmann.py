@@ -5,7 +5,7 @@ import numpy as np
 import time
 import logging
 
-class QLearning:
+class QLearningBoltzmann:
 
 	def __init__(self, prot):
 		logging.info("QLearngin with Boltzmann equation")

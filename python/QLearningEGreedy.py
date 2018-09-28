@@ -5,7 +5,7 @@ import numpy as np
 import time
 import logging
 
-class QLearning:
+class QLearningEGreedy:
 
 	def __init__(self, prot):
 		logging.info("QLearngin e-greedy")
