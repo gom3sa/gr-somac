@@ -35,5 +35,6 @@ from decision import decision
 from RandomForest import RandomForest
 from SOMAC import SOMAC
 from EnsembleNNet import EnsembleNNet
-from QLearning import QLearning
+from QLearningEGreedy import QLearningEGreedy
+from QLearningBoltzmann import QLearningBoltzmann
 #

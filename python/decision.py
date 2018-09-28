@@ -30,7 +30,8 @@ import copy as cp
 from RandomForest import RandomForest
 from EnsembleNNet import EnsembleNNet
 from SOMAC import SOMAC
-from QLearning import QLearning
+from QLearningEGreedy import QLearning as egreedy
+from QLearningBoltzmann import QLearningBoltzmann as boltz
 
 portid = 200 # Initially no MAC protocol is used. The normal node waits for coordinator's message.
 threshold = 0.1 # Threshold for switching MAC protocol
@@ -219,14 +220,10 @@ class decision(gr.basic_block):
 		prev_portid = portid
 
 		# ML modules
-		#somac = SOMAC(
-		#	reg_csma = EnsembleNNet(n_new_estimators = 10, n_neurons = 3, bag_size = 1),
-		#	reg_tdma = EnsembleNNet(n_new_estimators = 10, n_neurons = 3, bag_size = 1))
-		#somac = SOMAC(
-		#	reg_csma = RandomForest(n_estimators = 100, max_depth = 5, max_features = "log2", n_new_estimators = 10),
-		#	reg_tdma = RandomForest(n_estimators = 100, max_depth = 5, max_features = "log2", n_new_estimators = 10))
-		#somac.train(self.train_file)
-		somac = QLearning(portid)
+		if mode == 2:
+			somac = egreedy(portid)
+		elif mode == 3:
+			somac = boltz(portid)
 		
 		# Detects whether or not a prot switch has just occured
 		# _p: protocol, _pp: previous protocol
@@ -278,7 +275,7 @@ class decision(gr.basic_block):
 				# TODO: Decision {{{
 				# Guarantees two decision are not done in a row
 				# This is the mode code for SOMAC
-				if mode == 2 and dt > 1: 
+				if (mode == 2 or mode == 3) and dt > 1: 
 					#prot, gain, _, _ = somac.decision(log_dict[t])
 					frame_sec, packet_sec = \
 						log_dict[t]["metrics"][0, 1], log_dict[t]["metrics"][9, 1]
@@ -306,8 +303,6 @@ class decision(gr.basic_block):
 					prev = curr
 
 					somac.update_qtable(reward)
-					logging.info("Reward = {}".format(reward))
-					logging.info("QTable = \n{}".format(somac.q_table))
 
 					decision = somac.decision(portid)
 					logging.info("Decision: {}".format(decision))
