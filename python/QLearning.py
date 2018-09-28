@@ -8,13 +8,12 @@ import logging
 class QLearning:
 
 	def __init__(self, prot):
-		#self.q_table	= np.zeros((2, 2))
-		self.q_table    = np.random.rand(2, 2) - 0.5
+		self.q_table	= np.zeros((2, 2))
+		#self.q_table    = np.random.rand(2, 2) - 0.5
 		self.discount   = 0.8
 		self.learn_rate = 0.3
 		self.reward     = 0.
 
-		#self.epsilon    = 0.2
 		self.t          = 1
 
 		seed = int(time.time())
@@ -27,7 +26,7 @@ class QLearning:
 	def decision(self, prot):
 		self.state = prot
 
-		epsilon = 1. / (np.log(self.t + 1.))
+		epsilon = 1. / (np.log2(self.t + 1.))
 		self.t = self.t + 1
 		
 		if self.q_table[self.state, 0] == self.q_table[self.state, 1] or \
