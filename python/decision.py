@@ -30,7 +30,7 @@ import copy as cp
 from RandomForest import RandomForest
 from EnsembleNNet import EnsembleNNet
 from SOMAC import SOMAC
-from QLearningEGreedy import QLearning as egreedy
+from QLearningEGreedy import QLearningEGreedy as egreedy
 from QLearningBoltzmann import QLearningBoltzmann as boltz
 
 portid = 200 # Initially no MAC protocol is used. The normal node waits for coordinator's message.
