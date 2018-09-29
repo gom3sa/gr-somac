@@ -9,9 +9,9 @@ class QLearningBoltzmann:
 
 	def __init__(self, prot):
 		logging.info("QLearnging Boltzmann")
-		#self.q_table   = np.zeros((2, 2))
+		self.q_table   = np.zeros((2, 2))
 		
-		self.q_table	= np.random.rand(2, 2) - 0.5
+		#self.q_table	= np.random.rand(2, 2) - 0.5
 		self.prob_table = np.zeros((2, 2)) + 0.5
 		self.T		    = 1
 		self.discount   = 0.8
