@@ -44,7 +44,7 @@ class QLearningBoltzmann:
 		self.q_table[self.state, self.action] = (1. - self.learn_rate) * self.q_table[self.state, self.action] + \
 						self.learn_rate * (reward + self.discount * np.max(self.q_table[self.state_new, :]))
 
-		num = np.exp(self.prob_table / self.T)
+		num = np.exp(self.q_table / self.T)
 
 		sum_cols = np.sum(num, 1)
 		for row in range(num.shape[0]):
