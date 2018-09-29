@@ -48,7 +48,7 @@ class QLearningBoltzmann:
 
 		sum_cols = np.sum(num, 1)
 		for row in range(num.shape[0]):
-			num[row, :] = np[row, :] / sum_cols[row]
+			num[row, :] = num[row, :] / sum_cols[row]
 
 		self.prob_table = num
 
