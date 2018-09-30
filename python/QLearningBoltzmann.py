@@ -13,7 +13,7 @@ class QLearningBoltzmann:
 		
 		#self.q_table	= np.random.rand(2, 2) - 0.5
 		self.prob_table = np.zeros((2, 2)) + 0.5
-		self.T		    = 1
+		self.T		= 0.5
 		self.discount   = 0.8
 		self.learn_rate = 0.3
 		self.reward     = 0.
