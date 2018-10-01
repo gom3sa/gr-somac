@@ -266,7 +266,7 @@ class decision(gr.basic_block):
 
 				log_dict[t] = {	"prot": portid, "metrics": metrics,
 						"transition": is_transition(portid, prev_portid),
-						"dt": dt}
+						"dt": dt }
 
 				dt = dt + 1
 				prev_portid = portid
