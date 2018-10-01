@@ -272,16 +272,15 @@ class decision(gr.basic_block):
 
 				np.save(self.backlog_file, log_dict)
 
+				frame_sec, packet_sec = \
+					log_dict[t]["metrics"][0, 1], log_dict[t]["metrics"][9, 1]
+				logging.info("Frames/s = {}, Packets/s = {}".format(frame_sec, packet_sec))
+
 				# TODO: Decision {{{
 				# Guarantees two decision are not done in a row
 				# This is the mode code for SOMAC
-				if (mode == 2 or mode == 3) and dt > 1: 
+				if (mode == 2 or mode == 3) and dt > 2: 
 					#prot, gain, _, _ = somac.decision(log_dict[t])
-					frame_sec, packet_sec = \
-						log_dict[t]["metrics"][0, 1], log_dict[t]["metrics"][9, 1]
-					
-					logging.info("Frames/s = {}, Packets/s = {}".format(frame_sec, packet_sec))
-
 					curr = frame_sec
 
 					#if prev == -1:
@@ -295,7 +294,7 @@ class decision(gr.basic_block):
 
 					if prev == -1:
 						reward = 0.
-					elif dt == 2:
+					elif dt == 3:
 						reward = 2. * (curr - prev)
 					else:
 						reward = (curr - prev)

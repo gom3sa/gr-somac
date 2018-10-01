@@ -8,12 +8,11 @@ import logging
 class QLearningBoltzmann:
 
 	def __init__(self, prot):
-		logging.info("QLearnging Boltzmann")
 		self.q_table   = np.zeros((2, 2))
 		
 		#self.q_table	= np.random.rand(2, 2) - 0.5
 		self.prob_table = np.zeros((2, 2)) + 0.5
-		self.T		= 0.5
+		self.T		= 1.
 		self.discount   = 0.8
 		self.learn_rate = 0.3
 		self.reward     = 0.
@@ -22,6 +21,9 @@ class QLearningBoltzmann:
 		np.random.seed(seed)
 
 		_ = self.decision(prot)
+		
+		logging.info("QLearnging Boltzmann")
+		logging.info("T = {}, learn_rate = {}, discount factor = {}".format(self.T, self.learn_rate, self.discount))
 
 		return
 		
