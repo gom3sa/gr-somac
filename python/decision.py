@@ -293,7 +293,7 @@ class decision(gr.basic_block):
 
 					prev = curr
 
-					logging.info("dt = {}".foramt(dt))
+					logging.info("dt = {}".format(dt))
 					somac.update_qtable(reward)
 
 					decision = somac.decision(portid)
