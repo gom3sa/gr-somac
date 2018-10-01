@@ -280,14 +280,14 @@ class decision(gr.basic_block):
 				# TODO: Decision {{{
 				# Guarantees two decision are not done in a row
 				# This is the mode code for SOMAC
-				if (mode == 2 or mode == 3) and dt > 0: 
+				if (mode == 2 or mode == 3) and dt > 1: 
 					curr = frame_sec
 
 					if prev == -1:
 						reward = 0.
-					elif dt == 1:
+					elif dt == 2:
 						reward = 2. * (curr - prev)
-					elif dt == 2: # se o prot mantiver depois da troca, premiar baseado na diferença com o último protocolo
+					elif dt == 3: # se o prot mantiver depois da troca, premiar baseado na diferença com o último protocolo
 						reward = curr - prev_prev
 					else:
 						reward = curr - prev
