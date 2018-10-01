@@ -279,28 +279,21 @@ class decision(gr.basic_block):
 				# TODO: Decision {{{
 				# Guarantees two decision are not done in a row
 				# This is the mode code for SOMAC
-				if (mode == 2 or mode == 3) and dt > 2: 
-					#prot, gain, _, _ = somac.decision(log_dict[t])
+				if (mode == 2 or mode == 3) and dt > 1: 
 					curr = frame_sec
-
-					#if prev == -1:
-					#	reward = 0.
-					#elif dt == 2 and curr > 1.1 * prev:
-					#	reward = 1.
-					#elif dt == 2 and prev > curr:
-					#	reward = -2.
-					#else:
-					#	reward = 0.
 
 					if prev == -1:
 						reward = 0.
-					elif dt == 3:
-						reward = 2. * (curr - prev)
+					elif dt == 2:
+						reward = curr - prev
+					elif dt == 3: # se o prot mantiver depois da troca, premiar baseado na diferença com o último protocolo
+						reward = reward
 					else:
-						reward = (curr - prev)
+						reward = curr - prev
 
 					prev = curr
 
+					logging.info("dt = {}".foramt(dt))
 					somac.update_qtable(reward)
 
 					decision = somac.decision(portid)
