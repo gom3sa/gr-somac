@@ -236,6 +236,7 @@ class decision(gr.basic_block):
 		time.sleep(3)
 
 		prev = -1
+		prev_prev = -1
 
 		while True: # {{{
 			# Handling avg aggregation
@@ -287,10 +288,11 @@ class decision(gr.basic_block):
 					elif dt == 1:
 						reward = 2. * (curr - prev)
 					elif dt == 2: # se o prot mantiver depois da troca, premiar baseado na diferença com o último protocolo
-						reward = reward
+						reward = curr - prev_prev
 					else:
 						reward = curr - prev
 
+					prev_prev = prev
 					prev = curr
 
 					logging.info("dt = {}".format(dt))
