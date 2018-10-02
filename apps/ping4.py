@@ -3,18 +3,18 @@ import numpy as np
 from time import sleep
 import sys
 
-slot_time = 360
+slot_time = 60
 
 slots = np.array([
-		[0, 2  + 1],
-		[9, 15 + 1],
-		[9, 14 + 1],
-		[0, 9  + 1],
-		[0, 4  + 1],
-		[0, 6  + 1],
-		[2, 13 + 1],
-		[3, 9  + 1],
-		[5, 10 + 1]
+		[0, 4   + 1],
+		[3, 15  + 1],
+		[4, 10  + 1],
+		[4, 9   + 1],
+		[5, 11  + 1],
+		[4, 10  + 1],
+		[1, 4   + 1],
+		[9, 15  + 1],
+		[12, 15 + 1]
 	]) * slot_time
 
 arg_id = int(sys.argv[1]) - 1
