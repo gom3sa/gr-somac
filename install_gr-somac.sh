@@ -70,16 +70,6 @@ make
 sudo make install 
 sudo ldconfig
 
-echo "Installing Traffic Generator"
-cd ~
-git clone https://github.com/avgsg/gr-trafficgen.git
-cd gr-trafficgen
-mkdir build
-cd build
-cmake ..
-sudo make install
-sudo ldconfig
-
 echo "Installing SOMAC (Self-Organizing MAC sublayer)"
 cd ~
 git clone https://github.com/avgsg/gr-somac.git
