@@ -905,7 +905,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>dec_gran</key>
-      <value>60</value>
+      <value>30</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -972,7 +972,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1024, 456)</value>
+      <value>(1024, 448)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3274,6 +3274,12 @@ Coordinator: True/ False</value>
     <sink_block_id>data_link_0</sink_block_id>
     <source_key>pdus</source_key>
     <sink_key>tap in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>data_link_0</source_block_id>
+    <sink_block_id>somac_metrics_gen_0</sink_block_id>
+    <source_key>buff size</source_key>
+    <sink_key>bsz in</sink_key>
   </connection>
   <connection>
     <source_block_id>data_link_0</source_block_id>
