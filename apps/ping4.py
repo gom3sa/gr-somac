@@ -22,13 +22,14 @@ arg_id = int(sys.argv[1]) - 1
 ####################
 # Ping
 ####################
+sleep_time = slots[arg_id, 0]
+print("Sleeping time = {} min".format(sleep_time / 60))
+sleep(sleep_time)
 
-print("Sleeping time = {} min".format(slots[arg_id, 0] / 60))
-sleep(slots[arg_id, 0])
-
-print("Running time = {} min".format(slots[arg_id, 1] / 60))
+run_time = slots[arg_id, 1] - slots[arg_id, 0]
+print("Running time = {} min".format(run_time / 60))
 f = open("/dev/null", "w")
-call(["sudo", "timeout", str(slots[arg_id, 1]), "ping", "-i 0.1", "192.168.123.1"], stdout = f)
+call(["sudo", "timeout", str(int(run_time)), "ping", "-i 0.01", "192.168.123.1"], stdout = f)
 
 ####################
 # Make sure ping is dead
