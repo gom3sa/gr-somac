@@ -286,7 +286,7 @@ class decision(gr.basic_block):
 					if prev == -1:
 						reward = 0.
 					elif dt == 2:
-						reward = 2. * (curr - prev)
+						reward = 1. * (curr - prev)
 					elif dt == 3: # se o prot mantiver depois da troca, premiar baseado na diferença com o último protocolo
 						reward = curr - prev_prev
 					else:
