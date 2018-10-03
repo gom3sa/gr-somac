@@ -27,13 +27,16 @@ class QLearningBoltzmann:
 
 		return
 		
-	def decision(self, prot):
+	def decision(self, prot, keep = False):
 		self.state = prot
 
-		action = np.random.choice(
-				np.array([0, 1]),
-				p = self.prob_table[self.state]
-			)
+		if keep == False:
+			action = np.random.choice(
+					np.array([0, 1]),
+					p = self.prob_table[self.state]
+				)
+		else:
+			action = prot
 
 		logging.info("Choice = {}".format(action))
 		

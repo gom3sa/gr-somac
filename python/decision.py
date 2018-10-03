@@ -298,7 +298,11 @@ class decision(gr.basic_block):
 					logging.info("dt = {}".format(dt))
 					somac.update_qtable(reward)
 
-					decision = somac.decision(portid)
+					if dt == 2 and reward > 0.:
+						decision = somac.decision(portid, keep = True)
+					else:
+						decision = somac.decision(portid, keep = False)
+
 					logging.info("Decision: {}".format(decision))
 
 					if portid != decision: 
