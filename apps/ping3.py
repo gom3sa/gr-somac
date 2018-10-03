@@ -30,6 +30,13 @@ print("Running time = {} min".format(slots[arg_id, 1] / 60))
 f = open("/dev/null", "w")
 call(["sudo", "timeout", str(slots[arg_id, 1]), "ping", "-i 0.1", "192.168.123.1"], stdout = f)
 
+####################
+# Make sure ping is dead
+####################
+call(["sudo", "pkill", "ping"], stdout = f)
+sleep(10)
+
+
 f.close()
 
 print("Done!")

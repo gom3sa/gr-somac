@@ -35,6 +35,12 @@ sleep(time_list[t_id_1])
 print("Running time = {} min".format(time_list[n - t_id_1] / 60))
 call(["sudo", "timeout", str(time_list[n - t_id_1]), "ping", "-i 0.1", "192.168.123.1"], stdout = f)
 
+####################
+# Make sure ping is dead
+####################
+call(["sudo", "pkill", "ping"], stdout = f)
+sleep(10)
+
 f.close()
 
 print("Done!")
