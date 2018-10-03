@@ -3,13 +3,13 @@ import numpy as np
 from time import sleep
 import sys
 
-slot_time = 60
+slot_time = 360
 
 slots = np.array([
 		[0, 4   + 1],
 		[3, 11  + 1],
 		[4, 10  + 1],
-		[10, 14 + 1],
+		[10, 15 + 1],
 		[5, 12  + 1],
 		[4, 10  + 1],
 		[1, 4   + 1],
