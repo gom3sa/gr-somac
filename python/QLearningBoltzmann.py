@@ -60,6 +60,7 @@ class QLearningBoltzmann:
 
 		self.prob_table = num
 
+		logging.info("Temperature = {}".format(np.log(dt)))
 		logging.info("Reward = {}".format(reward))
 		logging.info("QTable = \n{}".format(self.q_table))
 		logging.info("Prob Table = \n{}".format(self.prob_table))
