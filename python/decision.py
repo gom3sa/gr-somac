@@ -202,6 +202,41 @@ class decision(gr.basic_block):
 		return
 	# }}} start_block()
 
+	def calc_reward(self, curr, prev): # {{{
+		# Positive reward
+		if curr > prev and curr <= 1.2 * prev:
+			reward = 0.
+		elif curr > 1.2 * prev and curr <= 1.4 * prev:
+			reward = 1.
+		elif curr > 1.4 * prev and curr <= 1.6 * prev:
+			reward = 2.
+		elif curr > 1.6 * prev and curr <= 1.8 * prev:
+			reward = 3.
+		elif curr > 1.8 * prev and curr <= 2.0 * prev:
+			reward = 4.
+		elif curr > 2.0 * prev:
+			reward = 5.
+
+		# Negative reward
+		elif prev > curr and prev <= 1.2 * curr:
+			reward = 0.
+		elif prev > 1.2 * curr and prev <= 1.4 * curr:
+			reward = -1.
+		elif prev > 1.4 * curr and prev <= 1.6 * curr:
+			reward = -2.
+		elif prev > 1.6 * curr and prev <= 1.8 * curr:
+			reward = -3.
+		elif prev > 1.8 * curr and prev <= 2.0 * curr:
+			reward = -4.
+		elif prev > 2.0 * curr:
+			reward = -5.
+
+		else:
+			reward = 0.
+
+		return reward
+	# }}}
+
 	# Coordinator selects the MAC protocol to use in the network
 	def coord_loop(self, name, id): # {{{
 		global portid
@@ -229,7 +264,7 @@ class decision(gr.basic_block):
 		# _p: protocol, _pp: previous protocol
 		is_transition = lambda _p, _pp: 1. if _p != _pp else 0.
 
-		dt = 1 # delta time since last protocol switch
+		dt = -1 # delta time since last protocol switch
 		t  = 0
 
 		logging.info("Decision block as Coordinator")
@@ -237,6 +272,8 @@ class decision(gr.basic_block):
 
 		prev = -1
 		prev_prev = -1
+
+		target_metric = {}
 
 		while True: # {{{
 			# Handling avg aggregation
@@ -273,41 +310,31 @@ class decision(gr.basic_block):
 
 				np.save(self.backlog_file, log_dict)
 
-				frame_sec, packet_sec = \
-					log_dict[t]["metrics"][0, 1], log_dict[t]["metrics"][9, 1]
-				logging.info("Frames/s = {}, Packets/s = {}".format(frame_sec, packet_sec))
+				target_metric[t] = log_dict[t]["metrics"][0, 1]
+				
+				logging.info("Target metric = {}".format(frame_sec, packet_sec))
 
 				# TODO: Decision {{{
 				# Guarantees two decision are not done in a row
 				# This is the mode code for SOMAC
 				if (mode == 2 or mode == 3) and dt > 1: 
-					curr = frame_sec
 
-					if prev == -1:
-						reward = 0.
-					elif dt == 2:
-						if curr > 1.2 * prev or prev > 1.2 * curr:
-							reward = 2. * (curr - prev)
-						else:
-							reward = curr - prev
-					elif dt == 3: # se o prot mantiver depois da troca, premiar baseado na diferença com o último protocolo
-						if curr > 1.2 * prev_prev or prev_prev > 1.2 * curr:
-							reward = 2. * (curr - prev_prev)
-						else:
-							reward = curr - prev_prev
+					if dt == 2:
+						reward = self.calc_reward(target_metric[t], target_metric[t - 2])
+					elif dt == 3:
+						reward = self.calc_reward(target_metric[t], target_metric[t-3])
 					else:
-						reward = curr - prev
-
-					prev_prev = prev
-					prev = curr
+						reward = self.calc_reward(target_metric[t], target_metric[t-1]) * 0.01
 
 					logging.info("dt = {}".format(dt))
 					somac.update_qtable(reward, dt)
 
-					if dt == 2 and reward > 0.:
+					if dt == 2 and reward > 0:
 						decision = somac.decision(portid, keep = True)
+					elif dt == 2 and reward < 0:
+						decision = somac.decision(portid, force_switch = True)
 					else:
-						decision = somac.decision(portid, keep = False)
+						decision = somac.decison(portid, keep = False)
 
 					logging.info("Decision: {}".format(decision))
 

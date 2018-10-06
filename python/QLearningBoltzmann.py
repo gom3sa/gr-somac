@@ -27,10 +27,12 @@ class QLearningBoltzmann:
 
 		return
 		
-	def decision(self, prot, keep = False):
+	def decision(self, prot, keep = False, force_switch = False):
 		self.state = prot
 
-		if keep == False:
+		if force_switch == True:
+			action = 0 if prot == 1 else 1
+		elif keep == False:
 			action = np.random.choice(
 					np.array([0, 1]),
 					p = self.prob_table[self.state]
@@ -52,7 +54,7 @@ class QLearningBoltzmann:
 		#num = np.exp(self.q_table / self.T)
 		if dt <= 1.:
 			dt = 2
-		num = np.exp(self.q_table / np.log(dt))
+		num = np.exp(self.q_table / np.log(np.sqrt(dt)))
 
 		sum_cols = np.sum(num, 1)
 		for row in range(num.shape[0]):
