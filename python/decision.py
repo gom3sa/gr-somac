@@ -312,7 +312,7 @@ class decision(gr.basic_block):
 
 				target_metric[t] = log_dict[t]["metrics"][0, 1]
 				
-				logging.info("Target metric = {}".format(frame_sec, packet_sec))
+				logging.info("Target metric = {}".format(target_metric[t]))
 
 				# TODO: Decision {{{
 				# Guarantees two decision are not done in a row
