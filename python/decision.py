@@ -264,7 +264,7 @@ class decision(gr.basic_block):
 		# _p: protocol, _pp: previous protocol
 		is_transition = lambda _p, _pp: 1. if _p != _pp else 0.
 
-		dt = -1 # delta time since last protocol switch
+		dt = -2 # delta time since last protocol switch
 		t  = 0
 
 		logging.info("Decision block as Coordinator")

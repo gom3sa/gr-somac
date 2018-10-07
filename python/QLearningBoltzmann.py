@@ -46,7 +46,7 @@ class QLearningBoltzmann:
 		self.state_new = action
 		
 		return action
-	
+
 	def update_qtable(self, reward, dt):
 		self.q_table[self.state, self.action] = (1. - self.learn_rate) * self.q_table[self.state, self.action] + \
 						self.learn_rate * (reward + self.discount * np.max(self.q_table[self.state_new, :]))
@@ -54,7 +54,9 @@ class QLearningBoltzmann:
 		#num = np.exp(self.q_table / self.T)
 		if dt <= 1.:
 			dt = 2
-		num = np.exp(self.q_table / np.log(np.sqrt(dt)))
+
+		T = np.log(np.sqrt(dt))
+		num = np.exp(self.q_table / T)
 
 		sum_cols = np.sum(num, 1)
 		for row in range(num.shape[0]):
@@ -62,7 +64,7 @@ class QLearningBoltzmann:
 
 		self.prob_table = num
 
-		logging.info("Temperature = {}".format(np.log(dt)))
+		logging.info("Temperature = {}".format(T))
 		logging.info("Reward = {}".format(reward))
 		logging.info("QTable = \n{}".format(self.q_table))
 		logging.info("Prob Table = \n{}".format(self.prob_table))
