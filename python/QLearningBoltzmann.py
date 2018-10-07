@@ -20,7 +20,7 @@ class QLearningBoltzmann:
 		seed = int(time.time())
 		np.random.seed(seed)
 
-		_ = self.decision(prot)
+		_ = self.decision(prot, keep = True)
 		
 		logging.info("QLearnging Boltzmann")
 		logging.info("T = {}, learn_rate = {}, discount factor = {}".format(self.T, self.learn_rate, self.discount))
