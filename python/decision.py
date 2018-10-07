@@ -334,7 +334,7 @@ class decision(gr.basic_block):
 					elif dt == 2 and reward < 0:
 						decision = somac.decision(portid, force_switch = True)
 					else:
-						decision = somac.decison(portid, keep = False)
+						decision = somac.decision(portid, keep = False)
 
 					logging.info("Decision: {}".format(decision))
 
