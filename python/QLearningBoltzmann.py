@@ -7,14 +7,14 @@ import logging
 
 class QLearningBoltzmann:
 
-	def __init__(self, prot):
+	def __init__(self, prot, learn_rate = 0.3, discount = 0.8):
 		self.q_table   = np.zeros((2, 2))
 		
 		#self.q_table	= np.random.rand(2, 2) - 0.5
 		self.prob_table = np.zeros((2, 2)) + 0.5
 		self.T          = 1.
-		self.discount   = 0.8
-		self.learn_rate = 0.3
+		self.discount   = discount
+		self.learn_rate = learn_rate
 		self.reward     = 0.
 
 		seed = int(time.time())
@@ -55,7 +55,8 @@ class QLearningBoltzmann:
 		if dt <= 1.:
 			dt = 2
 
-		T = np.log(np.sqrt(dt))
+		#T = np.log(np.sqrt(dt))
+		T = 1.
 		num = np.exp(self.q_table / T)
 
 		sum_cols = np.sum(num, 1)
