@@ -32,9 +32,9 @@ GR_PYTHON_INSTALL(
     FILES
     __init__.py
     decision.py
-    RandomForest.py
-    SOMAC.py
-    EnsembleNNet.py
+#    RandomForest.py
+#    SOMAC.py
+#    EnsembleNNet.py
     QLearningEGreedy.py
     QLearningBoltzmann.py DESTINATION ${GR_PYTHON_DIR}/somac
 )

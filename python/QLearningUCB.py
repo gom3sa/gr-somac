@@ -39,7 +39,7 @@ class QLearningUCB:
 			action = 0 if prot == 1 else 1
 
 		elif keep == False:
-			if self.q_table[self.state, 0] == self.q_table[self.state, 1]:
+			if self.q_table[self.state, 0] == self.q_table[self.state, 1] and False:
 				action = np.random.randint(2)
 				logging.info("Random choice = {}".format(action))
 			else:

@@ -38,8 +38,7 @@ class QLearningEGreedy:
 			action = 0 if prot == 1 else 1
 
 		elif keep == False:
-			if self.q_table[self.state, 0] == self.q_table[self.state, 1] or \
-					np.random.rand() < epsilon:
+			if np.random.rand() < epsilon:
 				action = np.random.randint(2)
 				logging.info("Random choice = {}".format(action))
 			else:
