@@ -24,19 +24,19 @@ from pathlib import Path
 home = str(Path.home())
 
 f_csma_list = [
-    home + "/Temp/SOMAC-ML/data/_BKP/29092018/csma/round2/backlog_file.npy", # RUN
-    home + "/Temp/SOMAC-ML/data/10102018/round1/csma/backlog_file.npy",      # RUN3
-    home + "/Temp/SOMAC-ML/data/06102018/run4/5/csma/backlog_file.npy",       # RUN4
-    home + "/Temp/SOMAC-ML/data/16102018/csma/csma/backlog_file.npy",       # RUN2 (CSMA)
-    home + "/Temp/SOMAC-ML/data/16102018/tdma/csma/backlog_file.npy"       # RUN2 (TDMA)
+    home + "/UFMG/SOMAC-ML/data/_BKP/29092018/csma/round2/backlog_file.npy", # RUN
+    home + "/UFMG/SOMAC-ML/data/10102018/round1/csma/backlog_file.npy",      # RUN3
+    home + "/UFMG/SOMAC-ML/data/06102018/run4/5/csma/backlog_file.npy",       # RUN4
+    home + "/UFMG/SOMAC-ML/data/16102018/csma/csma/backlog_file.npy",       # RUN2 (CSMA)
+    home + "/UFMG/SOMAC-ML/data/16102018/tdma/csma/backlog_file.npy"       # RUN2 (TDMA)
 ]
 
 f_tdma_list = [
-    home + "/Temp/SOMAC-ML/data/_BKP/29092018/tdma/round2/backlog_file.npy", # RUN
-    home + "/Temp/SOMAC-ML/data/10102018/round1/tdma/backlog_file.npy",      # RUN3
-    home + "/Temp/SOMAC-ML/data/06102018/run4/5/tdma/backlog_file.npy",       # RUN4
-    home + "/Temp/SOMAC-ML/data/16102018/csma/tdma/backlog_file.npy",       # RUN2 (CSMA)
-    home + "/Temp/SOMAC-ML/data/16102018/tdma/tdma/backlog_file.npy"       # RUN2 (TDMA)
+    home + "/UFMG/SOMAC-ML/data/_BKP/29092018/tdma/round2/backlog_file.npy", # RUN
+    home + "/UFMG/SOMAC-ML/data/10102018/round1/tdma/backlog_file.npy",      # RUN3
+    home + "/UFMG/SOMAC-ML/data/06102018/run4/5/tdma/backlog_file.npy",       # RUN4
+    home + "/UFMG/SOMAC-ML/data/16102018/csma/tdma/backlog_file.npy",       # RUN2 (CSMA)
+    home + "/UFMG/SOMAC-ML/data/16102018/tdma/tdma/backlog_file.npy"       # RUN2 (TDMA)
 ]
 
 
@@ -72,7 +72,8 @@ def plot_heatmap(arr, fig_name, save_fig = False):
     if save_fig == True:
         plt.savefig(fig_name, bbox_inches='tight')
     
-    plt.show()
+    #plt.show()
+    plt.clf()
     
     return
 
