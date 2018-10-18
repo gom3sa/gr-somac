@@ -47,7 +47,7 @@ f_tdma_list = [
 # In[3]:
 
 
-y = "hit_rate"
+y = "regret"
 
 def calc_heatmap(df):
     arr_avg = np.zeros((11, 11))
@@ -66,10 +66,10 @@ def plot_heatmap(arr, fig_name, save_fig = False):
     ylabels = [i for i in range(11)]
 
     sns.heatmap(
-        arr, vmin = 70, vmax = 90, annot = True, linewidths = 0., xticklabels = xlabels, yticklabels = ylabels
+        arr, vmin = 0, vmax = 2, annot = True, linewidths = 0., xticklabels = xlabels, yticklabels = ylabels
         #arr, annot = True, linewidths = 0., xticklabels = xlabels, yticklabels = ylabels
     )
-    plt.title("(%)")
+    plt.title("Regret")
     plt.ylabel(r'$\alpha$' + " (x10)")
     plt.xlabel(r'$\gamma$' + " (x10)")
 
@@ -98,8 +98,8 @@ def run(f_name, fig_name, save_fig = False):
         arr_avg = arr_avg + temp_avg
         arr_var = arr_var + temp_var
 
-    arr_avg = (arr_avg / (len(f_name) * 1.)) * 100.
-    arr_var = (arr_var / (len(f_name) * 1.)) * 1000.
+    arr_avg = (arr_avg / (len(f_name) * 1.))
+    arr_var = (arr_var / (len(f_name) * 1.))
     
     with my_lock:
         plot_heatmap(arr_avg, fig_name, save_fig = save_fig)
@@ -161,6 +161,7 @@ def test(init_prot = 0, learn_rate = 0.3, discount = 0.8, dic = {}, alg = {}, t_
     prot   = init_prot
     somac  = alg
     metric = {}
+    _metric = {}
     t      = 0
     dt     = -1
 
@@ -171,10 +172,15 @@ def test(init_prot = 0, learn_rate = 0.3, discount = 0.8, dic = {}, alg = {}, t_
     
     while t < n:
         metric[t] = t_csma[t] if prot == 0 else t_tdma[t]
+        _metric[t] = t_csma[t] if prot == 0 else t_tdma[t]
         
-        alpha = 0.25
+        alpha = 0.75
         if t > 0:
-            metric[t] = (1. - alpha) * metric[t-1] + alpha * metric[t]
+            _metric[t] = (1. - alpha) * _metric[t-1] + alpha * _metric[t]
+
+        # Penalty
+        if dt == 1:
+            metric[t] = (metric[t] + metric[t-1]) / 2
 
         backlog[t] = prot
         
@@ -182,11 +188,11 @@ def test(init_prot = 0, learn_rate = 0.3, discount = 0.8, dic = {}, alg = {}, t_
 
         if dt > 1:
             if dt == 2:
-                reward = calc_reward(metric[t], metric[t-2])
+                reward = calc_reward(_metric[t], _metric[t-2])
             elif dt == 3:
-                reward = calc_reward(metric[t], metric[t-3])
+                reward = calc_reward(_metric[t], _metric[t-3])
             else:
-                reward = calc_reward(metric[t], metric[t-1])
+                reward = calc_reward(_metric[t], _metric[t-1])
                 if reward > 0:
                     reward = 0.
                 elif reward < 0:
@@ -213,7 +219,19 @@ def test(init_prot = 0, learn_rate = 0.3, discount = 0.8, dic = {}, alg = {}, t_
         prot = decision
         
     return backlog, metric
+
+def _calc_regret(t_csma, t_tdma, t_somac):
+    n = np.min([len(t_csma), len(t_tdma), len(t_somac)])
+    
+    regret = []
+    for t in range(n):
+        opt = t_csma[t] if t_csma[t] >= t_tdma[t] else t_tdma[t]
         
+        r = opt - t_somac[t]
+        
+        regret.append(r)
+        
+    return np.mean(regret)
         
 def calc_stats(backlog, metric, dic = {}, t_csma = [], t_tdma = []):
     n_csma  = 0
@@ -251,9 +269,12 @@ def calc_stats(backlog, metric, dic = {}, t_csma = [], t_tdma = []):
         round(np.mean([metric[t] for t in range(n)]), 2)
     ])
     
+    regret = _calc_regret(t_csma, t_tdma, metric)
+    
     dic["csma_count"].append(round(n_csma * 1. / n, 2))
     dic["tdma_count"].append(round(n_tdma * 1. / n, 2))
     dic["hit_rate"].append(round(n_somac * 1. / n, 2))
+    dic["regret"].append(round(regret, 2))
     dic["n_switches"].append(n_changes)
     dic["n_tot"].append(n)
     dic["csma_performance"].append(round(np.mean(t_csma), 2))
@@ -269,7 +290,7 @@ def calc_stats(backlog, metric, dic = {}, t_csma = [], t_tdma = []):
 # In[5]:
 
 
-n_repetition = 30
+n_reptitions = 10
 
 
 # ### Softmax / Boltzmann
@@ -310,6 +331,7 @@ def init_boltz():
                 "csma_count":            [],
                 "tdma_count":            [],
                 "hit_rate":              [],
+                "regret":                [],
                 "n_switches":            [],
                 "n_tot":                 [],
                 "csma_performance":      [],
@@ -322,7 +344,7 @@ def init_boltz():
 
             count = 0
 
-            for step in range(n_repetition):
+            for step in range(n_reptitions):
 
                 prot = 0 if step % 2 == 0 else 1
 
@@ -397,6 +419,7 @@ def init_egreedy():
                 "csma_count":            [],
                 "tdma_count":            [],
                 "hit_rate":              [],
+                "regret":                [],
                 "n_switches":            [],
                 "n_tot":                 [],
                 "csma_performance":      [],
@@ -409,7 +432,7 @@ def init_egreedy():
 
             count = 0
 
-            for step in range(n_repetition):
+            for step in range(n_reptitions):
 
                 prot = 0 if step % 2 == 0 else 1
 
@@ -484,6 +507,7 @@ def init_ucb():
                 "csma_count":            [],
                 "tdma_count":            [],
                 "hit_rate":              [],
+                "regret":                [],
                 "n_switches":            [],
                 "n_tot":                 [],
                 "csma_performance":      [],
@@ -496,7 +520,7 @@ def init_ucb():
 
             count = 0
 
-            for step in range(n_repetition):
+            for step in range(n_reptitions):
 
                 prot = 0 if step % 2 == 0 else 1
 
