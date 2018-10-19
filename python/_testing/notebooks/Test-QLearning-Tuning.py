@@ -28,19 +28,19 @@ import time
 home = str(Path.home())
 
 f_csma_list = [
-    home + "/UFMG/SOMAC-ML/data/_BKP/29092018/csma/round2/backlog_file.npy", # RUN
-    home + "/UFMG/SOMAC-ML/data/10102018/round1/csma/backlog_file.npy",      # RUN3
-    home + "/UFMG/SOMAC-ML/data/06102018/run4/5/csma/backlog_file.npy",      # RUN4
-    home + "/UFMG/SOMAC-ML/data/16102018/csma/csma/backlog_file.npy",        # RUN2 (CSMA)
-    home + "/UFMG/SOMAC-ML/data/16102018/tdma/csma/backlog_file.npy"         # RUN2 (TDMA)
+    home + "/Temp/SOMAC-ML/data/_BKP/29092018/csma/round2/backlog_file.npy", # RUN
+    home + "/Temp/SOMAC-ML/data/10102018/round1/csma/backlog_file.npy",      # RUN3
+    home + "/Temp/SOMAC-ML/data/06102018/run4/5/csma/backlog_file.npy",      # RUN4
+    home + "/Temp/SOMAC-ML/data/16102018/csma/csma/backlog_file.npy",        # RUN2 (CSMA)
+    home + "/Temp/SOMAC-ML/data/16102018/tdma/csma/backlog_file.npy"         # RUN2 (TDMA)
 ]
 
 f_tdma_list = [
-    home + "/UFMG/SOMAC-ML/data/_BKP/29092018/tdma/round2/backlog_file.npy", # RUN
-    home + "/UFMG/SOMAC-ML/data/10102018/round1/tdma/backlog_file.npy",      # RUN3
-    home + "/UFMG/SOMAC-ML/data/06102018/run4/5/tdma/backlog_file.npy",      # RUN4
-    home + "/UFMG/SOMAC-ML/data/16102018/csma/tdma/backlog_file.npy",        # RUN2 (CSMA)
-    home + "/UFMG/SOMAC-ML/data/16102018/tdma/tdma/backlog_file.npy"         # RUN2 (TDMA)
+    home + "/Temp/SOMAC-ML/data/_BKP/29092018/tdma/round2/backlog_file.npy", # RUN
+    home + "/Temp/SOMAC-ML/data/10102018/round1/tdma/backlog_file.npy",      # RUN3
+    home + "/Temp/SOMAC-ML/data/06102018/run4/5/tdma/backlog_file.npy",      # RUN4
+    home + "/Temp/SOMAC-ML/data/16102018/csma/tdma/backlog_file.npy",        # RUN2 (CSMA)
+    home + "/Temp/SOMAC-ML/data/16102018/tdma/tdma/backlog_file.npy"         # RUN2 (TDMA)
 ]
 
 
@@ -66,7 +66,7 @@ def plot_heatmap(arr, fig_name, save_fig = False):
     ylabels = [i for i in range(11)]
 
     sns.heatmap(
-        arr, vmin = 0, vmax = 2, annot = True, linewidths = 0., xticklabels = xlabels, yticklabels = ylabels
+        arr, vmin = 0, vmax = 3, annot = True, linewidths = 0., xticklabels = xlabels, yticklabels = ylabels
         #arr, annot = True, linewidths = 0., xticklabels = xlabels, yticklabels = ylabels
     )
     plt.title("Regret")
@@ -115,14 +115,11 @@ def run(f_name, fig_name, save_fig = False):
 
 
 def calc_reward(curr, prev):
-    # Positive reward
-    if 0.95 * curr < prev < 1.05 * curr or 0.95 * prev < curr < 1.05 * prev:
-        reward = 0.
+    if curr > prev:
+        reward = curr / prev - 1. if prev > 0. else 0.
     else:
-        if curr > prev:
-            reward = curr / prev - 1. if prev > 0. else 0.
-        else:
-            reward = - (prev / curr - 1.) if curr > 0. else 0.
+        reward = - (prev / curr - 1.) if curr > 0. else 0.
+
     if reward > 1. or reward < -1:
         reward = 1 if reward > 1 else -1
 
@@ -174,13 +171,13 @@ def test(init_prot = 0, learn_rate = 0.3, discount = 0.8, dic = {}, alg = {}, t_
         metric[t] = t_csma[t] if prot == 0 else t_tdma[t]
         _metric[t] = t_csma[t] if prot == 0 else t_tdma[t]
         
-        alpha = 0.75
+        if dt == 1:
+            metric[t] = (metric[t] + metric[t-1]) / 2.
+            _metric[t] = (_metric[t] + _metric[t-1]) / 2.
+        
+        alpha = 1.
         if t > 0:
             _metric[t] = (1. - alpha) * _metric[t-1] + alpha * _metric[t]
-
-        # Penalty
-        if dt == 1:
-            metric[t] = (metric[t] + metric[t-1]) / 2
 
         backlog[t] = prot
         
@@ -290,7 +287,7 @@ def calc_stats(backlog, metric, dic = {}, t_csma = [], t_tdma = []):
 # In[5]:
 
 
-n_reptitions = 10
+n_reptitions = 30
 
 
 # ### Softmax / Boltzmann
