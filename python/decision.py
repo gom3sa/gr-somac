@@ -241,7 +241,9 @@ class decision(gr.basic_block):
 	def coord_loop(self, name, id): # {{{
 		global portid
 
-		portid = 1
+		#portid = 1
+		# Random init
+		portid = np.random.choice([0, 1], p = [0.5, 0.5])
 
 		##### MODE #####
 		f_mode = open("/tmp/prot.txt", "r")
@@ -258,7 +260,7 @@ class decision(gr.basic_block):
 		if mode == 2:
 			somac = egreedy(portid)
 		elif mode == 3:
-			somac = boltz(portid)
+			somac = boltz(prot = portid, learn_rate = 0.6, discount = 0.8, T = 0.5)
 		
 		# Detects whether or not a prot switch has just occured
 		# _p: protocol, _pp: previous protocol
