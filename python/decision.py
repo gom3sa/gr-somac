@@ -203,38 +203,14 @@ class decision(gr.basic_block):
 	# }}} start_block()
 
 	def calc_reward(self, curr, prev): # {{{
-		# Positive reward
-		if curr > prev and curr <= 1.2 * prev:
-			reward = 0.
-		elif curr > 1.2 * prev and curr <= 1.4 * prev:
-			reward = 1.
-		elif curr > 1.4 * prev and curr <= 1.6 * prev:
-			reward = 2.
-		elif curr > 1.6 * prev and curr <= 1.8 * prev:
-			reward = 3.
-		elif curr > 1.8 * prev and curr <= 2.0 * prev:
-			reward = 4.
-		elif curr > 2.0 * prev:
-			reward = 5.
-
-		# Negative reward
-		elif prev > curr and prev <= 1.2 * curr:
-			reward = 0.
-		elif prev > 1.2 * curr and prev <= 1.4 * curr:
-			reward = -1.
-		elif prev > 1.4 * curr and prev <= 1.6 * curr:
-			reward = -2.
-		elif prev > 1.6 * curr and prev <= 1.8 * curr:
-			reward = -3.
-		elif prev > 1.8 * curr and prev <= 2.0 * curr:
-			reward = -4.
-		elif prev > 2.0 * curr:
-			reward = -5.
-
+		if curr > prev:
+			reward = curr / prev - 1. if prev > 0. else 0.
 		else:
-			reward = 0.
+			reward = - (prev / curr - 1.) if curr > 0. else 0.
+		if reward > 1. or reward < -1:
+			reward = 1 if reward > 1 else -1
 
-		return reward
+		return reward * 5.
 	# }}}
 
 	# Coordinator selects the MAC protocol to use in the network
@@ -326,7 +302,12 @@ class decision(gr.basic_block):
 					elif dt == 3:
 						reward = self.calc_reward(target_metric[t], target_metric[t-3])
 					else:
-						reward = self.calc_reward(target_metric[t], target_metric[t-1]) * 0.01
+						reward = self.calc_reward(target_metric[t], target_metric[t-1])
+
+						if reward >= 0:
+							reward = 0
+						else:
+							reward = reward
 
 					logging.info("dt = {}".format(dt))
 					somac.update_qtable(reward, dt)
