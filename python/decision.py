@@ -27,9 +27,6 @@ import thread
 import numpy as np
 import logging
 import copy as cp
-from RandomForest import RandomForest
-from EnsembleNNet import EnsembleNNet
-from SOMAC import SOMAC
 from QLearningEGreedy import QLearningEGreedy as egreedy
 from QLearningBoltzmann import QLearningBoltzmann as boltz
 
