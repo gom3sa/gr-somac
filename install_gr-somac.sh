@@ -3,12 +3,16 @@
 echo "Checking dependencies"
 GNURADIO=`which gnuradio-companion`
 CMAKE=`which cmake`
+GIT=`which git`
 
 if [ -z $GNURADIO]; then
   sudo apt -y install gnuradio
 fi
 if [ -z $CMAKE ]; then
   sudo apt -y install cmake
+fi
+if [ -z $GIT ]; then
+  sudo apt -y install git
 fi
 
 echo "Installing gr-ieee802-11"
