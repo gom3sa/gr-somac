@@ -406,6 +406,108 @@
     </param>
   </block>
   <block>
+    <key>blocks_file_sink</key>
+    <param>
+      <key>append</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>file</key>
+      <value>/tmp/wifi_rx_all.pcap</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(96, 732)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>180</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_file_sink_0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>byte</value>
+    </param>
+    <param>
+      <key>unbuffered</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_file_sink</key>
+    <param>
+      <key>append</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>file</key>
+      <value>/tmp/wifi_tx_all.pcap</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(96, 612)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>180</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_file_sink_0_0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>byte</value>
+    </param>
+    <param>
+      <key>unbuffered</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
     <key>blocks_multiply_const_vxx</key>
     <param>
       <key>alias</key>
@@ -429,11 +531,11 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(824, 1012)</value>
+      <value>(844, 832)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>180</value>
+      <value>270</value>
     </param>
     <param>
       <key>id</key>
@@ -480,7 +582,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1000, 20)</value>
+      <value>(944, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -527,11 +629,7 @@
     </param>
     <param>
       <key>comment</key>
-      <value>Protocol:
-	- CSMA/CA = 0
-	- TDMA = 1
-
-Coordinator: True/ False</value>
+      <value></value>
     </param>
     <param>
       <key>coord</key>
@@ -555,7 +653,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1000, 696)</value>
+      <value>(944, 464)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -575,7 +673,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>portid</key>
-      <value>0</value>
+      <value>255</value>
     </param>
     <param>
       <key>mac_src</key>
@@ -618,11 +716,11 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(640, 1100)</value>
+      <value>(892, 832)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>90</value>
     </param>
     <param>
       <key>id</key>
@@ -646,46 +744,108 @@ Coordinator: True/ False</value>
     </param>
   </block>
   <block>
+    <key>foo_wireshark_connector</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>debug</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(296, 740)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>180</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>foo_wireshark_connector_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>tech</key>
+      <value>127</value>
+    </param>
+  </block>
+  <block>
+    <key>foo_wireshark_connector</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>debug</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(304, 620)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>180</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>foo_wireshark_connector_0_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>tech</key>
+      <value>127</value>
+    </param>
+  </block>
+  <block>
     <key>somac_decision</key>
     <param>
-      <key>aggr0</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>aggr1</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>aggr2</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>aggr3</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>aggr4</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>aggr5</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>aggr6</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>aggr7</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>aggr8</key>
-      <value>0</value>
+      <key>aggr</key>
+      <value>1</value>
     </param>
     <param>
       <key>backlog_file</key>
-      <value>/tmp/back_log.txt</value>
+      <value>/tmp/backlog_file.npy</value>
     </param>
     <param>
       <key>alias</key>
@@ -716,8 +876,12 @@ Coordinator: True/ False</value>
       <value>True</value>
     </param>
     <param>
+      <key>exploration</key>
+      <value>1</value>
+    </param>
+    <param>
       <key>_coordinate</key>
-      <value>(1000, 96)</value>
+      <value>(944, 96)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -728,11 +892,11 @@ Coordinator: True/ False</value>
       <value>somac_decision_0</value>
     </param>
     <param>
-      <key>ml_alg</key>
+      <key>maxoutbuf</key>
       <value>0</value>
     </param>
     <param>
-      <key>maxoutbuf</key>
+      <key>metric</key>
       <value>0</value>
     </param>
     <param>
@@ -741,14 +905,6 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>train_file</key>
-      <value>/tmp/training_data.txt</value>
-    </param>
-    <param>
-      <key>onoff_learn</key>
       <value>0</value>
     </param>
   </block>
@@ -776,11 +932,11 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1000, 464)</value>
+      <value>(608, 536)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>270</value>
     </param>
     <param>
       <key>id</key>
@@ -823,7 +979,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(704, 96)</value>
+      <value>(608, 96)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1518,11 +1674,11 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(800, 1068)</value>
+      <value>(1004, 832)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>270</value>
     </param>
     <param>
       <key>id</key>
@@ -2853,11 +3009,11 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1000, 1076)</value>
+      <value>(1148, 832)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>90</value>
     </param>
     <param>
       <key>id</key>
@@ -3028,7 +3184,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1000, 948)</value>
+      <value>(944, 676)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3082,6 +3238,12 @@ Coordinator: True/ False</value>
   <connection>
     <source_block_id>data_link_0</source_block_id>
     <sink_block_id>somac_metrics_gen_0</sink_block_id>
+    <source_key>buff size</source_key>
+    <sink_key>bsz in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>data_link_0</source_block_id>
+    <sink_block_id>somac_metrics_gen_0</sink_block_id>
     <source_key>buffer out</source_key>
     <sink_key>buffer in</sink_key>
   </connection>
@@ -3090,6 +3252,12 @@ Coordinator: True/ False</value>
     <sink_block_id>somac_metrics_gen_0</sink_block_id>
     <source_key>new frame out</source_key>
     <sink_key>new frame in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>data_link_0</source_block_id>
+    <sink_block_id>foo_wireshark_connector_0_0</sink_block_id>
+    <source_key>phy out</source_key>
+    <sink_key>in</sink_key>
   </connection>
   <connection>
     <source_block_id>data_link_0</source_block_id>
@@ -3118,6 +3286,18 @@ Coordinator: True/ False</value>
   <connection>
     <source_block_id>foo_packet_pad2_0</source_block_id>
     <sink_block_id>uhd_usrp_sink_0_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>foo_wireshark_connector_0</source_block_id>
+    <sink_block_id>blocks_file_sink_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>foo_wireshark_connector_0_0</source_block_id>
+    <sink_block_id>blocks_file_sink_0_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -3228,6 +3408,12 @@ Coordinator: True/ False</value>
     <sink_block_id>data_link_0</sink_block_id>
     <source_key>mac_out</source_key>
     <sink_key>phy in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>wifi_phy_hier_0</source_block_id>
+    <sink_block_id>foo_wireshark_connector_0</sink_block_id>
+    <source_key>mac_out</source_key>
+    <sink_key>in</sink_key>
   </connection>
   <connection>
     <source_block_id>wifi_phy_hier_0</source_block_id>

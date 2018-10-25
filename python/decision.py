@@ -39,8 +39,7 @@ class decision(gr.basic_block):
 		CSMA/CA:	portid = 0
 		TDMA:		portid = 1
 	"""
-	def __init__(self, coord, dec_gran, broad_gran, metrics_gran, backlog_file, train_file, ml_alg, onoff_learn, \
-			aggr0, aggr1, aggr2, aggr3, aggr4, aggr5, aggr6, aggr7, aggr8): # {{{
+	def __init__(self, coord, dec_gran, broad_gran, metrics_gran, exploration, metric, aggr, backlog_file): # {{{
 
 		gr.basic_block.__init__(self, name="decision", in_sig=None, out_sig=None)
 
@@ -49,22 +48,13 @@ class decision(gr.basic_block):
 		self.broad_gran   = broad_gran
 		self.metrics_gran = metrics_gran
 		self.backlog_file = backlog_file
-		self.train_file   = train_file
-		self.ml_alg       = ml_alg
-		self.onoff_learn  = onoff_learn
 
 		self.met0, self.met1, self.met2, self.met3, self.met4, \
 			self.met5, self.met6, self.met7, self.met8, self.met9 = [[] for _ in range(10)]    
 
-		self.aggr0 = aggr0
-		self.aggr1 = aggr1
-		self.aggr2 = aggr2
-		self.aggr3 = aggr3
-		self.aggr4 = aggr4
-		self.aggr5 = aggr5
-		self.aggr6 = aggr6
-		self.aggr7 = aggr7
-		self.aggr8 = aggr8
+		self.exploration = exploration
+		self.metric = metric
+		self.aggregation = aggr
 
 		# Input ports
 		self.msg_port_act_prot_in = pmt.intern('act prot in')
@@ -285,7 +275,7 @@ class decision(gr.basic_block):
 
 				np.save(self.backlog_file, log_dict)
 
-				target_metric[t] = log_dict[t]["metrics"][0, 1]
+				target_metric[t] = log_dict[t]["metrics"][self.metric, self.aggregation]
 				
 				logging.info("Target metric = {}".format(target_metric[t]))
 

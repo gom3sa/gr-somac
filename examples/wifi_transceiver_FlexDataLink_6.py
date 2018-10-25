@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Transceiver Flexdatalink 6
-# Generated: Tue Oct  2 16:38:55 2018
+# Generated: Thu Oct 25 11:21:31 2018
 ##################################################
 
 
@@ -83,7 +83,9 @@ class wifi_transceiver_FlexDataLink_6(gr.top_block):
         self.uhd_usrp_sink_0_0.set_bandwidth(10e6, 0)
         self.somac_sensor_0 = somac.sensor((mac_addr), False, False)
         self.somac_metrics_gen_0 = somac.metrics_gen(False)
-        self.somac_decision_0 = somac.decision(False, 60, 5, 30, '/tmp/back_log.txt', '/tmp/training_data.txt', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        self.somac_decision_0 = somac.decision(False, 60, 5, 30, 1, 0, 1, '/tmp/backlog_file.npy',)
+        self.foo_wireshark_connector_0_0 = foo.wireshark_connector(127, False)
+        self.foo_wireshark_connector_0 = foo.wireshark_connector(127, False)
         self.foo_packet_pad2_0 = foo.packet_pad2(False, False, 0.001, 10000, 10000)
         (self.foo_packet_pad2_0).set_min_output_buffer(100000)
         self.data_link_0 = data_link(
@@ -94,18 +96,24 @@ class wifi_transceiver_FlexDataLink_6(gr.top_block):
             mac_coord=mac_coord,
             mac_dst=mac_dst,
             mac_src=mac_addr,
-            portid=0,
+            portid=255,
             samp_rate=5e6,
         )
         self.blocks_tuntap_pdu_0 = blocks.tuntap_pdu('tap0', 440, False)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((0.6, ))
         (self.blocks_multiply_const_vxx_0).set_min_output_buffer(100000)
+        self.blocks_file_sink_0_0 = blocks.file_sink(gr.sizeof_char*1, '/tmp/wifi_tx_all.pcap', False)
+        self.blocks_file_sink_0_0.set_unbuffered(True)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, '/tmp/wifi_rx_all.pcap', False)
+        self.blocks_file_sink_0.set_unbuffered(True)
 
         ##################################################
         # Connections
         ##################################################
         self.msg_connect((self.blocks_tuntap_pdu_0, 'pdus'), (self.data_link_0, 'tap in'))
         self.msg_connect((self.data_link_0, 'tap out'), (self.blocks_tuntap_pdu_0, 'pdus'))
+        self.msg_connect((self.data_link_0, 'phy out'), (self.foo_wireshark_connector_0_0, 'in'))
+        self.msg_connect((self.data_link_0, 'buff size'), (self.somac_metrics_gen_0, 'bsz in'))
         self.msg_connect((self.data_link_0, 'buffer out'), (self.somac_metrics_gen_0, 'buffer in'))
         self.msg_connect((self.data_link_0, 'new frame out'), (self.somac_metrics_gen_0, 'new frame in'))
         self.msg_connect((self.data_link_0, 'phy out'), (self.somac_metrics_gen_0, 'mac in'))
@@ -127,10 +135,13 @@ class wifi_transceiver_FlexDataLink_6(gr.top_block):
         self.msg_connect((self.somac_sensor_0, 'met snr'), (self.somac_decision_0, 'met in5'))
         self.msg_connect((self.somac_sensor_0, 'met thr'), (self.somac_decision_0, 'met in0'))
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.data_link_0, 'phy in'))
+        self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.foo_wireshark_connector_0, 'in'))
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.somac_metrics_gen_0, 'phy in'))
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.somac_sensor_0, 'phy in'))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.foo_packet_pad2_0, 0))
         self.connect((self.foo_packet_pad2_0, 0), (self.uhd_usrp_sink_0_0, 0))
+        self.connect((self.foo_wireshark_connector_0, 0), (self.blocks_file_sink_0, 0))
+        self.connect((self.foo_wireshark_connector_0_0, 0), (self.blocks_file_sink_0_0, 0))
         self.connect((self.uhd_usrp_source_0, 0), (self.data_link_0, 0))
         self.connect((self.uhd_usrp_source_0, 0), (self.wifi_phy_hier_0, 0))
         self.connect((self.wifi_phy_hier_0, 0), (self.blocks_multiply_const_vxx_0, 0))

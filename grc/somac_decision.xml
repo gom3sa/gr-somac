@@ -1,97 +1,114 @@
 <?xml version="1.0"?>
 <block>
-  <name>Decision block</name>
-  <key>somac_decision</key>
-  <category>[SOMAC]</category>
-  <import>import somac</import>
-  <make>somac.decision($coord, $dec_gran, $broad_gran, $metrics_gran, $backlog_file, $train_file, $ml_alg, $onoff_learn, $aggr0, $aggr1, $aggr2, $aggr3, $aggr4, $aggr5, $aggr6, $aggr7, $aggr8)</make>
-  <!-- Make one 'param' node for every Parameter you want settable from the GUI.
-       Sub-nodes:
-       * name
-       * key (makes the value accessible as $keyname, e.g. in the make node)
-       * type -->
-  <param>
-    <name>Coordinator</name>
-    <key>coord</key>
-    <type>bool</type>
-    <option>
-      <name>True</name>
-      <key>True</key>
-    </option>
-    <option>
-      <name>False</name>
-      <key>False</key>
-    </option>
-  </param>
+	<name>Decision block</name>
+	<key>somac_decision</key>
+	<category>[SOMAC]</category>
+	<import>import somac</import>
+	<make>somac.decision($coord, $dec_gran, $broad_gran, $metrics_gran, $exploration, $metric, $aggr, $backlog_file,)</make>
+	<!-- Make one 'param' node for every Parameter you want settable from the GUI.
+			 Sub-nodes:
+			 * name
+			 * key (makes the value accessible as $keyname, e.g. in the make node)
+			 * type -->
+	<param>
+		<name>Coordinator</name>
+		<key>coord</key>
+		<type>bool</type>
+		<option>
+			<name>True</name>
+			<key>True</key>
+		</option>
+		<option>
+			<name>False</name>
+			<key>False</key>
+		</option>
+	</param>
+
+	<param>
+		<name>Decision granul (s)</name>
+		<key>dec_gran</key>
+		<type>int</type>
+	</param>
+
+	<param>
+		<name>Broadcast granul (s)</name>
+		<key>broad_gran</key>
+		<type>int</type>
+	</param>
+
+	<param>
+		<name>Metrics granul (s)</name>
+		<key>metrics_gran</key>
+		<type>int</type>
+	</param>
 
   <param>
-    <name>Decision granul (s)</name>
-    <key>dec_gran</key>
-    <type>int</type>
-  </param>
-
-  <param>
-    <name>Broadcast granul (s)</name>
-    <key>broad_gran</key>
-    <type>int</type>
-  </param>
-
-  <param>
-    <name>Metrics granul (s)</name>
-    <key>metrics_gran</key>
-    <type>int</type>
-  </param>
-
-  <param>
-    <name>Backlog file</name>
-    <key>backlog_file</key>
-    <type>file_save</type>
-  </param>
-
-  <param>
-    <name>Training file</name>
-    <key>train_file</key>
-    <type>file_open</type>
-  </param>
-
-  <param>
-    <name>Type of Learning</name>
-    <key>onoff_learn</key>
-    <value>0</value>
+    <name>Exploration</name>
+    <key>exploration</key>
     <type>int</type>
     <option>
-      <name>Offline</name>
+      <name>egreedy</name>
       <key>0</key>
     </option>
     <option>
-      <name>Online</name>
+      <name>softmax</name>
       <key>1</key>
     </option>
     <option>
-      <name>Training</name>
+      <name>ucb</name>
       <key>2</key>
     </option>
   </param>
 
   <param>
-    <name>ML Algorithm</name>
-    <key>ml_alg</key>
-    <value>0</value>
+    <name>Metric</name>
+    <key>metric</key>
     <type>int</type>
     <option>
-      <name>Neural Network</name>
+      <name>throughput</name>
       <key>0</key>
     </option>
     <option>
-      <name>Decision Tree</name>
+      <name>latency</name>
       <key>1</key>
+    </option>
+    <option>
+      <name>jitter</name>
+      <key>2</key>
+    </option>
+    <option>
+      <name>rnp</name>
+      <key>3</key>
+    </option>
+    <option>
+      <name>interpkt</name>
+      <key>4</key>
+    </option>
+    <option>
+      <name>snr</name>
+      <key>5</key>
+    </option>
+    <option>
+      <name>contention</name>
+      <key>6</key>
+    </option>
+    <option>
+      <name>non</name>
+      <key>7</key>
+    </option>
+    <option>
+      <name>buffer size</name>
+      <key>8</key>
+    </option>
+    <option>
+      <name>pkt thr</name>
+      <key>9</key>
     </option>
   </param>
 
   <param>
-    <name>Aggr0</name>
-    <key>aggr0</key>
-    <value>0</value>
+    <name>Aggregation</name>
+    <key>aggr</key>
     <type>int</type>
     <option>
       <name>sum</name>
@@ -109,284 +126,114 @@
       <name>min</name>
       <key>3</key>
     </option>
-  </param>
-
-  <param>
-    <name>Aggr1</name>
-    <key>aggr1</key>
-    <value>0</value>
-    <type>int</type>
     <option>
-      <name>sum</name>
-      <key>0</key>
+      <name>var</name>
+      <key>4</key>
     </option>
     <option>
-      <name>avg</name>
-      <key>1</key>
-    </option>
-    <option>
-      <name>max</name>
-      <key>2</key>
-    </option>
-    <option>
-      <name>min</name>
-      <key>3</key>
-    </option> 
-  </param>
-
-  <param>
-    <name>Aggr2</name>
-    <key>aggr2</key>
-    <value>0</value>
-    <type>int</type>
-    <option>
-      <name>sum</name>
-      <key>0</key>
-    </option>
-    <option>
-      <name>avg</name>
-      <key>1</key>
-    </option>
-    <option>
-      <name>max</name>
-      <key>2</key>
-    </option>
-    <option>
-      <name>min</name>
-      <key>3</key>
-    </option> 
-  </param>
-
-  <param>
-    <name>Aggr3</name>
-    <key>aggr3</key>
-    <value>0</value>
-    <type>int</type>
-    <option>
-      <name>sum</name>
-      <key>0</key>
-    </option>
-    <option>
-      <name>avg</name>
-      <key>1</key>
-    </option>
-    <option>
-      <name>max</name>
-      <key>2</key>
-    </option>
-    <option>
-      <name>min</name>
-      <key>3</key>
-    </option> 
-  </param> 
-
-  <param>
-    <name>Aggr4</name>
-    <key>aggr4</key>
-    <value>0</value>
-    <type>int</type>
-    <option>
-      <name>sum</name>
-      <key>0</key>
-    </option>
-    <option>
-      <name>avg</name>
-      <key>1</key>
-    </option>
-    <option>
-      <name>max</name>
-      <key>2</key>
-    </option>
-    <option>
-      <name>min</name>
-      <key>3</key>
+      <name>count</name>
+      <key>5</key>
     </option>
   </param>
 
-  <param>
-    <name>Aggr5</name>
-    <key>aggr5</key>
-    <value>0</value>
-    <type>int</type>
-    <option>
-      <name>sum</name>
-      <key>0</key>
-    </option>
-    <option>
-      <name>avg</name>
-      <key>1</key>
-    </option>
-    <option>
-      <name>max</name>
-      <key>2</key>
-    </option>
-    <option>
-      <name>min</name>
-      <key>3</key>
-    </option>
-  </param>
+	<param>
+		<name>Backlog file</name>
+		<key>backlog_file</key>
+		<type>file_save</type>
+	</param>
+	<!-- Make one 'sink' node per input. Sub-nodes:
+			 * name (an identifier for the GUI)
+			 * type
+			 * vlen
+			 * optional (set to 1 for optional inputs) -->
 
-  <param>
-    <name>Aggr6</name>
-    <key>aggr6</key>
-    <value>0</value>
-    <type>int</type>
-    <option>
-      <name>sum</name>
-      <key>0</key>
-    </option>
-    <option>
-      <name>avg</name>
-      <key>1</key>
-    </option>
-    <option>
-      <name>max</name>
-      <key>2</key>
-    </option>
-    <option>
-      <name>min</name>
-      <key>3</key>
-    </option>
-  </param>
+	<sink>
+		<name>act prot in</name>
+		<type>message</type>
+		<optional>1</optional>
+	</sink>
 
-  <param>
-    <name>Aggr7</name>
-    <key>aggr7</key>
-    <value>0</value>
-    <type>int</type>
-    <option>
-      <name>sum</name>
-      <key>0</key>
-    </option>
-    <option>
-      <name>avg</name>
-      <key>1</key>
-    </option>
-    <option>
-      <name>max</name>
-      <key>2</key>
-    </option>
-    <option>
-      <name>min</name>
-      <key>3</key>
-    </option>
-  </param>
+	<sink>
+		<name>met in0</name>
+		<type>message</type>
+		<optional>1</optional>
+	</sink>
 
-  <param>
-    <name>Aggr8</name>
-    <key>aggr8</key>
-    <value>0</value>
-    <type>int</type>
-    <option>
-      <name>sum</name>
-      <key>0</key>
-    </option>
-    <option>
-      <name>avg</name>
-      <key>1</key>
-    </option>
-    <option>
-      <name>max</name>
-      <key>2</key>
-    </option>
-    <option>
-      <name>min</name>
-      <key>3</key>
-    </option>
-  </param>
-  <!-- Make one 'sink' node per input. Sub-nodes:
-       * name (an identifier for the GUI)
-       * type
-       * vlen
-       * optional (set to 1 for optional inputs) -->
+	<sink>
+		<name>met in1</name>
+		<type>message</type>
+		<optional>1</optional>
+	</sink>
 
-  <sink>
-    <name>act prot in</name>
-    <type>message</type>
-    <optional>1</optional>
-  </sink>
+	<sink>
+		<name>met in2</name>
+		<type>message</type>
+		<optional>1</optional>
+	</sink>
 
-  <sink>
-    <name>met in0</name>
-    <type>message</type>
-    <optional>1</optional>
-  </sink>
+	<sink>
+		<name>met in3</name>
+		<type>message</type>
+		<optional>1</optional>
+	</sink>
 
-  <sink>
-    <name>met in1</name>
-    <type>message</type>
-    <optional>1</optional>
-  </sink>
+	<sink>
+		<name>met in4</name>
+		<type>message</type>
+		<optional>1</optional>
+	</sink>
 
-  <sink>
-    <name>met in2</name>
-    <type>message</type>
-    <optional>1</optional>
-  </sink>
+	<sink>
+		<name>met in5</name>
+		<type>message</type>
+		<optional>1</optional>
+	</sink>
 
-  <sink>
-    <name>met in3</name>
-    <type>message</type>
-    <optional>1</optional>
-  </sink>
+	<sink>
+		<name>met in6</name>
+		<type>message</type>
+		<optional>1</optional>
+	</sink>
 
-  <sink>
-    <name>met in4</name>
-    <type>message</type>
-    <optional>1</optional>
-  </sink>
+	<sink>
+		<name>met in7</name>
+		<type>message</type>
+		<optional>1</optional>
+	</sink>
 
-  <sink>
-    <name>met in5</name>
-    <type>message</type>
-    <optional>1</optional>
-  </sink>
+	<sink>
+		<name>met in8</name>
+		<type>message</type>
+		<optional>1</optional>
+	</sink>
 
-  <sink>
-    <name>met in6</name>
-    <type>message</type>
-    <optional>1</optional>
-  </sink>
+	<sink>
+		<name>met in9</name>
+		<type>message</type>
+		<optional>1</optional>
+	</sink>
 
-  <sink>
-    <name>met in7</name>
-    <type>message</type>
-    <optional>1</optional>
-  </sink>
+	<!-- Make one 'source' node per output. Sub-nodes:
+			 * name (an identifier for the GUI)
+			 * type
+			 * vlen
+			 * optional (set to 1 for optional inputs) -->
 
-  <sink>
-    <name>met in8</name>
-    <type>message</type>
-    <optional>1</optional>
-  </sink>
+	<source>
+		<name>ctrl out</name>
+		<type>message</type>
+		<optional>1</optional>
+	</source>
 
-  <sink>
-    <name>met in9</name>
-    <type>message</type>
-    <optional>1</optional>
-  </sink>
+	<source>
+		<name>broad out</name>
+		<type>message</type>
+		<optional>1</optional>
+	</source>
 
-  <!-- Make one 'source' node per output. Sub-nodes:
-       * name (an identifier for the GUI)
-       * type
-       * vlen
-       * optional (set to 1 for optional inputs) -->
-
-  <source>
-    <name>ctrl out</name>
-    <type>message</type>
-    <optional>1</optional>
-  </source>
-
-  <source>
-    <name>broad out</name>
-    <type>message</type>
-    <optional>1</optional>
-  </source>
-
-  <source>
-    <name>metrics out</name>
-    <type>message</type>
-    <optional>1</optional>
-  </source>
+	<source>
+		<name>metrics out</name>
+		<type>message</type>
+		<optional>1</optional>
+	</source>
 </block>

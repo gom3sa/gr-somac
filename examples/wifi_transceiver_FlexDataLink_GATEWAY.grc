@@ -433,7 +433,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(168, 940)</value>
+      <value>(176, 716)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -484,7 +484,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(168, 820)</value>
+      <value>(176, 596)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -531,11 +531,11 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(832, 1020)</value>
+      <value>(900, 816)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>180</value>
+      <value>270</value>
     </param>
     <param>
       <key>id</key>
@@ -629,11 +629,7 @@
     </param>
     <param>
       <key>comment</key>
-      <value>Protocol:
-	- CSMA/CA = 0
-	- TDMA = 1
-
-Coordinator: True/ False</value>
+      <value></value>
     </param>
     <param>
       <key>coord</key>
@@ -657,7 +653,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1024, 680)</value>
+      <value>(1024, 456)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -720,11 +716,11 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(608, 1100)</value>
+      <value>(948, 816)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>90</value>
     </param>
     <param>
       <key>id</key>
@@ -771,7 +767,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(368, 948)</value>
+      <value>(376, 724)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -818,7 +814,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(376, 828)</value>
+      <value>(384, 604)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -844,39 +840,7 @@ Coordinator: True/ False</value>
   <block>
     <key>somac_decision</key>
     <param>
-      <key>aggr0</key>
-      <value>2</value>
-    </param>
-    <param>
-      <key>aggr1</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>aggr2</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>aggr3</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>aggr4</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>aggr5</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>aggr6</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>aggr7</key>
-      <value>2</value>
-    </param>
-    <param>
-      <key>aggr8</key>
+      <key>aggr</key>
       <value>1</value>
     </param>
     <param>
@@ -912,6 +876,10 @@ Coordinator: True/ False</value>
       <value>True</value>
     </param>
     <param>
+      <key>exploration</key>
+      <value>1</value>
+    </param>
+    <param>
       <key>_coordinate</key>
       <value>(1024, 88)</value>
     </param>
@@ -924,11 +892,11 @@ Coordinator: True/ False</value>
       <value>somac_decision_0</value>
     </param>
     <param>
-      <key>ml_alg</key>
+      <key>maxoutbuf</key>
       <value>0</value>
     </param>
     <param>
-      <key>maxoutbuf</key>
+      <key>metric</key>
       <value>0</value>
     </param>
     <param>
@@ -938,14 +906,6 @@ Coordinator: True/ False</value>
     <param>
       <key>minoutbuf</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>train_file</key>
-      <value>/tmp/training_file.npy</value>
-    </param>
-    <param>
-      <key>onoff_learn</key>
-      <value>1</value>
     </param>
   </block>
   <block>
@@ -972,11 +932,11 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1024, 448)</value>
+      <value>(688, 528)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>270</value>
     </param>
     <param>
       <key>id</key>
@@ -1714,11 +1674,11 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(768, 1068)</value>
+      <value>(1068, 816)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>270</value>
     </param>
     <param>
       <key>id</key>
@@ -3049,11 +3009,11 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(968, 1076)</value>
+      <value>(1228, 816)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>90</value>
     </param>
     <param>
       <key>id</key>
@@ -3224,7 +3184,7 @@ Coordinator: True/ False</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1024, 956)</value>
+      <value>(1024, 660)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3274,6 +3234,12 @@ Coordinator: True/ False</value>
     <sink_block_id>data_link_0</sink_block_id>
     <source_key>pdus</source_key>
     <sink_key>tap in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>data_link_0</source_block_id>
+    <sink_block_id>somac_metrics_gen_0</sink_block_id>
+    <source_key>buff size</source_key>
+    <sink_key>bsz in</sink_key>
   </connection>
   <connection>
     <source_block_id>data_link_0</source_block_id>
