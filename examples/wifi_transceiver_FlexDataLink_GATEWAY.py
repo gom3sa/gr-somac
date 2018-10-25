@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Transceiver Flexdatalink Gateway
-# Generated: Thu Oct 25 11:22:52 2018
+# Generated: Thu Oct 25 17:35:12 2018
 ##################################################
 
 
@@ -98,6 +98,7 @@ class wifi_transceiver_FlexDataLink_GATEWAY(gr.top_block):
             mac_src=mac_addr,
             portid=255,
             samp_rate=5e6,
+            csma_threshold=-35,
         )
         self.blocks_tuntap_pdu_0 = blocks.tuntap_pdu('tap0', 440, False)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((0.6, ))

@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Test Tcd 4
-# Generated: Thu Oct 25 17:00:01 2018
+# Generated: Thu Oct 25 17:37:25 2018
 ##################################################
 
 
@@ -98,6 +98,7 @@ class test_tcd_4(gr.top_block):
             mac_src=mac_addr,
             portid=255,
             samp_rate=samp_rate,
+            csma_threshold=-30,
         )
         self.blocks_tuntap_pdu_0 = blocks.tuntap_pdu('tap0', 440, False)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((0.6, ))

@@ -234,6 +234,49 @@
     </param>
     <param>
       <key>_coordinate</key>
+      <value>(376, 668)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>csma_threshold</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>CSMA threshold (dB)</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>type</key>
+      <value></value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>-35</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
       <value>(968, 94)</value>
     </param>
     <param>
@@ -658,7 +701,7 @@
     </param>
     <param>
       <key>threshold</key>
-      <value>-35</value>
+      <value>csma_threshold</value>
     </param>
   </block>
   <block>
