@@ -1,8 +1,9 @@
 #!/bin/bash
 
 cd ~
-apt install net-tools
-apt install iproute2
+apt -y install net-tools
+apt -y install iproute2
+apt -y install iputils-ping
 
 cd ~
 rm -rf gr-somac
