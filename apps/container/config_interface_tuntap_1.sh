@@ -17,7 +17,7 @@ IP=${IP_LIST[$INTERFACE_ID]}
 if [[ $INTERFACE_ID -eq "0" ]]; then
 	echo "Configuring Gateway interface.";
 
-	ip tuntap add dev tap0 user ${USER} mode tap; sleep 1
+	ip tuntap add dev tap0 user root mode tap; sleep 1
 
 	ifconfig tap0 down; sleep 1
 	ifconfig tap0 hw ether $MAC; sleep 1
