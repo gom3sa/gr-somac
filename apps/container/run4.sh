@@ -14,7 +14,7 @@ mkdir $DIR;
 # }}}
 
 # Run {{{
-./gr-somac/apps/config_interface_tuntap_"${IDS_CONFIG[$ARG_ID]}".sh;
+./gr-somac/apps/container/config_interface_tuntap_"${IDS_CONFIG[$ARG_ID]}".sh;
 
 pkill python; pkill ping;
 
