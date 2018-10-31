@@ -27,6 +27,9 @@ sudo pip install scikit-learn
 sudo pip install scipy
 
 cd ~
+sudo rm -rf gr-*
+
+cd ~
 git clone -b master https://github.com/bastibl/gr-foo.git
 cd gr-foo
 mkdir build

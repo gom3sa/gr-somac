@@ -40,6 +40,9 @@ pip install scikit-learn
 pip install scipy
 
 cd ~
+rm -rf gr-*
+
+cd ~
 git clone -b master https://github.com/bastibl/gr-foo.git
 cd gr-foo
 mkdir build
