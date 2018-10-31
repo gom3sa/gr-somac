@@ -14,8 +14,8 @@ cd ..
 mkdir build
 cd build
 cmake ..
-sudo make install
-sudo ldconfig
+make install
+ldconfig
 
 cd ../examples
 grcc ./data_link.grc
