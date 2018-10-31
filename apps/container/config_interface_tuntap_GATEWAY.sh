@@ -42,7 +42,7 @@ fi
 if [[ ! $INTERFACE_ID -eq "0" ]]; then 
 	echo "Configuring normal node, addr = ${MAC_LIST[$INTERFACE_ID]}."
 
-	ip tuntap add dev tap0 user ${USER} mode tap; sleep 1
+	ip tuntap add dev tap0 user root mode tap; sleep 1
 
 	ifconfig tap0 down; sleep 1
 	ifconfig tap0 hw ether $MAC; sleep 1
