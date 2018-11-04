@@ -49,8 +49,12 @@ class QLearningBoltzmann:
 		return action
 
 	def update_qtable(self, reward, dt):
+		#self.q_table[self.state, self.action] = (1. - self.learn_rate) * self.q_table[self.state, self.action] + \
+		#				self.learn_rate * (reward + self.discount * np.max(self.q_table[self.state_new, :]))
+
+		q_table_abs = np.abs(self.q_table)
 		self.q_table[self.state, self.action] = (1. - self.learn_rate) * self.q_table[self.state, self.action] + \
-						self.learn_rate * (reward + self.discount * np.max(self.q_table[self.state_new, :]))
+						self.learn_rate * (reward + self.discount * np.max(q_table_abs[self.state_new, :]))
 
 		T = self.T
 		num = np.exp(self.q_table / T)
