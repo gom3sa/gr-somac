@@ -15,9 +15,9 @@ mkdir $DIR;
 
 # Run {{{
 cd ~
-./gr-somac/apps/container/config_interface_tuntap_"${IDS_CONFIG[$ARG_ID]}".sh;
+sudo ./gr-somac/apps/container/config_interface_tuntap_"${IDS_CONFIG[$ARG_ID]}".sh;
 
-pkill python; pkill ping;
+sudo pkill python; sudo pkill ping;
 
 RUN_TIME=3700
 if [[ $ARG_ID -eq 9 ]]; then
@@ -25,10 +25,10 @@ if [[ $ARG_ID -eq 9 ]]; then
 	echo $MODE > "/tmp/prot.txt"
 	rm -rf "/tmp/backlog_file.npy"
 	rm -rf "/tmp/out.log"
-	((sleep $RUN_TIME; pkill python) & ./gr-somac/examples/wifi_transceiver_FlexDataLink_"${IDS_CONFIG[$ARG_ID]}".py);
+	((sleep $RUN_TIME; sudo pkill python) & sudo ./gr-somac/examples/wifi_transceiver_FlexDataLink_"${IDS_CONFIG[$ARG_ID]}".py);
 else
 	echo "NORMAL NODE"
-	((sleep $RUN_TIME; pkill python; pkill ping) & ./gr-somac/examples/wifi_transceiver_FlexDataLink_"${IDS_CONFIG[$ARG_ID]}".py >/dev/null 2>&1 & python $HOME/gr-somac/apps/ping5.py "${IDS_CONFIG[$ARG_ID]}");
+	((sleep $RUN_TIME; sudo pkill python; sudo pkill ping) & sudo ./gr-somac/examples/wifi_transceiver_FlexDataLink_"${IDS_CONFIG[$ARG_ID]}".py >/dev/null 2>&1 & python $HOME/gr-somac/apps/ping5.py "${IDS_CONFIG[$ARG_ID]}");
 fi
 # }}}
 
