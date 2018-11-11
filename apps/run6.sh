@@ -15,7 +15,7 @@ mkdir $DIR;
 
 # Run {{{
 cd ~
-./gr-somac/apps/container/config_interface_tuntap_"${IDS_CONFIG[$ARG_ID]}".sh;
+sudo ./gr-somac/apps/container/config_interface_tuntap_"${IDS_CONFIG[$ARG_ID]}".sh;
 
 sudo pkill python; sudo pkill ping;
 
