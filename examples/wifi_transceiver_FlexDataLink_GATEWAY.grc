@@ -628,6 +628,10 @@
       <value>mac_coord</value>
     </param>
     <param>
+      <key>csma_threshold</key>
+      <value>-35</value>
+    </param>
+    <param>
       <key>comment</key>
       <value></value>
     </param>
@@ -906,6 +910,10 @@
     <param>
       <key>minoutbuf</key>
       <value>0</value>
+    </param>
+    <param>
+      <key>minmax</key>
+      <value>1</value>
     </param>
   </block>
   <block>

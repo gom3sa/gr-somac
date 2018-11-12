@@ -4,7 +4,7 @@
 	<key>somac_decision</key>
 	<category>[SOMAC]</category>
 	<import>import somac</import>
-	<make>somac.decision($coord, $dec_gran, $broad_gran, $metrics_gran, $exploration, $metric, $aggr, $minmax, $backlog_file,)</make>
+	<make>somac.decision($coord, $dec_gran, $broad_gran, $metrics_gran, $exploration, $metric, $aggr, $minmax, $backlog_file)</make>
 	<!-- Make one 'param' node for every Parameter you want settable from the GUI.
 			 Sub-nodes:
 			 * name

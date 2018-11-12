@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Transceiver Flexdatalink 1
-# Generated: Thu Oct 25 17:34:38 2018
+# Generated: Mon Nov 12 10:55:00 2018
 ##################################################
 
 
@@ -83,7 +83,7 @@ class wifi_transceiver_FlexDataLink_1(gr.top_block):
         self.uhd_usrp_sink_0_0.set_bandwidth(10e6, 0)
         self.somac_sensor_0 = somac.sensor((mac_addr), False, False)
         self.somac_metrics_gen_0 = somac.metrics_gen(False)
-        self.somac_decision_0 = somac.decision(False, 60, 5, 30, 1, 0, 1, '/tmp/backlog_file.npy',)
+        self.somac_decision_0 = somac.decision(False, 60, 5, 30, 1, 0, 1, 1, '/tmp/backlog_file.npy')
         self.foo_wireshark_connector_0_0 = foo.wireshark_connector(127, False)
         self.foo_wireshark_connector_0 = foo.wireshark_connector(127, False)
         self.foo_packet_pad2_0 = foo.packet_pad2(False, False, 0.001, 10000, 10000)
@@ -91,6 +91,7 @@ class wifi_transceiver_FlexDataLink_1(gr.top_block):
         self.data_link_0 = data_link(
             alpha=1000,
             coord=False,
+            csma_threshold=-35,
             debug=False,
             mac_bss=[0xff, 0xff, 0xff, 0xff, 0xff, 0xff],
             mac_coord=mac_coord,
@@ -98,7 +99,6 @@ class wifi_transceiver_FlexDataLink_1(gr.top_block):
             mac_src=mac_addr,
             portid=255,
             samp_rate=5e6,
-            csma_threshold=-35,
         )
         self.blocks_tuntap_pdu_0 = blocks.tuntap_pdu('tap0', 440, False)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((0.6, ))

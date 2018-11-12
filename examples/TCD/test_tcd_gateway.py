@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Test Tcd Gateway
-# Generated: Thu Oct 25 17:38:46 2018
+# Generated: Mon Nov 12 10:56:16 2018
 ##################################################
 
 
@@ -83,7 +83,7 @@ class test_tcd_gateway(gr.top_block):
         self.uhd_usrp_sink_0_0.set_bandwidth(10e6, 0)
         self.somac_sensor_0 = somac.sensor((mac_addr), True, False)
         self.somac_metrics_gen_0 = somac.metrics_gen(False)
-        self.somac_decision_0 = somac.decision(True, 60, 5, 30, 1, 0, 1, '/tmp/backlog_file.npy',)
+        self.somac_decision_0 = somac.decision(True, 60, 5, 30, 1, 0, 1, 1, '/tmp/backlog_file.npy')
         self.foo_wireshark_connector_0_0 = foo.wireshark_connector(127, False)
         self.foo_wireshark_connector_0 = foo.wireshark_connector(127, False)
         self.foo_packet_pad2_0 = foo.packet_pad2(False, False, 0.01, 100, 1000)
@@ -91,6 +91,7 @@ class test_tcd_gateway(gr.top_block):
         self.data_link_0 = data_link(
             alpha=1000,
             coord=True,
+            csma_threshold=-30,
             debug=False,
             mac_bss=[0xff, 0xff, 0xff, 0xff, 0xff, 0xff],
             mac_coord=mac_coord,
@@ -98,7 +99,6 @@ class test_tcd_gateway(gr.top_block):
             mac_src=mac_addr,
             portid=255,
             samp_rate=samp_rate,
-            csma_threshold=-30,
         )
         self.blocks_tuntap_pdu_0 = blocks.tuntap_pdu('tap0', 440, False)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((0.6, ))
