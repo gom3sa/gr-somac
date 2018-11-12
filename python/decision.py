@@ -39,7 +39,7 @@ class decision(gr.basic_block):
 		CSMA/CA:	portid = 0
 		TDMA:		portid = 1
 	"""
-	def __init__(self, coord, dec_gran, broad_gran, metrics_gran, exploration, metric, aggr, backlog_file): # {{{
+	def __init__(self, coord, dec_gran, broad_gran, metrics_gran, exploration, metric, aggr, minmax, backlog_file): # {{{
 
 		gr.basic_block.__init__(self, name="decision", in_sig=None, out_sig=None)
 
@@ -53,8 +53,9 @@ class decision(gr.basic_block):
 			self.met5, self.met6, self.met7, self.met8, self.met9 = [[] for _ in range(10)]    
 
 		self.exploration = exploration
-		self.metric = metric
+		self.metric      = metric
 		self.aggregation = aggr
+		self.minmax      = minmax # target metric should be minimized ou maximized?
 
 		# Input ports
 		self.msg_port_act_prot_in = pmt.intern('act prot in')
@@ -197,7 +198,10 @@ class decision(gr.basic_block):
 		if reward > 1. or reward < -1:
 			reward = 1 if reward > 1 else -1
 
-		return reward * 5.
+		if self.mimmax == 0:	# min
+			return reward * -5.
+		elif self.mimmax == 1:	# max
+			return reward * 5.
 	# }}}
 
 	# Coordinator selects the MAC protocol to use in the network
