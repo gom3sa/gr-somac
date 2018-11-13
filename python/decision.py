@@ -198,9 +198,9 @@ class decision(gr.basic_block):
 		if reward > 1. or reward < -1:
 			reward = 1 if reward > 1 else -1
 
-		if self.mimmax == 0:	# min
+		if self.minmax == 0:	# min
 			return reward * -5.
-		elif self.mimmax == 1:	# max
+		elif self.minmax == 1:	# max
 			return reward * 5.
 	# }}}
 
