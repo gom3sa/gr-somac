@@ -36,7 +36,8 @@ GR_PYTHON_INSTALL(
 #    SOMAC.py
 #    EnsembleNNet.py
     QLearningEGreedy.py
-    QLearningBoltzmann.py DESTINATION ${GR_PYTHON_DIR}/somac
+    QLearningBoltzmann.py
+    FSMAC.py DESTINATION ${GR_PYTHON_DIR}/somac
 )
 
 ########################################################################

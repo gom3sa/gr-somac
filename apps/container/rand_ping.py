@@ -30,8 +30,8 @@ for i in range(n):
 	sleeptime, txtime = sleeptime * 60, txtime * 60
 
 	sleep(sleeptime)
-	call(["sudo", "timeout", str(txtime), "ping", "-i 0.01", "192.168.123.1"], stdout = f)
-	call(["sudo", "pkill", "ping"], stdout = f)
+	call(["timeout", str(txtime), "ping", "-i 0.01", "192.168.123.1"], stdout = f)
+	call(["pkill", "ping"], stdout = f)
 
 f.close()
 

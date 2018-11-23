@@ -34,4 +34,5 @@ except ImportError:
 from decision import decision
 from QLearningEGreedy import QLearningEGreedy
 from QLearningBoltzmann import QLearningBoltzmann
+from FSMAC import FSMAC
 #
