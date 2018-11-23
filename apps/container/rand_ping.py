@@ -4,6 +4,8 @@ from time import sleep
 import sys
 import time
 
+call(["pkill", "ping"], stdout = f)
+
 nodeid = -1
 
 print("Starting ping")
