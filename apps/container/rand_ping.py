@@ -4,6 +4,7 @@ from time import sleep
 import sys
 import time
 
+f = open("/dev/null", "w")
 call(["pkill", "ping"], stdout = f)
 
 nodeid = -1
@@ -17,7 +18,6 @@ assert nodeid >= 0, "Error! Invalid nodeid"
 profile = np.load("/tmp/profile.npy", encoding = "latin1").item()
 
 n = len(profile[nodeid]["tx"])
-f = open("/dev/null", "w")
 
 _tic = time.time()
 
