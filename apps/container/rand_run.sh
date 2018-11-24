@@ -19,7 +19,7 @@ cd ~
 
 pkill python; pkill ping;
 
-RUN_TIME=5400
+RUN_TIME=7200
 if [[ $ARG_ID -eq 9 ]]; then
 	echo "COORDINATOR"
 	echo $MODE > "/tmp/prot.txt"
