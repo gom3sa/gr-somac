@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Wifi Transceiver Flexdatalink Gateway
-# Generated: Tue Nov 13 13:10:05 2018
+# Generated: Fri Nov 23 22:24:48 2018
 ##################################################
 
 
@@ -83,7 +83,7 @@ class wifi_transceiver_FlexDataLink_GATEWAY(gr.top_block):
         self.uhd_usrp_sink_0_0.set_bandwidth(10e6, 0)
         self.somac_sensor_0 = somac.sensor((mac_addr), True, False)
         self.somac_metrics_gen_0 = somac.metrics_gen(False)
-        self.somac_decision_0 = somac.decision(True, 60, 5, 30, 1, 1, 1, 0, '/tmp/backlog_file.npy')
+        self.somac_decision_0 = somac.decision(True, 60, 5, 30, 1, 0, 1, 1, '/tmp/backlog_file.npy')
         self.foo_wireshark_connector_0_0 = foo.wireshark_connector(127, False)
         self.foo_wireshark_connector_0 = foo.wireshark_connector(127, False)
         self.foo_packet_pad2_0 = foo.packet_pad2(False, False, 0.001, 10000, 10000)
