@@ -31,9 +31,10 @@ for i in range(n):
 	# minutes to seconds
 	sleeptime, txtime = sleeptime * 60, txtime * 60
 
-	sleep(sleeptime)
 	call(["timeout", str(txtime), "ping", "-i 0.01", "192.168.123.1"], stdout = f)
 	call(["pkill", "ping"], stdout = f)
+
+	sleep(sleeptime)
 
 f.close()
 
