@@ -10,9 +10,10 @@ IDS_CONFIG=(1 2 3 4 5 6 7 8 9 GATEWAY)
 PROT=$MODE; # 0: CSMA, 1: TDMA, 2: SOMAC
 DATE=`date +%d%m%Y_%H%M`;
 DIR=$HOME/$PROT"_"$DATE;
-
 mkdir $DIR;
 # }}}
+
+cp $HOME/gr-somac/data/90_lim30/profile_0.npy /tmp/profile.npy
 
 # Run {{{
 

@@ -13,6 +13,8 @@ DIR=$HOME/$PROT"_"$DATE;
 mkdir $DIR;
 # }}}
 
+cp $HOME/gr-somac/data/90_lim30/profile_0.npy /tmp/profile.npy
+
 # Run {{{
 cd ~
 ./gr-somac/apps/container/config_interface_tuntap_"${IDS_CONFIG[$ARG_ID]}".sh;
