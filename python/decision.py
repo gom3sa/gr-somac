@@ -367,6 +367,7 @@ class decision(gr.basic_block):
 						if perf < 0.8:
 							decision = 0 if portid == 1 else 1
 
+						portid = decision
 						logging.info("SMAC, delta perfomance = {}%".format(round((perf - 1) * 100., 0)))
 						logging.info("SMAC, decision = {}".format("CSMA" if decision == 0 else "TDMA"))
 				# }}}
