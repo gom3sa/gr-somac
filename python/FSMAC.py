@@ -16,10 +16,7 @@ class FSMAC:
 		csma = float(self.calculate_csma_adaptability(non, lat/2.))
 		tdma = float(self.calculate_tdma_adaptability(non, lat/2.))
 
-		logging.info("Prot = {}".format("CSMA" if self.prot == 0 else "TDMA"))
-		logging.info("non = {}, lat = {}".format(non, lat))
 		logging.info("Adaptability: CSMA = {}, TDMA = {}".format(csma, tdma))
-		logging.info("\n")
 
 		# 0: CSMA
 		# 1: TDMA

@@ -29,6 +29,7 @@ import logging
 import copy as cp
 from QLearningEGreedy import QLearningEGreedy as egreedy
 from QLearningBoltzmann import QLearningBoltzmann as boltz
+from FSMAC import FSMAC
 
 portid = 200 # Initially no MAC protocol is used. The normal node waits for coordinator's message.
 threshold = 0.1 # Threshold for switching MAC protocol
@@ -204,12 +205,18 @@ class decision(gr.basic_block):
 			return reward * 5.
 	# }}}
 
+	def calc_non(self, met8): # {{{
+		return int(np.sum(np.array(met8) >= 2) / 2.)
+	# }}}
+
 	# Coordinator selects the MAC protocol to use in the network
 	def coord_loop(self, name, id): # {{{
 		global portid
 
 		#portid = 1
 		# Random init
+		seed = int(time.time())
+		np.random.seed(seed)
 		portid = np.random.choice([0, 1], p = [0.5, 0.5])
 
 		##### MODE #####
@@ -228,6 +235,8 @@ class decision(gr.basic_block):
 			somac = egreedy(portid)
 		elif mode == 3:
 			somac = boltz(prot = portid, learn_rate = 0.6, discount = 0.8, T = 0.5)
+		elif mode == 4:
+			somac = FSMAC(prot = portid)
 		
 		# Detects whether or not a prot switch has just occured
 		# _p: protocol, _pp: previous protocol
@@ -245,8 +254,20 @@ class decision(gr.basic_block):
 		target_metric = {}
 
 		while True: # {{{
+
+			self.non = self.calc_non(self.met8)
+
 			# Handling avg aggregation
-			# [sum, avg, max, min, var, count]
+			# met0: thr
+			# met1: lat
+			# met2: jit
+			# met3: rnp
+			# met4: interpkt
+			# met5: snr
+			# met6: contention
+			# met7: non - this does not detect if node is idle or busy
+			# met8: buffsize
+			# met9: pkt thr
 			self.met0_list = [self.aggr(i, self.met0) for i in range(6)]
 			self.met1_list = [self.aggr(i, self.met1) for i in range(6)]
 			self.met2_list = [self.aggr(i, self.met2) for i in range(6)]
@@ -283,43 +304,78 @@ class decision(gr.basic_block):
 				
 				logging.info("Target metric = {}".format(target_metric[t]))
 
-				# TODO: Decision {{{
+				# Decision SOMAC {{{
 				# Guarantees two decision are not done in a row
 				# This is the mode code for SOMAC
-				if (mode == 2 or mode == 3) and dt > 1: 
+				if (mode == 2 or mode == 3): 
 
-					if dt == 2:
-						reward = self.calc_reward(target_metric[t], target_metric[t - 2])
-					elif dt == 3:
-						reward = self.calc_reward(target_metric[t], target_metric[t-3])
-					else:
-						reward = self.calc_reward(target_metric[t], target_metric[t-1])
-
-						if reward >= 0:
-							reward = 0
+					if dt > 1:
+						if dt == 2:
+							reward = self.calc_reward(target_metric[t], target_metric[t - 2])
+						elif dt == 3:
+							reward = self.calc_reward(target_metric[t], target_metric[t-3])
 						else:
-							reward = reward
+							reward = self.calc_reward(target_metric[t], target_metric[t-1])
 
-					logging.info("dt = {}".format(dt))
-					somac.update_qtable(reward, dt)
+							if reward >= 0:
+								reward = 0
+							else:
+								reward = reward
 
-					if dt == 2 and reward > 0:
-						decision = somac.decision(portid, keep = True)
-					elif dt == 2 and reward < 0:
-						decision = somac.decision(portid, force_switch = True)
+						logging.info("dt = {}".format(dt))
+						somac.update_qtable(reward, dt)
+
+						if dt == 2 and reward > 0:
+							decision = somac.decision(portid, keep = True)
+						elif dt == 2 and reward < 0:
+							decision = somac.decision(portid, force_switch = True)
+						else:
+							decision = somac.decision(portid, keep = False)
+
+						logging.info("Decision: {}".format(decision))
+
+						if portid != decision: 
+							portid = decision
+							dt = 0
 					else:
-						decision = somac.decision(portid, keep = False)
-
-					logging.info("Decision: {}".format(decision))
-
-					if portid != decision: 
-						portid = decision
-						dt = 0
+						logging.info("No decision: protocol was switched last time")
 				# }}}
+
+				# FS-MAC{{{ 
+				elif mode == 4:
+					non = self.non
+					lat = (log_dict[t]["metrics"][1, 1] / log_dict[t]["metrics"][1, 5]) * 1. / non
+
+					decision = somac.decision(non, lat)
+					portid = decision
+
+					logging.info("FS-MAC, non = {}, lat = {}ms".format(non, round(lat, 2)))
+					logging.info("FS-MAC, decision = {}".format("CSMA" if decision == 0 else "TDMA"))
+				# }}}
+
+				# SMAC {{{
+				elif mode == 5:
+					if t > 1:
+						non = self.non
+
+						prev_thr = log_dict[t-1]["metrics"][0, 1] * 1. / non
+						curr_thr = log_dict[t]["metrics"][0, 1] * 1. / non
+
+						perf = (curr_thr / prev_thr)
+
+						decision = portid
+						if perf < 0.8:
+							decision = 0 if portid == 1 else 1
+
+						logging.info("SMAC, delta perfomance = {}%".format(round((perf - 1) * 100., 0)))
+						logging.info("SMAC, decision = {}".format("CSMA" if decision == 0 else "TDMA"))
+				# }}}
+
 				else:
-					logging.info("No decision: protocol was switched last time")
+					logging.info("Mode: {}".format("pure-CSMA" if mode == 0 else "pure-TDMA"))
 
 				t = t + 1
+
 			else:
 				logging.info("Metrics contain None")
 			## }}}
