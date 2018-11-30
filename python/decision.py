@@ -366,7 +366,7 @@ class decision(gr.basic_block):
 						prev_thr = log_dict[t-1]["metrics"][0, 1] * 1. / non
 						curr_thr = log_dict[t]["metrics"][0, 1] * 1. / non
 
-						perf = (curr_thr / prev_thr)
+						perf = (curr_thr / prev_thr) if prev_thr > 0 else 1.
 
 						decision = portid
 						if perf < 0.8:
