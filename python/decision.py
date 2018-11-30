@@ -343,8 +343,10 @@ class decision(gr.basic_block):
 
 				# FS-MAC{{{ 
 				elif mode == 4:
-					non = self.non
-					lat = (log_dict[t]["metrics"][1, 1] / log_dict[t]["metrics"][1, 5]) * 1. / non
+					non = self.non if self.non > 0 else 1
+
+					den = log_dict[t]["metrics"][1, 5] if log_dict[t]["metrics"][1, 5] > 0 else 1
+					lat = (log_dict[t]["metrics"][1, 1] / den) * 1. / non
 
 					decision = somac.decision(non, lat)
 					portid = decision
@@ -356,7 +358,7 @@ class decision(gr.basic_block):
 				# SMAC {{{
 				elif mode == 5:
 					if t > 1:
-						non = self.non
+						non = self.non if self.non > 0 else 1
 
 						prev_thr = log_dict[t-1]["metrics"][0, 1] * 1. / non
 						curr_thr = log_dict[t]["metrics"][0, 1] * 1. / non
