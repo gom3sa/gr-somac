@@ -343,21 +343,24 @@ class decision(gr.basic_block):
 
 				# FS-MAC{{{ 
 				elif mode == 4:
-					non = self.non if self.non > 0 else 1
+					if dt > 1:
+						non = self.non if self.non > 0 else 1
 
-					den = log_dict[t]["metrics"][1, 5] if log_dict[t]["metrics"][1, 5] > 0 else 1
-					lat = (log_dict[t]["metrics"][1, 1] / den) * 1. / non
+						den = log_dict[t]["metrics"][1, 5] if log_dict[t]["metrics"][1, 5] > 0 else 1
+						lat = (log_dict[t]["metrics"][1, 1] / den) * 1. / non
 
-					decision = somac.decision(non, lat)
-					portid = decision
+						decision = somac.decision(non, lat)
+						if decision != portid:
+							dt = 0
+						portid = decision
 
-					logging.info("FS-MAC, non = {}, lat = {}ms".format(non, round(lat, 2)))
-					logging.info("FS-MAC, decision = {}".format("CSMA" if decision == 0 else "TDMA"))
+						logging.info("FS-MAC, non = {}, lat = {}ms".format(non, round(lat, 2)))
+						logging.info("FS-MAC, decision = {}".format("CSMA" if decision == 0 else "TDMA"))
 				# }}}
 
 				# SMAC {{{
 				elif mode == 5:
-					if t > 1:
+					if t > 1 and dt > 1:
 						non = self.non if self.non > 0 else 1
 
 						prev_thr = log_dict[t-1]["metrics"][0, 1] * 1. / non
@@ -368,6 +371,9 @@ class decision(gr.basic_block):
 						decision = portid
 						if perf < 0.8:
 							decision = 0 if portid == 1 else 1
+
+						if decision != portid:
+							dt = 0
 
 						portid = decision
 						logging.info("SMAC, delta perfomance = {}%".format(round((perf - 1) * 100., 0)))
