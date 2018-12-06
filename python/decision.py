@@ -234,7 +234,7 @@ class decision(gr.basic_block):
 		if mode == 2:
 			somac = egreedy(portid)
 		elif mode == 3:
-			somac = boltz(prot = portid, learn_rate = 0.6, discount = 0.8, T = 0.5)
+			somac = boltz(prot = portid, learn_rate = 0.7, discount = 0.8, T = 0.5)
 		elif mode == 4:
 			somac = FSMAC(prot = portid)
 		
