@@ -2,6 +2,7 @@
 
 ARG_ID=$1
 MODE=$2
+RAND_PROFILE=$3
 
 # IDs of TunTap script
 IDS_CONFIG=(1 2 3 4 5 6 7 8 9 GATEWAY)
@@ -9,14 +10,13 @@ IDS_CONFIG=(1 2 3 4 5 6 7 8 9 GATEWAY)
 # Setup {{{
 PROT=$MODE; # 0: CSMA, 1: TDMA, 2: SOMAC
 DATE=`date +%d%m%Y_%H%M`;
-DIR=$HOME/$PROT"_"$DATE;
+DIR=$HOME/$PROT"_"$RAND_PROFILE"_"$DATE;
 mkdir $DIR;
 # }}}
 
-cp $HOME/gr-somac/data/90_lim30/profile_0.npy /tmp/profile.npy
+cp "$HOME/gr-somac/data/90_lim30/profile_$RAND_PROFILE.npy" /tmp/profile.npy
 
 # Run {{{
-
 cd ~
 sudo ./gr-somac/apps/container/config_interface_tuntap_"${IDS_CONFIG[$ARG_ID]}".sh;
 
