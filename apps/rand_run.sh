@@ -22,7 +22,7 @@ sudo ./gr-somac/apps/container/config_interface_tuntap_"${IDS_CONFIG[$ARG_ID]}".
 
 sudo pkill python; sudo pkill ping;
 
-RUN_TIME=5400
+RUN_TIME=3600
 if [[ $ARG_ID -eq 9 ]]; then
 	echo "COORDINATOR"
 	echo $MODE > "/tmp/prot.txt"
