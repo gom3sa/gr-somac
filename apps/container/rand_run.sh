@@ -2,7 +2,7 @@
 
 ARG_ID=$1
 MODE=$2
-RAND_PROFILE=$3
+RANDPROFILE=$3
 
 # IDs of TunTap script
 IDS_CONFIG=(1 2 3 4 5 6 7 8 9 GATEWAY)
@@ -10,11 +10,11 @@ IDS_CONFIG=(1 2 3 4 5 6 7 8 9 GATEWAY)
 # Setup {{{
 PROT=$MODE; # 0: CSMA, 1: TDMA, 2: SOMAC
 DATE=`date +%d%m%Y_%H%M`;
-DIR=$HOME/$PROT"_"$RAND_PROFILE"_"$DATE;
+DIR=$HOME/$PROT"_"$RANDPROFILE"_"$DATE;
 mkdir $DIR;
 # }}}
 
-cp "$HOME/gr-somac/data/60/profile_$RAND_PROFILE.npy" /tmp/profile.npy
+cp "$HOME/gr-somac/data/30/profile_$RANDPROFILE.npy" /tmp/profile.npy
 
 # Run {{{
 cd ~
@@ -22,7 +22,7 @@ cd ~
 
 pkill python; pkill ping;
 
-RUN_TIME=3600
+RUN_TIME=1800
 if [[ $ARG_ID -eq 9 ]]; then
 	echo "COORDINATOR"
 	echo $MODE > "/tmp/prot.txt"
