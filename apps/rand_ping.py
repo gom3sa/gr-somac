@@ -31,11 +31,9 @@ for i in range(n):
 	# minutes to seconds
 	sleeptime, txtime = sleeptime * 60, txtime * 60
 
-	if txtime == 0:
-		txtime = 5
-
-	call(["sudo", "timeout", str(txtime), "sudo", "ping", "-i 0.01", "192.168.123.1"], stdout = f)
-	call(["sudo", "pkill", "ping"], stdout = f)
+	if txtime > 0:
+		call(["sudo", "timeout", str(txtime), "sudo", "ping", "-i 0.01", "192.168.123.1"], stdout = f)
+		call(["sudo", "pkill", "ping"], stdout = f)
 
 	sleep(sleeptime)
 
