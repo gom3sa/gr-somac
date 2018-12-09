@@ -358,7 +358,7 @@ class decision(gr.basic_block):
 						logging.info("FS-MAC, decision = {}".format("CSMA" if decision == 0 else "TDMA"))
 				# }}}
 
-				# SMAC {{{
+				# AMAC {{{
 				elif mode == 5:
 					if t > 1 and dt > 1:
 						non = self.non if self.non > 0 else 1
@@ -376,8 +376,8 @@ class decision(gr.basic_block):
 							dt = 0
 
 						portid = decision
-						logging.info("SMAC, delta perfomance = {}%".format(round((perf - 1) * 100., 0)))
-						logging.info("SMAC, decision = {}".format("CSMA" if decision == 0 else "TDMA"))
+						logging.info("AMAC, delta perfomance = {}%".format(round((perf - 1) * 100., 0)))
+						logging.info("AMAC, decision = {}".format("CSMA" if decision == 0 else "TDMA"))
 				# }}}
 
 				else:
