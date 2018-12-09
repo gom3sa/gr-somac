@@ -249,6 +249,7 @@ class decision(gr.basic_block):
 		t  = 0
 
 		logging.info("Decision block as Coordinator")
+		logging.info("Init prot: {}".format("CSMA" if portid == 0 else "TDMA"))
 		time.sleep(3)
 
 		prev = -1
