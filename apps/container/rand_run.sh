@@ -25,6 +25,14 @@ pkill python; pkill ping;
 RUN_TIME=1800
 if [[ $ARG_ID -eq 9 ]]; then
 	echo "COORDINATOR"
+	if [[ $MODE -eq 5 ]]; then
+		if [[ $(( RANDOM % 2 )) -eq 0 ]]; then 
+			echo 0 > "/tmp/init_prot.txt"
+		else 
+			echo 1 > "/tmp/init_prot.txt"
+		fi
+	fi
+
 	echo $MODE > "/tmp/prot.txt"
 	rm -rf "/tmp/backlog_file.npy"
 	rm -rf "/tmp/out.log"
