@@ -14,7 +14,7 @@ DIR=$HOME/$PROT"_"$RANDPROFILE"_"$DATE;
 mkdir $DIR;
 # }}}
 
-cp "$HOME/gr-somac/data/45/profile_$RANDPROFILE.npy" /tmp/profile.npy
+cp "$HOME/gr-somac/data/30/profile_$RANDPROFILE.npy" /tmp/profile.npy
 
 # Run {{{
 cd ~
@@ -22,7 +22,7 @@ sudo ./gr-somac/apps/container/config_interface_tuntap_"${IDS_CONFIG[$ARG_ID]}".
 
 sudo pkill python; sudo pkill ping;
 
-RUN_TIME=2700
+RUN_TIME=1800
 if [[ $ARG_ID -eq 9 ]]; then
 	echo "COORDINATOR"
 	if [[ $MODE -eq 5 ]]; then
