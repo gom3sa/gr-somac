@@ -14,7 +14,7 @@ DIR=$HOME/$PROT"_"$RANDPROFILE"_"$DATE;
 mkdir $DIR;
 # }}}
 
-cp "$HOME/gr-somac/data/30/profile_$RANDPROFILE.npy" /tmp/profile.npy
+cp "$HOME/gr-somac/data/45/profile_$RANDPROFILE.npy" /tmp/profile.npy
 
 # Run {{{
 cd ~
