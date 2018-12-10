@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/andre/GnuRadio-SOMAC/gr-somac/lib/qa_somac.cc
+qa_somac.h
+/home/andre/GnuRadio-SOMAC/gr-somac/lib/qa_somac.h
+
+/home/andre/GnuRadio-SOMAC/gr-somac/lib/qa_somac.h
+gnuradio/attributes.h
+-
+cppunit/TestSuite.h
+-
+
+/home/andre/GnuRadio-SOMAC/gr-somac/lib/test_somac.cc
+config.h
+/home/andre/GnuRadio-SOMAC/gr-somac/lib/config.h
+cppunit/TextTestRunner.h
+-
+cppunit/XmlOutputter.h
+-
+gnuradio/unittests.h
+-
+qa_somac.h
+/home/andre/GnuRadio-SOMAC/gr-somac/lib/qa_somac.h
+iostream
+-
+fstream
+-
+

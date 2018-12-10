@@ -22,7 +22,7 @@ cd ~
 
 pkill python; pkill ping;
 
-RUN_TIME=1800
+RUN_TIME=2700
 if [[ $ARG_ID -eq 9 ]]; then
 	echo "COORDINATOR"
 	if [[ $MODE -eq 5 ]]; then
