@@ -215,12 +215,12 @@ class decision(gr.basic_block):
 
 		#portid = 1
 		# Random init
-		#seed = int(time.time())
-		#np.random.seed(seed)
-		#portid = np.random.choice([0, 1], p = [0.5, 0.5])
-		f_init_prot = open("/tmp/init_prot.txt", "r")
-		init_prot = int(f_init_prot.readline().strip("\n"))
-		portid = init_prot
+		seed = int(time.time())
+		np.random.seed(seed)
+		portid = np.random.choice([0, 1], p = [0.5, 0.5])
+		#f_init_prot = open("/tmp/init_prot.txt", "r")
+		#init_prot = int(f_init_prot.readline().strip("\n"))
+		#portid = init_prot
 
 		##### MODE #####
 		f_mode = open("/tmp/prot.txt", "r")
