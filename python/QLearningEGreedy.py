@@ -30,7 +30,6 @@ class QLearningEGreedy:
 	def decision(self, prot, keep = False, force_switch = False):
 		self.state = prot
 
-		#epsilon = 1. / (np.log2(self.t + 1.))
 		epsilon = self.epsilon
 		self.t = self.t + 1
 
