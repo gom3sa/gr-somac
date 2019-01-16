@@ -4,13 +4,13 @@ SOMAC is a Self-Organizing MAC-sublayer system. SOMAC switches MAC protocols in 
 The project is fully implemented in Software-Defined Radios (SDR), including both the data link layer (i.e. MAC protocols and framing) and the physical (PHY) layer.
 
 ## MAC Protocols
-There are 2 MAC protocols available currently. They bellong to the project [gr-macprotocols](https://github.com/andreviniciusgsg/gr-macprotocols), click in the link for more information.
+There are 2 MAC protocols available currently. They belong to the project [gr-macprotocols](https://github.com/andreviniciusgsg/gr-macprotocols), click in the link for more information.
 
 ## PHY Layer
 SOMAC uses the PHY layer from the project IEEE 802.11 a/g/p Transceiver. More information is available in [https://github.com/bastibl/gr-ieee802-11](https://github.com/bastibl/gr-ieee802-11).
 
 ## Upper layers
-The upper layers can be either simulated by GNU Radio or connected to the upper layer of the linux operating system via TUN/TAP interfaces. Examples are provided for the latter, allowing the use of well-known applications such as ping, ftp, ssh, etc. to generate network traffic.
+The upper layers can be either simulated by GNU Radio or connected to the upper layer of the Linux operating system via TUN/TAP interfaces. Examples are provided for the latter, allowing the use of well-known applications such as ping, ftp, ssh, etc. to generate network traffic.
 
 ## Installation
 There are two installation scripts available for SOMAC. The first is called *install-pc.sh* and relates to the installation over a physical machine or a virtual machine (both tested on Ubuntu 16.04 and Ubuntu 18.04). On the other hand, the second is called *install-container.sh* is designated for installation over an Ubuntu docker container. In both cases, the script checks for all SOMAC dependencies and installs the missing ones. That includes the list below.
@@ -27,7 +27,7 @@ There are two installation scripts available for SOMAC. The first is called *ins
 ## Examples
 
 #### TUN/TAP config scripts
-There are necessary steps to configure the TUN/TAP interface in order to connect the upper layers from the linux operating system to the data link and PHY layers of SOMAC. The folder gr-somac/apps provides config scripts for that. The scripts *config_interface_tuntap_GATEWAY.sh* relates to the coordinator/master node, whereas *config_interface_tuntap_\<ID\>.sh* related to ordinary/slave nodes. The master node gets the following IP: 192.168.123.1 for the TUN/TAP interface. Others follow the increasing sequence of 192.168.123.2, 192.168.123.3, ..., 192.168.123.n, where n+1 is equal to \<ID\>.
+There are necessary steps to configure the TUN/TAP interface in order to connect the upper layers from the Linux operating system to the data link and PHY layers of SOMAC. The folder gr-somac/apps provides config scripts for that. The scripts *config_interface_tuntap_GATEWAY.sh* relates to the coordinator/master node, whereas *config_interface_tuntap_\<ID\>.sh* related to ordinary/slave nodes. The master node gets the following IP: 192.168.123.1 for the TUN/TAP interface. Others follow the increasing sequence of 192.168.123.2, 192.168.123.3, ..., 192.168.123.n, where n+1 is equal to \<ID\>.
 
 #### GNU Radio examples
 Examples can be found at gr-somac/examples. Those scripts were tested using Software-Defined Radios USRP B2\*0 from the [FUTEBOL project, testbed UFMG](http://futebol.dcc.ufmg.br/). Some hyperparameters may need to be adjusted in order to run SOMAC on different devices.
