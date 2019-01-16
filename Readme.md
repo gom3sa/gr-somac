@@ -34,5 +34,5 @@ Examples can be found at gr-somac/examples. Those scripts were tested using Soft
 
 ## Author
 Full name: André Vinícius Gomes Santos Gonçalves (usually André Gomes) <br />
-E-mail: andre.gomes@dcc.ufmg.br
+E-mail: andre.gomes@dcc.ufmg.br <br />
 Website: https://homepages.dcc.ufmg.br/~andre.gomes/
