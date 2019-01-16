@@ -27,7 +27,7 @@ There are two installation scripts available for SOMAC. The first is called *ins
 ## Examples
 
 #### TUN/TAP config scripts
-There are necessary steps to configure the TUN/TAP interface in order to connect the upper layers from the linux operating system to the data link and PHY layers of SOMAC. The folder gr-somac/apps provides config scripts for that. The scripts *config_interface_tuntap_GATEWAY.sh* relates to the coordinator/master node, whereas *config_interface_tuntap_<ID>.sh* related to ordinary/slave nodes. The master node gets the following IP: 192.168.123.1 for the TUN/TAP interface. Others follow the increasing sequency 192.168.123.2, 192.168.123.3, ..., 192.168.123.n, where n+1 is equal to <ID>.
+There are necessary steps to configure the TUN/TAP interface in order to connect the upper layers from the linux operating system to the data link and PHY layers of SOMAC. The folder gr-somac/apps provides config scripts for that. The scripts *config_interface_tuntap_GATEWAY.sh* relates to the coordinator/master node, whereas *config_interface_tuntap_\<ID\>.sh* related to ordinary/slave nodes. The master node gets the following IP: 192.168.123.1 for the TUN/TAP interface. Others follow the increasing sequency 192.168.123.2, 192.168.123.3, ..., 192.168.123.n, where n+1 is equal to \<ID\>.
 
 #### GNU Radio examples
 Examples can be found at gr-somac/examples. Those scripts were tested using Software-Defined Radios USRP B2\*0 from the [FUTEBOL project, testbed UFMG](http://futebol.dcc.ufmg.br/). Some hyperparameters may need to be adjusted in order to run SOMAC on different devices.
