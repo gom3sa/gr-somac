@@ -52,11 +52,6 @@ class QLearningBoltzmann:
 		self.q_table[self.state, self.action] = (1. - self.learn_rate) * self.q_table[self.state, self.action] + \
 						self.learn_rate * (reward + self.discount * np.max(self.q_table[self.state_new, :]))
 
-		#q_table_abs = np.abs(self.q_table)
-		#p = np.argmax(q_table_abs[self.state_new, :])
-		#self.q_table[self.state, self.action] = (1. - self.learn_rate) * self.q_table[self.state, self.action] + \
-		#				self.learn_rate * (reward + self.discount * self.q_table[self.state_new, p])
-
 		T = self.T
 		num = np.exp(self.q_table / T)
 
