@@ -10,7 +10,6 @@ class QLearningBoltzmann:
 	def __init__(self, prot, learn_rate = 0.3, discount = 0.8, T = 1.0):
 		self.q_table   = np.zeros((2, 2))
 		
-		#self.q_table	= np.random.rand(2, 2) - 0.5
 		self.prob_table = np.zeros((2, 2)) + 0.5
 		self.discount   = discount
 		self.learn_rate = learn_rate
@@ -69,6 +68,7 @@ class QLearningBoltzmann:
 		return
 
 	def reset_qtable(self):
-		self.q_table = np.random.rand(2, 2) - 0.5
+		self.q_table   = np.zeros((2, 2))
+		self.prob_table = np.zeros((2, 2)) + 0.5
 
 		return
